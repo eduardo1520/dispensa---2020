@@ -19,16 +19,24 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
+
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('/profile', 'ProfileController');
 
 Route::resource('/user', 'UserController');
 
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
+Route::resource('/category', 'CategoryController');
+
+Route::resource('/feedback', 'FeedbackController');
+
 
 Route::get('/usuario/novo', function () {
     return view('users/user');
 })->name('novo_usuario');
+
+Route::get('/categoria/novo','CategoryController@novo')->name('categoria_nova');

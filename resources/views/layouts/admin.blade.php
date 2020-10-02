@@ -22,7 +22,13 @@
     <!-- Favicon -->
     <link href="{{ asset('img/favicon.png') }}" rel="icon" type="image/png">
 
-
+    <style>
+        .nao_selecionado {
+            color: #fff;
+            background-color: #f1f1f1;
+            border-color: #c7ccda;
+        }
+    </style>
 </head>
 <body id="page-top">
 
@@ -58,9 +64,10 @@
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Páginas:</h6>
-                        <a class="collapse-item" href="categorias.html">Categorias</a>
+                        <a class="collapse-item" href="{{ route('category.index') }}">Categorias</a>
                         <a class="collapse-item" href="produtos.html">Produtos</a>
                         <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
+                        <a class="collapse-item" href="{{ route('feedback.index') }}">Feedback</a>
                     </div>
                 </div>
             </li>
@@ -113,8 +120,8 @@
             <div id="feedback" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Informações:</h6>
-                    <a class="collapse-item" href="categorias.html">Reclamações</a>
-                    <a class="collapse-item" href="produtos.html">Sugestões</a>
+                    <a class="collapse-item" href="#" data-toggle="modal" data-target="#feedbackModal" onclick="atualizaTitulo('Reclamações');">Reclamações</a>
+                    <a class="collapse-item" href="#" data-toggle="modal" data-target="#feedbackModal" onclick="atualizaTitulo('Sugestões');">Sugestões</a>
                 </div>
             </div>
         </li>
@@ -126,8 +133,8 @@
             <div id="settings" class="collapse {{ Nav::isRoute('profile.index') }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Informações:</h6>
-                    <a class="collapse-item" href="{{ route('profile.index') }}">Profile</a>
-                    <a class="collapse-item" href="{{ route('about') }}">About</a>
+                    <a class="collapse-item" href="{{ route('profile.index') }}">Perfil</a>
+                    <a class="collapse-item" href="{{ route('about') }}">Sobre</a>
                 </div>
             </div>
         </li>
@@ -309,7 +316,7 @@
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="{{ route('profile.index') }}">
                                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                {{ __('Profile') }}
+                                {{ __('Perfil') }}
                             </a>
                             <a class="dropdown-item" href="javascript:void(0)">
                                 <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -347,7 +354,7 @@
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
-                    <span>Copyright &copy; Alejandro RH 2020</span>
+                    <span>Copyright &copy; Eduardo Oliveira 2020</span>
                 </div>
             </div>
         </footer>
@@ -385,6 +392,54 @@
     </div>
 </div>
 
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloFeedback"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-feedback">
+                    <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div>
+                                <label class="form-control-label" for="feedback">Tipo:</label>
+                            </div>
+
+                            <div id="feedback" class="btn-group" role="group" aria-label="Tipo">
+                                <button type="button" data-id="R" class="btn {{(empty(old('tipo')) || old('tipo') == 'R') ? 'btn-danger' : 'nao_selecionado'}}" value="R">Reclamação</button>
+                                <button type="button" data-id="S" class="btn {{(old('tipo') == 'S') ? 'btn-success' : 'nao_selecionado'}}" value="S">Sugestão</button>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" id="prioridade_selecionada">
+                            <div>
+                                <label class="form-control-label" for="admin">Prioridade:</label>
+                            </div>
+                            <select name="prioridade" id="prioridade" class="form-control">
+                                <option value="">Selecione:</option>
+                                <option value="A">Alta</option>
+                                <option value="B">Baixa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Descrição:</label>
+                        <textarea class="form-control" name="descricao" id="descricao"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"  onclick="cancelar()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="salvarFeedback()" id="btnFeedback">Cadastrar Feedback</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
 
@@ -392,6 +447,80 @@
     setTimeout(() => {
         $(".alert").remove();
     }, 2000);
+
+    function atualizaTitulo(titulo) {
+        $("#tituloFeedback").empty().append(titulo);
+
+        if(titulo == 'Sugestões') {
+            $("#prioridade_selecionada").hide();
+            $("#feedback .btn").each(function(){
+                $(this).removeClass().addClass('btn nao_selecionado');
+            });
+
+            $("#feedback .btn").each(function(){
+                if($(this).data('id') == 'S') {
+                    $(this).removeClass('btn nao_selecionado').addClass('btn btn-success');
+                }
+            });
+            $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="S">');
+        } else {
+            $("#feedback .btn").each(function(){
+                if($(this).data('id') == 'N') {
+                    $(this).removeClass('btn nao_selecionado').addClass('btn btn-danger');
+                }
+            });
+            $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="R">');
+        }
+    }
+
+    function cancelar() {
+        window.location.reload();
+    }
+
+    function salvarFeedback() {
+        let formulario = $("#form-feedback").serializeArray();
+        let id = $('#id').val() != '' ? $('#id').val() : '';
+        let url = id == undefined ? 'feedback' : 'feedback/'+id;
+        let tipo = id == undefined ? 'post' : 'put';
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:url,
+            type:tipo,
+            dateType: 'json',
+            data:{
+                form: formulario
+            },
+            success: function(res) {
+                window.location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $("#feedback .btn").on('click', function(){
+            $("#feedback .btn").each(function(){
+                $(this).removeClass().addClass('btn nao_selecionado');
+            });
+
+            let tipo = $(this).val();
+
+            if(tipo == "R") {
+                $(this).removeClass('btn nao_selecionado').addClass('btn btn-danger');
+                $("#prioridade_selecionada").show();
+                $("#tituloFeedback").empty().append('Reclamações');
+            } else {
+                $(this).removeClass('btn nao_selecionado').addClass('btn btn-success');
+                $("#prioridade_selecionada").hide();
+                $("#tituloFeedback").empty().append('Sugestões');
+            }
+            $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="'+ $(this).val() +'">');
+        });
+    });
 
 </script>
 

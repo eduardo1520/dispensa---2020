@@ -49,4 +49,9 @@ class User extends Authenticatable
 
         return "{$this->name} {$this->last_name}";
     }
+
+    public function feedback()
+    {
+        return $this->hasMany('App\Feedback');
+    }
 }

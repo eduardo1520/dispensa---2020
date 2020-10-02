@@ -1,20 +1,19 @@
 @extends('layouts.admin')
 @section('main-content')
 
-    <div class="col-lg-10 order-lg-1">
+    <div class="col-lg-7 order-lg-1">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Listagens de Usúarios</h6>
             </div>
             <div class="card-body">
-{{--                {{ $users }}--}}
                 <a href="{{ route('novo_usuario') }}" class="btn btn-success btn-icon-split">
                     <span class="icon text-white-50">
                       <i class="fa fa-user-plus" aria-hidden="true"></i>
                     </span>
                     <span class="text">Novo</span>
                 </a>
-                <table class="table table-responsive mt-2">
+                <table class="mt-lg-3 table table-striped table-bordered table-hover">
                     <thead>
                     <tr align="center">
                         <th>#</th>
