@@ -28,3 +28,7 @@ Route::resource('/user', 'UserController');
 Route::get('/about', function () {
     return view('about');
 })->name('about');
+
+Route::get('/usuario/novo', function () {
+    return view('users/user');
+})->name('novo_usuario');

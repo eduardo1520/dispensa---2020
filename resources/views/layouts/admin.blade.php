@@ -21,6 +21,8 @@
 
     <!-- Favicon -->
     <link href="{{ asset('img/favicon.png') }}" rel="icon" type="image/png">
+
+
 </head>
 <body id="page-top">
 
@@ -46,22 +48,23 @@
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>{{ __('Dashboard') }}</span></a>
         </li>
-        <hr class="sidebar-divider my-0">
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-desktop"></i>
-                <span>Cadastros do Sistema</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Páginas:</h6>
-                    <a class="collapse-item" href="categorias.html">Categorias</a>
-                    <a class="collapse-item" href="produtos.html">Produtos</a>
-                    <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
+        @if(Auth::user()->admin == 'S')
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-desktop"></i>
+                    <span>Cadastros do Sistema</span>
+                </a>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Páginas:</h6>
+                        <a class="collapse-item" href="categorias.html">Categorias</a>
+                        <a class="collapse-item" href="produtos.html">Produtos</a>
+                        <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
+                    </div>
                 </div>
-            </div>
-        </li>
-
+            </li>
+        @endif
         <!-- Divider -->
         <hr class="sidebar-divider">
         <li class="nav-item {{ Nav::isRoute('profile.index') }}">
@@ -82,23 +85,25 @@
                 <span>{{ __('Solicitação de Produtos') }}</span>
             </a>
         </li>
-        <hr class="sidebar-divider">
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#relatorio" aria-expanded="true" aria-controls="relatorio">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Relatórios do Sistema</span>
-            </a>
-            <div id="relatorio" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Páginas:</h6>
-                    <a class="collapse-item" href="categorias.html">Categorias</a>
-                    <a class="collapse-item" href="produtos.html">Produtos</a>
-                    <a class="collapse-item" href="usuarios.html">Usuários</a>
-                    <a class="collapse-item" href="logs.html">Logs</a>
-                    <a class="collapse-item" href="erros.html">Erros</a>
+        @if(Auth::user()->admin == 'S')
+            <hr class="sidebar-divider">
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#relatorio" aria-expanded="true" aria-controls="relatorio">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Relatórios do Sistema</span>
+                </a>
+                <div id="relatorio" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Páginas:</h6>
+                        <a class="collapse-item" href="categorias.html">Categorias</a>
+                        <a class="collapse-item" href="produtos.html">Produtos</a>
+                        <a class="collapse-item" href="usuarios.html">Usuários</a>
+                        <a class="collapse-item" href="logs.html">Logs</a>
+                        <a class="collapse-item" href="erros.html">Erros</a>
+                    </div>
                 </div>
-            </div>
-        </li>
+            </li>
+        @endif
         <hr class="sidebar-divider">
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#feedback" aria-expanded="true" aria-controls="feedback">
@@ -382,7 +387,17 @@
 
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+
+<script>
+    setTimeout(() => {
+        $(".alert").remove();
+    }, 2000);
+
+</script>
+
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 </body>

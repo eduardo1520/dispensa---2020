@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -15,7 +17,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('users.user',compact('users'));
+        return view('users.index',compact('users'));
     }
 
     /**
@@ -36,7 +38,26 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $data = $request->all();
+        $validacao = \Validator::make($data,[
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users'. Auth::user()->id,
+            'admin' => 'string|max:1',
+            'password' => 'required|string|min:6',
+            'password_confirmation' => 'nullable|min:6|max:12|required_with:password|same:password'
+        ]);
+
+        if($validacao->fails()){
+            return redirect()->back()->withErrors($validacao)->withInput();
+        }
+
+        $data['password'] = bcrypt($data['password']);
+        $data['admin'] = empty($request->admin) ? "N": $request->admin;
+
+        User::create($data);
+        return redirect()->route('home');
+
     }
 
     /**
