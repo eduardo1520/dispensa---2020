@@ -90,7 +90,6 @@
                         });
                         $("#prioridade_selecionada").hide();
                     }
-
                     $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="'+ res.tipo +'">');
                     $("#form-feedback").append('<input type="hidden" id="id" value="'+ res.id +'">');
                     $("#btnFeedback").text('Atualizar Feedback');
@@ -123,21 +122,6 @@
                 console.log(error);
             }
         });
-
-    }
-
-    // Todo
-    function validaFeedback() {
-
-        let tipo = $("#tipo").val();
-
-        if(tipo == '') {
-            alert('Campo obrigatório');
-            $("#tipo").focus();
-        } else {
-            let codigo = $("#id").val();
-            atualizaFeedback(tipo, codigo);
-        }
     }
 
     function apagarFeedback(codigo) {
@@ -155,7 +139,6 @@
                 console.log(error);
             }
         });
-
     }
 
     $(document).ready(function(){
