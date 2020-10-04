@@ -403,7 +403,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="form-feedback">
+                <form id="form-feedback" onchange="validaFeedback();">
                     <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
 
                     <div class="row">
@@ -419,9 +419,9 @@
                         </div>
                         <div class="col-lg-6" id="prioridade_selecionada">
                             <div>
-                                <label class="form-control-label" for="admin">Prioridade:</label>
+                                <label class="form-control-label" for="admin">Prioridade:<span class="small text-danger">*</span></label>
                             </div>
-                            <select name="prioridade" id="prioridade" class="form-control">
+                            <select name="prioridade" id="prioridade" class="form-control" required>
                                 <option value="">Selecione:</option>
                                 <option value="A">Alta</option>
                                 <option value="B">Baixa</option>
@@ -429,14 +429,14 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="message-text" class="col-form-label">Descrição:</label>
-                        <textarea class="form-control" name="descricao" id="descricao"></textarea>
+                        <label for="message-text" class="col-form-label">Descrição:<span class="small text-danger">*</span></label>
+                        <textarea class="form-control" name="descricao" id="descricao" required></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal"  onclick="cancelar()">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="salvarFeedback()" id="btnFeedback">Cadastrar Feedback</button>
+                <button type="button" class="btn btn-primary" onclick="salvarFeedback()" id="btnFeedback" disabled>Cadastrar Feedback</button>
             </div>
         </div>
     </div>
@@ -464,6 +464,7 @@
                 }
             });
             $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="S">');
+            $("#prioridade").removeAttr('required');
         } else {
             $("#feedback .btn").each(function(){
                 if($(this).data('id') == 'N') {
@@ -471,6 +472,7 @@
                 }
             });
             $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="R">');
+            $("#prioridade").attr('required','required');
         }
     }
 
@@ -500,6 +502,12 @@
                 console.log(error);
             }
         });
+    }
+
+    function validaFeedback() {
+        let cont = 0;
+        $("#form-feedback").find('select[required],textarea[required]').each((x,filhos) => {($(filhos).val() != "") ? cont++ : 0 });
+        (cont == $("#form-feedback select[required]").length + $("#form-feedback textarea[required]").length) ? $("#btnFeedback").removeAttr('disabled') : $("#btnFeedback").attr('disabled','disabled');
     }
 
     $(document).ready(function(){

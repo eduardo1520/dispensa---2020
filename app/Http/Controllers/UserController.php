@@ -142,7 +142,12 @@ class UserController extends Controller
 
     public function relatorio()
     {
-        $users = User::paginate(5);
+        $users = User::select('id','name','last_name','admin','email','created_at','updated_at','deleted_at')
+            ->orderBy('name', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('deleted_at', 'desc')
+            ->withTrashed()
+            ->paginate(5);
         return view('users.relatorio',compact('users'));
     }
 }

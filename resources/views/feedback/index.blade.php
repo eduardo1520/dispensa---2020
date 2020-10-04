@@ -14,10 +14,12 @@
                 <h6 class="m-0 font-weight-bold text-primary">Listagens de Feedback</h6>
             </div>
             <div class="card-body">
-                <table class="mt-lg-3 table table-striped table-bordered table-hover">
+                <table class="mt-lg-3 table table-striped table-bordered table-hover table-responsive-lg">
                     <thead>
                     <tr align="center">
                         <th>#</th>
+                        <th>Data de Abertura</th>
+                        <th>Data de Conclusão</th>
                         <th>Tipo</th>
                         <th>Descrição</th>
                         <th>Prioridade</th>
@@ -29,6 +31,8 @@
                     @forelse($feedback as $f)
                         <tr align="center" class="{{ $f->tipo == 'R' ? 'table-danger': 'table-primary'}}">
                             <th scope="row">{{$f->id}}</th>
+                            <td align="center">{{date('d/m/Y',strtotime($f->created_at))}}</td>
+                            <td align="center">{{ !empty($f->deleted_at) ? date('d/m/Y',strtotime($f->deleted_at)) : '-'}}</td>
                             <td align="center">{{$f->tipo == 'R' ? 'Reclamação' : 'Sugestão'}}</td>
                             <td align="center">{{Str::limit($f->descricao,100,'...')}}</td>
                             <td align="center">{{$f->prioridade == 'A' ? 'Alta' : 'Baixa'}}</td>
@@ -45,6 +49,13 @@
                     @endforelse
                     </tbody>
                 </table>
+                <div class="pl-lg-4">
+                    <div class="row">
+                        <div class="col text-center" style="margin-left:500px;">
+                            {{ $feedback }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
