@@ -105,7 +105,7 @@
                         <a class="collapse-item" href="categorias.html">Categorias</a>
                         <a class="collapse-item" href="produtos.html">Produtos</a>
                         <a class="collapse-item" href="{{ route('feedback.index') }}">Feedback</a>
-                        <a class="collapse-item" href="usuarios.html">Usuários</a>
+                        <a class="collapse-item" href="{{ route('relatorio') }}">Usuários</a>
                         <a class="collapse-item" href="logs.html">Logs</a>
                         <a class="collapse-item" href="erros.html">Erros</a>
                     </div>

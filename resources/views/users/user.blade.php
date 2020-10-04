@@ -27,7 +27,7 @@
                         if(isset($user)) {
                             $active = empty($user->id) ? route('user.store') : route('user.update',$user->id);
                         } else {
-                            $active = '';
+                            $active = route('user.store');
                         }
                     @endphp
                     <form method="POST" action="{{ $active  }}" autocomplete="off"  id="frm-user" onchange="validaCampos();">

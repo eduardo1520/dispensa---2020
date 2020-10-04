@@ -10,7 +10,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
+use DB;
 class UserController extends Controller
 {
     /**
@@ -138,5 +138,11 @@ class UserController extends Controller
     {
         $resultado = User::find($id)->delete();
         return response($resultado);
+    }
+
+    public function relatorio()
+    {
+        $users = User::paginate(5);
+        return view('users.relatorio',compact('users'));
     }
 }
