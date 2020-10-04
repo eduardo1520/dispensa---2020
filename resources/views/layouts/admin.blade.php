@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Laravel SB Admin 2">
-    <meta name="author" content="Alejandro RH">
+    <meta name="author" content="Eduardo Oliveira">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -18,7 +18,6 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
-
     <!-- Favicon -->
     <link href="{{ asset('img/favicon.png') }}" rel="icon" type="image/png">
 
@@ -65,6 +64,7 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Páginas:</h6>
                         <a class="collapse-item" href="{{ route('category.index') }}">Categorias</a>
+                        <a class="collapse-item" href="{{ route('measure.index') }}">Medidas</a>
                         <a class="collapse-item" href="produtos.html">Produtos</a>
                         <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
 
@@ -403,7 +403,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="form-feedback" onchange="validaFeedback();">
+                <form id="form-feedback" onchange="validaCampos('form-feedback','btnFeedback',['select','textarea']);">
                     <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
 
                     <div class="row">
@@ -441,9 +441,45 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="medidaModal" tabindex="-1" aria-labelledby="medidaModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cadastro de Unidade de Medidas</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-medida" onchange="validaCampos('form-medida','btnMedida',['input']);">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div>
+                                <label class="form-control-label" for="nome">Nome:<span class="small text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nome" id="nome" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div>
+                                <label class="form-control-label" for="sigla">Sigla:<span class="small text-danger">*</span></label>
+                                <input type="text" class="form-control" name="sigla" id="sigla" required>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"  onclick="cancelar()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="salvarMedida()" id="btnMedida" disabled>Cadastrar Medida</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-
+<script src="{{ asset('js/default.js') }}"></script>
 <script>
     setTimeout(() => {
         $(".alert").remove();
@@ -502,12 +538,6 @@
                 console.log(error);
             }
         });
-    }
-
-    function validaFeedback() {
-        let cont = 0;
-        $("#form-feedback").find('select[required],textarea[required]').each((x,filhos) => {($(filhos).val() != "") ? cont++ : 0 });
-        (cont == $("#form-feedback select[required]").length + $("#form-feedback textarea[required]").length) ? $("#btnFeedback").removeAttr('disabled') : $("#btnFeedback").attr('disabled','disabled');
     }
 
     $(document).ready(function(){

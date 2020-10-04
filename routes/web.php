@@ -35,6 +35,10 @@ Route::resource('/category', 'CategoryController');
 
 Route::resource('/feedback', 'FeedbackController');
 
+Route::resource('/feedback', 'FeedbackController');
+
+Route::resource('/measure', 'MeasureController');
+
 
 Route::get('/usuario/novo', function () {
     $user = null;
@@ -42,3 +46,4 @@ Route::get('/usuario/novo', function () {
 })->name('novo_usuario');
 
 Route::get('/categoria/novo','CategoryController@novo')->name('categoria_nova');
+Route::get('/medida/novo','MeasureController@novo')->name('medida_nova');
