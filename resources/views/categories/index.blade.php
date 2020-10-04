@@ -7,7 +7,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">Listagens de Categorias</h6>
             </div>
             <div class="card-body">
-                <a href="{{ route('categoria_nova') }}" class="btn btn-success btn-icon-split">
+                <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria("");'>
                     <span class="icon text-white-50">
                       <i class="fa fa-cubes" aria-hidden="true"></i>
                     </span>
@@ -27,7 +27,7 @@
                             <th scope="row">{{$categoria->id}}</th>
                             <td align="center">{{$categoria->tipo}}</td>
                             <td align="center">
-                                <a href="#" class="btn btn-info btn-circle btn-sm categoria" title="Atualizar Categoria" data-toggle="modal" data-target="#modalCategoria"  onclick='abreModalCategoria({{ $categoria->id }});'>
+                                <a href="#" class="btn btn-info btn-circle btn-sm categoria" title="Atualizar Categoria" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria({{ $categoria->id }});'>
                                     <i class="fas fa-info-circle"></i>
                                 </a>
                                 <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Categoria" data-id="{{ $categoria->id }}"><i class="fas fa-trash"></i></a>
@@ -41,31 +41,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalCategoria" tabindex="-1" aria-labelledby="modalCategoria" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Atualizar Categoria</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <input type="hidden" name="id" id="id">
-                        <div class="form-group">
-                            <label for="tipo" class="col-form-label">Tipo:</label>
-                            <input type="text" class="form-control" id="tipo">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="atualizar" onclick="validaCategoriaTipo()">Atualizar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 @endsection
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>
@@ -75,19 +51,24 @@
 
     function abreModalCategoria(codigo) {
         if(codigo) {
+            $("#titulo-categoria").text('Atualizar Categoria');
+            $("#btnCategoria").empty().text('Atualizar');
             $.ajax({
-                url:'category/'+ codigo,
-                type:'get',
+                url: `category/${codigo}`,
+                type: 'get',
                 dateType: 'json',
                 success: function(res) {
                     $("#id").val(res.id);
                     $("#tipo").val(res.tipo);
-                    $('#modalCategoria').modal('show');
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
+        } else {
+            $("#btnCategoria").empty().text('Cadastrar');
+            $("#btnCategoria").attr('disabled','disabled');
+            $("#titulo-categoria").empty().text('Cadastrar Categoria');
         }
     }
 

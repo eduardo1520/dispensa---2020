@@ -446,7 +446,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Cadastro de Unidade de Medidas</h5>
+                <h5 class="modal-title" id="titulo-medida">Cadastro de Unidade de Medidas</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -477,6 +477,33 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade modalCategoria" tabindex="-1" aria-labelledby="modalCategoria" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titulo-categoria">Atualizar Categoria</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-categoria" onchange="validaCampos('form-categoria','btnCategoria',['input']);">
+                    <input type="hidden" id="id">
+                    <div class="form-group">
+                        <label for="tipo" class="col-form-label">Tipo:<span class="small text-danger">*</span></label>
+                        <input type="text" class="form-control" id="tipo" name="tipo" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnCategoria" onclick="salvarCategoria()">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('js/default.js') }}"></script>
@@ -519,8 +546,8 @@
     function salvarFeedback() {
         let formulario = $("#form-feedback").serializeArray();
         let id = $('#id').val() != '' ? $('#id').val() : '';
-        let url = id == undefined ? 'feedback' : 'feedback/'+id;
-        let tipo = id == undefined ? 'post' : 'put';
+        let url = id == undefined || id == '' ? 'feedback' : 'feedback/'+id;
+        let tipo = id == undefined || id == '' ? 'post' : 'put';
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -538,6 +565,58 @@
                 console.log(error);
             }
         });
+    }
+
+    function salvarMedida() {
+        let formulario = $("#form-medida").serializeArray();
+        let id = $('#measure').val() != '' ? $('#measure').val() : '';
+        let url = id == undefined  || id == '' ? 'measure' : 'measure/'+id;
+        let tipo = id == undefined  || id == '' ? 'post' : 'put';
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:url,
+            type:tipo,
+            dateType: 'json',
+            data:{
+                form: formulario
+            },
+            success: function(res) {
+                window.location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function salvarCategoria() {
+
+        let formulario = $("#form-categoria").serializeArray();
+        let id = $('#category').val() != '' ? $('#category').val() : '';
+        let url = id == undefined  || id == '' ? 'category' : 'category/'+id;
+        let tipo = id == undefined  || id == '' ? 'post' : 'put';
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:url,
+            type:tipo,
+            dateType: 'json',
+            data:{
+                form: formulario
+            },
+            success: function(res) {
+                window.location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
     }
 
     $(document).ready(function(){

@@ -14,7 +14,7 @@
                     </span>
                     <span class="text">Novo</span>
                 </a>
-                <table class="mt-lg-3 table table-striped table-bordered table-hover">
+                <table class="mt-lg-3 table table-striped table-bordered table-hover table-responsive-lg">
                     <thead>
                     <tr align="center">
                         <th>#</th>
@@ -28,12 +28,12 @@
                         <tr align="center">
                             <th scope="row">{{$unidade->id}}</th>
                             <td align="center">{{$unidade->nome}}</td>
-                            <td align="center">{{$unidade->sigla}}</td>
+                            <td align="center">{{strtoupper($unidade->sigla)}}</td>
                             <td align="center">
-                                <a href="#" class="btn btn-info btn-circle btn-sm unidade" title="Atualizar Categoria" data-toggle="modal" data-target="#modalCategoria"  onclick='abreModalCategoria({{ $unidade->id }});'>
+                                <a href="#" class="btn btn-info btn-circle btn-sm unidade" title="Atualizar Medida" data-toggle="modal" data-target="#medidaModal"  onclick='abreModalMedida({{ $unidade->id }});'>
                                     <i class="fas fa-info-circle"></i>
                                 </a>
-                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Categoria" data-id="{{ $unidade->id }}"><i class="fas fa-trash"></i></a>
+                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Medida" data-id="{{ $unidade->id }}"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                     @empty
@@ -44,31 +44,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalCategoria" tabindex="-1" aria-labelledby="modalCategoria" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Atualizar Categoria</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <input type="hidden" name="id" id="id">
-                        <div class="form-group">
-                            <label for="tipo" class="col-form-label">Tipo:</label>
-                            <input type="text" class="form-control" id="tipo">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="atualizar" onclick="validaCategoriaTipo()">Atualizar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 @endsection
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>
@@ -76,16 +52,21 @@
 
 <script>
 
-    function abreModalCategoria(codigo) {
+    function abreModalMedida(codigo) {
         if(codigo) {
             $.ajax({
-                url:'category/'+ codigo,
+                url:'measure/'+ codigo,
                 type:'get',
                 dateType: 'json',
                 success: function(res) {
-                    $("#id").val(res.id);
-                    $("#tipo").val(res.tipo);
-                    $('#modalCategoria').modal('show');
+
+                    $("#form-medida").append(`<input type="hidden"  id="measure" value="${res.id}">`);
+                    $("#nome").val(res.nome);
+                    $("#sigla").val(res.sigla);
+                    $("#titulo-medida").empty().text('Atualizar Unidade de Medidas');
+                    $("#btnMedida").text('Atualizar Medida');
+                    $("#btnMedida").removeAttr('disabled');
+                    // $('#medidaModal').modal('hide');
                 },
                 error: function (error) {
                     console.log(error);
@@ -94,7 +75,8 @@
         }
     }
 
-    function atualizaCategoria(nome, codigo) {
+    function atualizaMedida(nome, codigo) {
+
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -126,16 +108,16 @@
             $("#tipo").focus();
         } else {
             let codigo = $("#id").val();
-            atualizaCategoria(tipo, codigo);
+            atualizaMedida(tipo, codigo);
         }
     }
 
-    function apagarCatalogo(codigo) {
+    function apagarMedida(codigo) {
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            url:'category/'+ codigo,
+            url:'measure/'+ codigo,
             type:'delete',
             dateType: 'json',
             success: function(res) {
@@ -161,7 +143,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     let codigo = $(this).data('id');
-                    apagarCatalogo(codigo);
+                    apagarMedida(codigo);
                     Swal.fire(
                         'Sucesso!',
                         'O item selecionado foi apagado.',

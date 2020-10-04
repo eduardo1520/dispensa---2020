@@ -13,7 +13,7 @@
                     </span>
                     <span class="text">Novo</span>
                 </a>
-                <table class="mt-lg-3 table table-striped table-bordered table-hover">
+                <table class="mt-lg-3 table table-striped table-bordered table-hover table-responsive-lg">
                     <thead>
                     <tr align="center">
                         <th>#</th>

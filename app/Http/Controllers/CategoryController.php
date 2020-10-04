@@ -38,7 +38,12 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
+        foreach ($request->all() as $categoria) {
+            foreach ($categoria as $c) {
+                $data[$c['name']] = $c['value'];
+            }
+        }
+
         $validacao = \Validator::make($data,[
             'tipo' => 'required|string|max:50'
         ]);
@@ -47,8 +52,13 @@ class CategoryController extends Controller
             return redirect()->back()->withErrors($validacao)->withInput();
         }
 
-        Category::create($data);
-        return redirect()->route('category.index');
+        $resultado = Category::create($data);
+
+        if($resultado) {
+            return response($resultado,200);
+        } else {
+            return response('Erro ao cadastrar a categoria',500);
+        }
     }
 
     /**

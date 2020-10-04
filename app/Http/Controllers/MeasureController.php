@@ -36,7 +36,30 @@ class MeasureController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $data = [];
+        foreach ($request->all() as  $valor) {
+            foreach ($valor as $index => $v) {
+                $data[$v['name']] = $v['value'];
+            }
+        }
+
+        $validacao = \Validator::make($data,[
+            'nome' => 'required|string|max:50',
+            'sigla' => 'required|string|max:10'
+        ]);
+
+        if($validacao->fails()){
+            return redirect()->back()->withErrors($validacao)->withInput();
+        }
+
+        $resposta = Measure::create($data);
+
+        if($resposta) {
+            return response($resposta,200);
+        } else {
+            return response('Erro ao cadastrar a unidade de medida',500);
+        }
     }
 
     /**
@@ -47,7 +70,8 @@ class MeasureController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Measure::find($id);
+        return response($data);
     }
 
     /**
@@ -70,7 +94,28 @@ class MeasureController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        foreach ($request->all() as $medidas) {
+            foreach ($medidas as $medida) {
+                $data[$medida['name']] = $medida['value'];
+            }
+        }
+
+        $validacao = \Validator::make($data,[
+            'nome' => 'required|string|max:50',
+            'sigla' => 'required|string|max:10'
+        ]);
+
+        if($validacao->fails()){
+            return redirect()->back()->withErrors($validacao)->withInput();
+        }
+
+        $resultado = Measure::find($id)->update($data);
+
+        if($resultado) {
+            return response($resultado,200);
+        } else {
+            return response('Erro ao atualizar a unidade de medida',500);
+        }
     }
 
     /**
@@ -81,7 +126,13 @@ class MeasureController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $resultado = Measure::find($id)->delete();
+
+        if($resultado) {
+            return response($resultado,200);
+        } else {
+            return response('Erro ao excluir a unidade de medida',500);
+        }
     }
 
 }
