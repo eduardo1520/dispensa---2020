@@ -1,11 +1,15 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
+use App\Category;
+use App\Feedback;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -38,11 +42,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
         $data = $request->all();
         $validacao = \Validator::make($data,[
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users'. Auth::user()->id,
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'admin' => 'string|max:1',
             'password' => 'required|string|min:6',
             'password_confirmation' => 'nullable|min:6|max:12|required_with:password|same:password'
@@ -54,9 +57,11 @@ class UserController extends Controller
 
         $data['password'] = bcrypt($data['password']);
         $data['admin'] = empty($request->admin) ? "N": $request->admin;
+        $resposta = User::create($data);
 
-        User::create($data);
-        return redirect()->route('home');
+        if($resposta)
+            return redirect()->route('user.index')->with('success','Usuário criado com sucesso!');
+        return back()->with('error','Erro ao criar o usuário!');
 
     }
 
@@ -68,7 +73,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::find($id);
+        return view('users.user',compact('user'));
     }
 
     /**
@@ -91,7 +97,35 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+
+        if($data['password'] && $data['password_confirmation']) {
+            $validacao = \Validator::make($data,[
+                'name' => 'required|string|max:255',
+                'email' => ['required','string','email','max:255',Rule::unique('users')->ignore($id)],
+                'admin' => 'string|max:1',
+                'password' => 'required|string|min:6',
+                'password_confirmation' => 'nullable|min:6|max:12|required_with:password|same:password'
+            ]);
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            $validacao = \Validator::make($data,[
+                'name' => 'required|string|max:255',
+                'email' => ['required','string','email','max:255',Rule::unique('users')->ignore($id)],
+                'admin' => 'string|max:1',
+            ]);
+            unset($data['password']);
+        }
+
+        if($validacao->fails()){
+            return redirect()->back()->withErrors($validacao)->withInput();
+        }
+
+        $resultado = User::find($id)->update($data);
+
+        if($resultado)
+            return redirect()->route('user.index')->with('success','Usuário atualizado com sucesso!');
+        return back()->with('error','Erro ao atualizar o usuário!');
     }
 
     /**
@@ -102,6 +136,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $resultado = User::find($id)->delete();
+        return response($resultado);
     }
 }

@@ -33,7 +33,7 @@
                             <td align="center">{{$user->email}}</td>
                             <td align="center">{{$user->admin == 'S' ? "Sim" : 'Não'}}</td>
                             <td align="center">
-                                <a href="#" class="btn btn-info btn-circle btn-sm" title="Atualizar Usúario" data-id="{{ $user->id }}"><i class="fas fa-info-circle"></i></a>
+                                <a href="user/{{$user->id}}" class="btn btn-info btn-circle btn-sm" title="Atualizar Usúario" data-id="{{ $user->id }}"><i class="fas fa-info-circle"></i></a>
                                 <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Usúario" data-id="{{ $user->id }}"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
@@ -53,22 +53,43 @@
 
 <script>
 
+    function apagarUsuario(codigo) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:'user/'+ codigo,
+            type:'delete',
+            dateType: 'json',
+            success: function(res) {
+                window.location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    }
+
     $(document).ready(function(){
 
         $(".excluir").click(function(){
             Swal.fire({
                 title: 'Deseja realmente excluir?',
-                text: "You won't be able to revert this!",
+                text: "O item será excluído do sistema.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'Apagar',
+                cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    let codigo = $(this).data('id');
+                    apagarUsuario(codigo);
                     Swal.fire(
-                        'Deleted!',
-                        'Your file has been deleted.',
+                        'Apagado!',
+                        'O item selecionado foi excluído com sucesso!',
                         'success'
                     )
                 }

@@ -67,7 +67,7 @@
                         <a class="collapse-item" href="{{ route('category.index') }}">Categorias</a>
                         <a class="collapse-item" href="produtos.html">Produtos</a>
                         <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
-                        <a class="collapse-item" href="{{ route('feedback.index') }}">Feedback</a>
+
                     </div>
                 </div>
             </li>
@@ -104,6 +104,7 @@
                         <h6 class="collapse-header">Páginas:</h6>
                         <a class="collapse-item" href="categorias.html">Categorias</a>
                         <a class="collapse-item" href="produtos.html">Produtos</a>
+                        <a class="collapse-item" href="{{ route('feedback.index') }}">Feedback</a>
                         <a class="collapse-item" href="usuarios.html">Usuários</a>
                         <a class="collapse-item" href="logs.html">Logs</a>
                         <a class="collapse-item" href="erros.html">Erros</a>
@@ -341,7 +342,7 @@
 
             <!-- Begin Page Content -->
             <div class="container-fluid">
-
+                @include('flash-message')
                 @yield('main-content')
 
             </div>

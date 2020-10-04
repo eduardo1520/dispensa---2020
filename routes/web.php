@@ -36,7 +36,8 @@ Route::resource('/feedback', 'FeedbackController');
 
 
 Route::get('/usuario/novo', function () {
-    return view('users/user');
+    $user = null;
+    return view('users/user', compact('user'));
 })->name('novo_usuario');
 
 Route::get('/categoria/novo','CategoryController@novo')->name('categoria_nova');
