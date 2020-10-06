@@ -65,7 +65,8 @@
                         <h6 class="collapse-header">Páginas:</h6>
                         <a class="collapse-item" href="{{ route('category.index') }}">Categorias</a>
                         <a class="collapse-item" href="{{ route('measure.index') }}">Medidas</a>
-                        <a class="collapse-item" href="produtos.html">Produtos</a>
+                        <a class="collapse-item" href="marcas.html">Marcas</a>
+                        <a class="collapse-item" href="{{ route('product.index') }}">Produtos</a>
                         <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
 
                     </div>

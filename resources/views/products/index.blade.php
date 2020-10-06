@@ -1,16 +1,15 @@
 @extends('layouts.admin')
 @section('main-content')
-
-    <div class="col-lg-7 order-lg-1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <div class="col-lg-10 order-lg-1">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Listagens de Usúarios</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Listagens de Produtos</h6>
             </div>
             <div class="card-body">
-{{--                Todo - ajustar a chamada para o create do controller.--}}
-                <a href="{{ route('novo_usuario') }}" class="btn btn-success btn-icon-split">
+                <a href="{{ route('product.create') }}" class="btn btn-success btn-icon-split">
                     <span class="icon text-white-50">
-                      <i class="fa fa-user-plus" aria-hidden="true"></i>
+                      <i class="fa fa-cubes" aria-hidden="true"></i>
                     </span>
                     <span class="text">Novo</span>
                 </a>
@@ -18,31 +17,40 @@
                     <thead>
                     <tr align="center">
                         <th>#</th>
+                        <th>Imagem</th>
                         <th>Nome</th>
-                        <th>Sobrenome</th>
-                        <th>E-mail</th>
-                        <th>Admin</th>
+                        <th>Descrição</th>
+                        <th>Marca</th>
                         <th>Ação</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @forelse($users as $user)
-                        <tr>
-                            <th scope="row">{{$user->id}}</th>
-                            <td align="center">{{$user->name}}</td>
-                            <td align="center">{{$user->last_name}}</td>
-                            <td align="center">{{$user->email}}</td>
-                            <td align="center">{{$user->admin == 'S' ? "Sim" : 'Não'}}</td>
+                    @forelse($produtos as $produto)
+                        <tr align="center">
+                            <th scope="row">{{$produto->id}}</th>
+                            <td align="center"><img src="{{ asset($produto->image) }}" width="50" height="50"/></td>
+                            <td align="center">{{$produto->name}}</td>
+                            <td align="center">{{$produto->description}}</td>
+                            <td align="center">{{$produto->brand_id ? $produto->brand_id : '-'}}</td>
                             <td align="center">
-                                <a href="user/{{$user->id}}" class="btn btn-info btn-circle btn-sm" title="Atualizar Usúario" data-id="{{ $user->id }}"><i class="fas fa-info-circle"></i></a>
-                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Usúario" data-id="{{ $user->id }}"><i class="fas fa-trash"></i></a>
+                                <a href="#" class="btn btn-info btn-circle btn-sm unidade" title="Atualizar Medida">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Medida" data-id="{{ $produto->id }}"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                     @empty
-                        <p>No users</p>
+                        <p class="mt-lg-3">Sem produtos</p>
                     @endforelse
                     </tbody>
                 </table>
+                <div class="pl-lg-4">
+                    <div class="row">
+                        <div class="col text-center" style="margin-left:500px;">
+                            {{ $produtos }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -54,12 +62,12 @@
 
 <script>
 
-    function apagarUsuario(codigo) {
+    function apagarProduto(codigo) {
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            url:'user/'+ codigo,
+            url:'product/'+ codigo,
             type:'delete',
             dateType: 'json',
             success: function(res) {
@@ -69,15 +77,13 @@
                 console.log(error);
             }
         });
-
     }
 
     $(document).ready(function(){
-
         $(".excluir").click(function(){
             Swal.fire({
                 title: 'Deseja realmente excluir?',
-                text: "O item será excluído do sistema.",
+                text: "O item escolhido será apagado!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -87,18 +93,15 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     let codigo = $(this).data('id');
-                    apagarUsuario(codigo);
+                    apagarProduto(codigo);
                     Swal.fire(
-                        'Apagado!',
-                        'O item selecionado foi excluído com sucesso!',
+                        'Sucesso!',
+                        'O item selecionado foi apagado.',
                         'success'
                     )
                 }
             })
         });
-
-        $("#admin .btn").on('click', function(){
-
-        });
     });
+
 </script>

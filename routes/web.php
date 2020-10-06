@@ -39,6 +39,8 @@ Route::resource('/feedback', 'FeedbackController');
 
 Route::resource('/measure', 'MeasureController');
 
+Route::resource('/product', 'ProductController');
+Route::post('/product/fileupload/','ProductController@uploadFiles')->name('fileupload');
 
 Route::get('/usuario/novo', function () {
     $user = null;
