@@ -33,10 +33,10 @@
                             <td align="center">{{$produto->description}}</td>
                             <td align="center">{{$produto->brand_id ? $produto->brand_id : '-'}}</td>
                             <td align="center">
-                                <a href="#" class="btn btn-info btn-circle btn-sm unidade" title="Atualizar Medida">
+                                <a href="{{ route('product.edit',$produto->id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
                                     <i class="fas fa-info-circle"></i>
                                 </a>
-                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Medida" data-id="{{ $produto->id }}"><i class="fas fa-trash"></i></a>
+                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Produto" data-id="{{ $produto->id }}"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                     @empty
@@ -71,7 +71,7 @@
             type:'delete',
             dateType: 'json',
             success: function(res) {
-                window.location.reload();
+                window.location.href="{{route('product.index')}}";
             },
             error: function (error) {
                 console.log(error);
