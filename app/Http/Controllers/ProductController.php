@@ -39,6 +39,15 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+
+        if(!empty($data['pesquisar'])) {
+            $filtros = $this->getFiltros($data);
+            $produtos = \DB::select("select * from products {$filtros}");
+//            $pesquisa = collect(\DB::select("select * from products {$filtros}"));
+            $pesquisa = $request->all();
+            return view('products.index',compact('produtos','pesquisa'));
+        }
+
         $validacao = \Validator::make($data,[
             'name' => 'required|string|max:50'
         ]);
@@ -48,6 +57,7 @@ class ProductController extends Controller
         }
 
         $images = scandir("files");
+
         if($images) {
             foreach($images as $img){
                 if(!in_array($img, array(".", "..","products"))){
@@ -58,11 +68,18 @@ class ProductController extends Controller
                     }
                     if($resposta) {
                         $data['image'] = 'files/products/'. strtolower($info['basename']);
+                    } else {
+                        $data['image'] = '';
                     }
+                } else {
+                    $data['image'] = '';
                 }
             }
+        } else {
+            $data['image'] = '';
         }
 
+//        dd($data);
         $resposta = Product::create($data);
 
         if($resposta)
@@ -161,8 +178,8 @@ class ProductController extends Controller
 
         $resposta = $product->update($data);
         if($resposta)
-            return redirect()->route('product.index')->with('success','Produto criado com sucesso!');
-        return back()->with('error','Erro ao criar o produto!');
+            return redirect()->route('product.index')->with('success','Produto atualizado com sucesso!');
+        return back()->with('error','Erro ao atualizar o produto!');
     }
 
     /**
@@ -224,7 +241,7 @@ class ProductController extends Controller
 
     private function removeAcentuacao($string)
     {
-        return preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/"),explode(" ","a A e E i I o O u U n N"),$string);
+        return preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/", "/(Ç)/","/(ç)/"),explode(" ","a A e E i I o O u U n N C c"),$string);
     }
 
     /**
@@ -243,5 +260,25 @@ class ProductController extends Controller
                 }
             }
         }
+    }
+
+    protected function getFiltros($dados)
+    {
+        $sql[] = 'WHERE 1 = 1';
+        if(!empty($dados)) {
+            foreach ($dados as $campo => $dado) {
+                if(!in_array($campo,['_token','pesquisar','brand_id'])){
+                    switch ($campo){
+                        case 'name':
+                        case 'description':
+                            $sql[] = "AND ({$campo} like '%{strtolower($dado)}%' OR {$campo} like '%{$dado}%')";
+                            break;
+                        default:
+                            $sql[] = "AND {$campo} = '{$dado}'";
+                    }
+                }
+            }
+        }
+        return implode(' ', $sql);
     }
 }

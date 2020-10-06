@@ -3,6 +3,7 @@
 @section('main-content')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" type="text/css" href="{{asset('dropzone-5.7.0/dist/min/dropzone.min.css')}}">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 
     <style>
         .nao_selecionado {
@@ -31,6 +32,8 @@
         .btn-upload:focus > span{
             background:#098ab1;
         }
+
+        .slow .toggle-group { transition: left 0.7s; -webkit-transition: left 0.7s; }
     </style>
     @if ($errors->any())
         <div class="alert alert-danger border-left-danger" role="alert">
@@ -88,6 +91,9 @@
                         </div>
                     </form>
                     <div id="alert"></div>
+                    <div class="card-body">
+                        <input type="checkbox"  onchange="mostraUpload();" id="toggle" checked data-toggle="toggle" data-off="<i class='fas fa-file-upload'></i> Com imagem" data-on="<i class='fas fa-ban'></i> Sem imagem"  data-onstyle="danger" data-offstyle="success" data-style="slow" data-width="150" data-height="20" >
+                    </div>
                     <div class="row" id="upload-produto" style="display: none">
                         <div class="col-lg-12">
                             <div class='content'>
@@ -120,8 +126,14 @@
 @endsection
 <script src="{{asset('dropzone-5.7.0/dist/min/dropzone.min.js')}}" type="text/javascript"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script src="{{ asset('js/default.js') }}"></script>
 <script>
+
+    function mostraUpload() {
+        $("#upload-produto").toggle();
+    }
+
     function removerProduto(){
         $.ajax({
             headers: {
@@ -134,6 +146,10 @@
             }
         });
     }
+
+    $('#toggle-event').change(function() {
+        $('#console-event').html('Toggle: ' + $(this).prop('checked'))
+    })
 
     Dropzone.autoDiscover = false;
     $(document).ready(function(){
@@ -181,18 +197,29 @@
             myDropzone.processQueue();
         });
 
-        $("#name").blur(function(){
+        // $("#name").blur(function(){
+        //     if($(this).val()) {
+        //         $("#upload-produto").show();
+        //     } else {
+        //         $("#upload-produto").hide();
+        //         $(".dz-preview").remove();
+        //     }
+        // });
+
+        $("#btn-upload").click(function(){
             if($(this).val()) {
                 $("#upload-produto").show();
             } else {
                 $("#upload-produto").hide();
                 $(".dz-preview").remove();
             }
-        });
+        })
 
         $("#btn-cadastrar").click(function(){
            $('form').submit();
         });
+
+
     });
 </script>
 
