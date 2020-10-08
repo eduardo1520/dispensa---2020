@@ -1,23 +1,19 @@
 @extends('layouts.admin')
 @section('main-content')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="{{ asset('vendor/harvesthq/chosen/chosen.min.css') }}" rel="stylesheet">
     <style>
         .chosen-container-multi .chosen-choices {
             border: 1px solid #cbd5e0;
             height: 40px !important;
             cursor: text;
-            margin-top: 12px;
             padding-left: 15px;
             border-bottom: 1px solid #ddd;
-            width: 273.281px;
             text-indent: 0;
-            margin-left: 30px;
             border-radius: .35rem;
-            padding-left: 10px;
             padding-top: 6px;
         }
     </style>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="{{ asset('vendor/harvesthq/chosen/chosen.min.css') }}" rel="stylesheet">
     <div class="col-lg-10 order-lg-1">
         <div class="card shadow mb-4">
             <div class="pl-lg-4 mt-lg-5">
@@ -27,7 +23,7 @@
                     <div class="row">
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label class="form-control-label" for="brand">Marca</label>
+                                <label class="form-control-label" for="brand_id">Marca</label>
                                 <select data-placeholder="Selecione uma marca" class="chosen-select" multiple tabindex="3" name="id[]" id="brand_id" value="">
                                     @if(!empty($comboSql))
                                         @foreach($comboSql as $value => $marca)

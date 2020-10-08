@@ -18,9 +18,9 @@ class ProductController extends Controller
     {
         $produtos = Product::paginate(10);
         $marcas = Brand::orderBy('name','asc')->get();
-        $comboSql = Brand::orderby('name','asc')->pluck('name', 'id');
-//        dd($comboSql);
-        return view('products.index',compact('produtos','marcas','comboSql'));
+        $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
+        $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
+        return view('products.index',compact('produtos','marcas','comboBrandSql','comboProductSql'));
     }
 
     /**
@@ -32,7 +32,8 @@ class ProductController extends Controller
     {
         $titulo = "Cadastrar Produto";
         $marcas = Brand::orderBy('name','asc')->get();
-        return view('products.product', compact('titulo', 'marcas'));
+        $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
+        return view('products.product', compact('titulo', 'marcas','comboBrandSql'));
     }
 
     /**
@@ -47,10 +48,11 @@ class ProductController extends Controller
 
         if(!empty($data['pesquisar'])) {
             $filtros = $this->getFiltros($data);
-            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, b.name as marca from products p inner join brands b on b.id = p.brand_id {$filtros}" . " order by p.name asc");
+            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, b.name as marca from products p left join brands b on b.id = p.brand_id {$filtros}" . " order by p.name asc");
             $pesquisa = $request->all();
-            $comboSql = Brand::orderby('name','asc')->pluck('name', 'id');
-            return view('products.index',compact('produtos','pesquisa','comboSql'));
+            $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
+            $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
+            return view('products.index',compact('produtos','pesquisa','comboBrandSql','comboProductSql'));
         }
 
         $validacao = \Validator::make($data,[
@@ -114,7 +116,8 @@ class ProductController extends Controller
         $produto = Product::find($id);
         $titulo = 'Atualizar Produto';
         $marcas = Brand::orderBy('name','asc')->get();
-        return view('products.product', compact('produto','titulo','marcas'));
+        $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
+        return view('products.product', compact('produto','titulo','marcas','comboBrandSql'));
     }
 
     /**
@@ -276,7 +279,9 @@ class ProductController extends Controller
                     switch ($campo){
                         case 'name':
                         case 'description':
-                            $sql[] = "AND (p.{$campo} like '%{strtolower($dado)}%' OR p.{$campo} like '%{$dado}%')";
+                            if($dado) {
+                                $sql[] = "AND (p.{$campo} like '%{strtolower($dado)}%' OR p.{$campo} like '%{$dado}%')";
+                            }
                             break;
                         default:
                             if(is_array($dado)) {

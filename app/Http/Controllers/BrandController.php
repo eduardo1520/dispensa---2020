@@ -174,7 +174,9 @@ class BrandController extends Controller
                     switch ($campo){
                         case 'name':
                         case 'description':
-                            $sql[] = "AND (b.{$campo} like '%{strtolower($dado)}%' OR b.{$campo} like '%{$dado}%')";
+                            if($dado) {
+                                $sql[] = "AND (p.{$campo} like '%{strtolower($dado)}%' OR p.{$campo} like '%{$dado}%')";
+                            }
                             break;
                         default:
                             if(is_array($dado)) {

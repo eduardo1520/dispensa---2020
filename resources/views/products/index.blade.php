@@ -1,23 +1,20 @@
 @extends('layouts.admin')
 @section('main-content')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="{{ asset('vendor/harvesthq/chosen/chosen.min.css') }}" rel="stylesheet">
+
     <style>
         .chosen-container-multi .chosen-choices {
             border: 1px solid #cbd5e0;
             height: 40px !important;
             cursor: text;
-            margin-top: 12px;
             padding-left: 15px;
             border-bottom: 1px solid #ddd;
-            width: 273.281px;
             text-indent: 0;
-            margin-left: 30px;
             border-radius: .35rem;
-            padding-left: 10px;
             padding-top: 6px;
         }
     </style>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="{{ asset('vendor/harvesthq/chosen/chosen.min.css') }}" rel="stylesheet">
     <div class="col-lg-10 order-lg-1">
         <div class="card shadow mb-4">
             <div class="card-body">
@@ -29,7 +26,13 @@
                             <div class="col-lg-3">
                                 <div class="form-group">
                                     <label class="form-control-label" for="name">Produto</label>
-                                    <input type="text" id="name" class="form-control" name="name" placeholder="Nome" value="{{ !empty($pesquisa['name']) ? $pesquisa['name'] : old('name') }}">
+                                    <select data-placeholder="Selecione um produto" class="chosen-select-product" multiple tabindex="3" name="id[]" id="id" value="">
+                                        @if(!empty($comboProductSql))
+                                            @foreach($comboProductSql as $value => $produto)
+                                                <option value="{{$value}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $produto }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -41,9 +44,9 @@
                             <div class="col-lg-3">
                                 <div class="form-group">
                                     <label class="form-control-label" for="brand_id">Marca</label>
-                                    <select data-placeholder="Selecione uma marca" class="chosen-select-product teste" multiple tabindex="3" name="brand_id[]" id="brand_id" value="">
-                                        @if(!empty($comboSql))
-                                            @foreach($comboSql as $value => $marca)
+                                    <select data-placeholder="Selecione uma marca" class="chosen-select-brand" multiple tabindex="3" name="brand_id[]" id="brand_id" value="">
+                                        @if(!empty($comboBrandSql))
+                                            @foreach($comboBrandSql as $value => $marca)
                                                 <option value="{{$value}}" {{ !empty($pesquisa['brand_id']) && in_array($value,$pesquisa['brand_id'])  ? 'selected' : '' }}>{{ $marca }}</option>
                                             @endforeach
                                         @endif
@@ -114,6 +117,7 @@
                 </div>
             </div>
         </div>
+    </div>
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -122,9 +126,15 @@
 <script>
     let jQuery = $.noConflict();
     jQuery(function() {
-        jQuery('.chosen-select-product').chosen({
+        jQuery('.chosen-select-brand').chosen({
             width: '100%',
             no_results_text: "Não encontramos está marca!",
+            max_selected_options: 5
+        });
+
+        jQuery('.chosen-select-product').chosen({
+            width: '100%',
+            no_results_text: "Não encontramos este produto!",
             max_selected_options: 5
         });
         jQuery('.chosen-select-deselect').chosen({ allow_single_deselect: true });
