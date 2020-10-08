@@ -17,7 +17,8 @@ class ProductController extends Controller
     public function index()
     {
         $produtos = Product::paginate(10);
-        return view('products.index',compact('produtos'));
+        $marcas = Brand::orderBy('name','asc')->get();
+        return view('products.index',compact('produtos','marcas'));
     }
 
     /**
@@ -44,10 +45,10 @@ class ProductController extends Controller
 
         if(!empty($data['pesquisar'])) {
             $filtros = $this->getFiltros($data);
-            $produtos = \DB::select("select * from products {$filtros}");
-//            $pesquisa = collect(\DB::select("select * from products {$filtros}"));
+            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, b.name as marca from products p inner join brands b on b.id = p.brand_id {$filtros}");
             $pesquisa = $request->all();
-            return view('products.index',compact('produtos','pesquisa'));
+            $marcas = Brand::orderBy('name','asc')->get();
+            return view('products.index',compact('produtos','pesquisa','marcas'));
         }
 
         $validacao = \Validator::make($data,[
@@ -269,14 +270,14 @@ class ProductController extends Controller
         $sql[] = 'WHERE 1 = 1';
         if(!empty($dados)) {
             foreach ($dados as $campo => $dado) {
-                if(!in_array($campo,['_token','pesquisar','brand_id'])){
+                if(!in_array($campo,['_token','pesquisar'])){
                     switch ($campo){
                         case 'name':
                         case 'description':
-                            $sql[] = "AND ({$campo} like '%{strtolower($dado)}%' OR {$campo} like '%{$dado}%')";
+                            $sql[] = "AND (p.{$campo} like '%{strtolower($dado)}%' OR p.{$campo} like '%{$dado}%')";
                             break;
                         default:
-                            $sql[] = "AND {$campo} = '{$dado}'";
+                            $sql[] = "AND p.{$campo} = '{$dado}'";
                     }
                 }
             }

@@ -482,7 +482,6 @@
             </div>
             <div class="modal-body">
                 <form id="form-marca" onchange="validaCampos('form-marca','btnMarca',['input']);">
-                    <input type="hidden" id="id">
                     <div class="form-group">
                         <label for="name" class="col-form-label">Nome:<span class="small text-danger">*</span></label>
                         <input type="text" class="form-control" id="name" name="name" required>

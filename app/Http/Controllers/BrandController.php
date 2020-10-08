@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Measure;
 use Illuminate\Http\Request;
 use App\Brand;
 
@@ -74,7 +75,8 @@ class BrandController extends Controller
      */
     public function show($id)
     {
-        //
+        $marca = Brand::find($id);
+        return response($marca,200);
     }
 
     /**
@@ -97,7 +99,43 @@ class BrandController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        foreach ($request->all() as $marcas) {
+            foreach ($marcas as $marca) {
+                $data[$marca['name']] = $marca['value'];
+            }
+        }
+
+        $validacao = \Validator::make($data,[
+            'name' => 'required|string|max:50'
+        ]);
+
+        if($validacao->fails()){
+            return redirect()->back()->withErrors($validacao)->withInput();
+        }
+
+        //Verifica se a marca já existe e está inativa
+        //Caso a marca exista inativa a atual e ativa a inativada.
+
+        $brand = Brand::withTrashed()->where('name','=',$data['name'])->first();
+        if(!empty($brand->name)) {
+            $brand = Brand::withTrashed()->where('name', $data['name'])->restore();
+            if(!empty($brand)) {
+                $brand_atual = Brand::where('name','=',$data['name-old'])->first();
+                $resultado = Brand::find($brand_atual->id)->delete();
+                if($resultado) {
+                    return response(true,200);
+                } else {
+                    return response('Erro ao atualizar a marca',500);
+                }
+            }
+        }
+
+        $resultado = Brand::find($id)->update($data);
+        if($resultado) {
+            return response($resultado,200);
+        } else {
+            return response('Erro ao atualizar a marca',500);
+        }
     }
 
     /**
@@ -108,13 +146,16 @@ class BrandController extends Controller
      */
     public function destroy($id)
     {
-
-
         $resposta = Brand::find($id)->delete();
         if($resposta) {
             return response($resposta,200);
         } else {
             return response('Erro ao excluir a marca',500);
         }
+    }
+
+    public function marcas()
+    {
+        return Brand::all()->pluck('id', 'name')->toJson();
     }
 }

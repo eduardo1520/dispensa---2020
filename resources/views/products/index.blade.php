@@ -25,7 +25,13 @@
                                 <div class="form-group">
                                     <label class="form-control-label" for="brand">Marca</label>
                                     <select name="brand_id" id="brand_id" class="form-control" value="{{ !empty($pesquisa['brand_id']) ? $pesquisa['brand_id'] : old('brand_id') }}">
-                                        <option value="" selected>Outros</option>
+                                        <option value="" {{ empty($pesquisa['brand_id']) ? 'selected' : ''}}>Selecione</option>
+                                        @if(!empty($marcas))
+                                            @foreach($marcas as $marca)
+                                                <option value="{{$marca->id}}" {{ !empty($pesquisa['brand_id']) && $pesquisa['brand_id'] == $marca->id  ? 'selected' : '' }}>{{ $marca->name }}</option>
+                                            @endforeach
+                                        @endif
+                                        <option value="999">Outros</option>
                                     </select>
                                 </div>
                             </div>
@@ -69,7 +75,7 @@
                                 <td align="center">@if(!empty($produto->image))<img src="{{ asset($produto->image) }}" width="50" height="50"/> @else - @endif</td>
                                 <td align="center">{{$produto->name}}</td>
                                 <td align="center">{{$produto->description}}</td>
-                                <td align="center">{{$produto->brand_id ? $produto->brand->name: '-'}}</td>
+                                <td align="center">{{($produto->brand_id && !empty($produto->brand->name)) ? $produto->brand->name : (!empty($produto->marca) ? $produto->marca : '-')}}</td>
                                 <td align="center">
                                     <a href="{{ route('product.edit',$produto->id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
                                         <i class="fas fa-info-circle"></i>
