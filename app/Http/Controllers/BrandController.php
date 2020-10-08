@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Category;
-use App\Measure;
 use Illuminate\Http\Request;
 use App\Brand;
 
@@ -16,8 +14,9 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $marcas = Brand::paginate(10);
-        return view('brands.index', compact('marcas'));
+        $marcas = Brand::orderby('name','asc')->paginate(10);
+        $comboSql = Brand::orderby('name','asc')->pluck('name', 'id');
+        return view('brands.index', compact('marcas','comboSql'));
     }
 
     /**
@@ -38,6 +37,17 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
+
+        $data = $request->all();
+
+        if(!empty($data['pesquisar'])) {
+            $filtros = $this->getFiltros($data);
+            $marcas = \DB::select('select b.id, b.name from brands b ' . $filtros . ' order by b.name asc');
+            $comboSql = Brand::orderby('name','asc')->pluck('name', 'id');
+            $pesquisa = $request->all();
+            return view('brands.index',compact('marcas','pesquisa','comboSql'));
+        }
+
         foreach ($request->all() as $marca) {
             foreach ($marca as $m) {
                 $data[$m['name']] = $m['value'];
@@ -154,8 +164,29 @@ class BrandController extends Controller
         }
     }
 
-    public function marcas()
+    protected function getFiltros($dados)
     {
-        return Brand::all()->pluck('id', 'name')->toJson();
+        $sql[] = 'WHERE 1 = 1';
+        if(!empty($dados)) {
+
+            foreach ($dados as $campo => $dado) {
+                if(!in_array($campo,['_token','pesquisar'])){
+                    switch ($campo){
+                        case 'name':
+                        case 'description':
+                            $sql[] = "AND (b.{$campo} like '%{strtolower($dado)}%' OR b.{$campo} like '%{$dado}%')";
+                            break;
+                        default:
+                            if(is_array($dado)) {
+                               $sql[] = "AND b.{$campo} IN ('" . implode("','",$dado) . "')";
+                            } else {
+                                $sql[] = "AND b.{$campo} = '{$dado}'";
+                            }
+                    }
+                }
+            }
+        }
+//        dd($sql);
+        return implode(' ', $sql);
     }
 }

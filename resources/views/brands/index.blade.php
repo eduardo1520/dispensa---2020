@@ -1,21 +1,37 @@
 @extends('layouts.admin')
 @section('main-content')
+    <style>
+        .chosen-container-multi .chosen-choices {
+            border: 1px solid #cbd5e0;
+            height: 40px !important;
+            cursor: text;
+            margin-top: 12px;
+            padding-left: 15px;
+            border-bottom: 1px solid #ddd;
+            width: 273.281px;
+            text-indent: 0;
+            margin-left: 30px;
+            border-radius: .35rem;
+            padding-left: 10px;
+            padding-top: 6px;
+        }
+    </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="{{ asset('vendor/harvesthq/chosen/chosen.min.css') }}" rel="stylesheet">
     <div class="col-lg-10 order-lg-1">
         <div class="card shadow mb-4">
             <div class="pl-lg-4 mt-lg-5">
-                <form action="{{ route('product.store') }}" name="frm-product-pesquisar" method="post" id="frm-product-pesquisar">
+                <form action="{{ route('brand.store') }}" name="frm-brand-pesquisar" method="post" id="frm-brand-pesquisar">
                     <input type="hidden" name="pesquisar" value="true">
                     <input type="hidden" name="_token" value="{{ @csrf_token() }}">
                     <div class="row">
                         <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="form-control-label" for="brand">Marca</label>
-                                <select name="brand_id" id="brand_id" class="form-control" value="{{ !empty($pesquisa['brand_id']) ? $pesquisa['brand_id'] : old('brand_id') }}">
-                                    <option value="" {{ empty($pesquisa['brand_id']) ? 'selected' : ''}}>Selecione</option>
-                                    @if(!empty($marcas))
-                                        @foreach($marcas as $marca)
-                                            <option value="{{$marca->id}}" {{ !empty($pesquisa['brand_id']) && $pesquisa['brand_id'] == $marca->id  ? 'selected' : '' }}>{{ $marca->name }}</option>
+                                <select data-placeholder="Selecione uma marca" class="chosen-select" multiple tabindex="3" name="id[]" id="brand_id" value="">
+                                    @if(!empty($comboSql))
+                                        @foreach($comboSql as $value => $marca)
+                                            <option value="{{$value}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $marca }}</option>
                                         @endforeach
                                     @endif
                                     <option value="999">Outros</option>
@@ -23,11 +39,10 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="pl-lg-4 mt-lg-5">
                         <div class="row">
                             <div class="col text-center">
-                                <a href="{{ route('product.index') }}" class="btn btn-warning">Limpar</a>
+                                <a href="{{ route('brand.index') }}" class="btn btn-warning">Limpar</a>
                                 <button type="submit" class="btn btn-primary" id="btn-pesquisar">Pesquisar</button>
                             </div>
                         </div>
@@ -81,8 +96,25 @@
     </div>
 @endsection
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.min.js') }}"></script>
+
+<script>
+    let jQuery = $.noConflict();
+    jQuery(function() {
+        jQuery('.chosen-select').chosen({
+                width: '100%',
+                no_results_text: "Não encontramos está marca!",
+                max_selected_options: 5
+        });
+        jQuery('.chosen-select-deselect').chosen({ allow_single_deselect: true });
+    });
+</script>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
 
 <script>
 
@@ -193,4 +225,13 @@
 
     });
 
+</script>
+
+{{--<script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.js') }}"></script>--}}
+<script>
+    // $.noConflict();
+    // $(function() {
+    //     $('.chosen-select').chosen();
+    //     $('.chosen-select-deselect').chosen({ allow_single_deselect: true });
+    // });
 </script>

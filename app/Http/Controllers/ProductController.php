@@ -18,7 +18,9 @@ class ProductController extends Controller
     {
         $produtos = Product::paginate(10);
         $marcas = Brand::orderBy('name','asc')->get();
-        return view('products.index',compact('produtos','marcas'));
+        $comboSql = Brand::orderby('name','asc')->pluck('name', 'id');
+//        dd($comboSql);
+        return view('products.index',compact('produtos','marcas','comboSql'));
     }
 
     /**
@@ -45,10 +47,10 @@ class ProductController extends Controller
 
         if(!empty($data['pesquisar'])) {
             $filtros = $this->getFiltros($data);
-            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, b.name as marca from products p inner join brands b on b.id = p.brand_id {$filtros}");
+            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, b.name as marca from products p inner join brands b on b.id = p.brand_id {$filtros}" . " order by p.name asc");
             $pesquisa = $request->all();
-            $marcas = Brand::orderBy('name','asc')->get();
-            return view('products.index',compact('produtos','pesquisa','marcas'));
+            $comboSql = Brand::orderby('name','asc')->pluck('name', 'id');
+            return view('products.index',compact('produtos','pesquisa','comboSql'));
         }
 
         $validacao = \Validator::make($data,[
@@ -277,7 +279,11 @@ class ProductController extends Controller
                             $sql[] = "AND (p.{$campo} like '%{strtolower($dado)}%' OR p.{$campo} like '%{$dado}%')";
                             break;
                         default:
-                            $sql[] = "AND p.{$campo} = '{$dado}'";
+                            if(is_array($dado)) {
+                                $sql[] = "AND p.{$campo} IN ('" . implode("','",$dado) . "')";
+                            } else {
+                                $sql[] = "AND p.{$campo} = '{$dado}'";
+                            }
                     }
                 }
             }
