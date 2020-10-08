@@ -76,7 +76,12 @@
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label" for="brand">Marca</label>
-                                        <select name="brand" id="brand" class="form-control">
+                                        <select name="brand_id" id="brand_id" class="form-control">
+                                            @if(!empty($marcas))
+                                                @foreach($marcas as $marca)
+                                                    <option value="{{ $marca->id }}">{{ strtoupper($marca->name) }}</option>
+                                                @endforeach
+                                            @endif
                                             <option value="999" selected>Outros</option>
                                         </select>
                                     </div>

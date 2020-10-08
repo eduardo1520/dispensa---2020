@@ -40,10 +40,14 @@ Route::resource('/feedback', 'FeedbackController');
 Route::resource('/measure', 'MeasureController');
 
 Route::resource('/product', 'ProductController');
+
 Route::post('/product/fileupload/','ProductController@uploadFiles')->name('fileupload');
 Route::post('/product/remover/','ProductController@removeProdutos')->name('prod_cancelados');
+
 
 Route::get('/usuario/novo', function () {
     $user = null;
     return view('users/user', compact('user'));
 })->name('novo_usuario');
+
+Route::resource('/brand', 'BrandController');

@@ -56,7 +56,7 @@
                         <h6 class="collapse-header">Páginas:</h6>
                         <a class="collapse-item" href="{{ route('category.index') }}">Categorias</a>
                         <a class="collapse-item" href="{{ route('measure.index') }}">Medidas</a>
-                        <a class="collapse-item" href="marcas.html">Marcas</a>
+                        <a class="collapse-item" href="{{ route('brand.index') }}">Marcas</a>
                         <a class="collapse-item" href="{{ route('product.index') }}">Produtos</a>
                         <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
 
@@ -471,6 +471,31 @@
         </div>
     </div>
 </div>
+<div class="modal fade modalMarca" tabindex="-1" aria-labelledby="modalMarca" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titulo-marca">Cadastrar Marca</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-marca" onchange="validaCampos('form-marca','btnMarca',['input']);">
+                    <input type="hidden" id="id">
+                    <div class="form-group">
+                        <label for="name" class="col-form-label">Nome:<span class="small text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnMarca" onclick="salvarMarca()">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
@@ -586,6 +611,33 @@
         });
 
     }
+
+    function salvarMarca() {
+
+            let formulario = $("#form-marca").serializeArray();
+            let id = $('#brand').val() != '' ? $('#brand').val() : '';
+            let url = id == undefined  || id == '' ? 'brand' : 'brand/'+id;
+            let tipo = id == undefined  || id == '' ? 'post' : 'put';
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url:url,
+                type:tipo,
+                dateType: 'json',
+                data:{
+                    form: formulario
+                },
+                success: function(res) {
+                    window.location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+        }
 
     $(document).ready(function(){
         $("#feedback .btn").on('click', function(){

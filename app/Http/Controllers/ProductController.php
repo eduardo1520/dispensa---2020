@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Product;
+use App\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -27,7 +28,8 @@ class ProductController extends Controller
     public function create()
     {
         $titulo = "Cadastrar Produto";
-        return view('products.product', compact('titulo'));
+        $marcas = Brand::orderBy('name','asc')->get();
+        return view('products.product', compact('titulo', 'marcas'));
     }
 
     /**
@@ -79,7 +81,6 @@ class ProductController extends Controller
             $data['image'] = '';
         }
 
-//        dd($data);
         $resposta = Product::create($data);
 
         if($resposta)
@@ -109,7 +110,8 @@ class ProductController extends Controller
     {
         $produto = Product::find($id);
         $titulo = 'Atualizar Produto';
-        return view('products.product', compact('produto','titulo'));
+        $marcas = Brand::orderBy('name','asc')->get();
+        return view('products.product', compact('produto','titulo','marcas'));
     }
 
     /**

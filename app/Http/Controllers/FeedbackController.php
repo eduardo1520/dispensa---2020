@@ -15,7 +15,7 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        $feedback = Feedback::withTrashed()->paginate(5);
+        $feedback = Feedback::withTrashed()->paginate(10);
         return view('feedback.index', compact('feedback'));
     }
 

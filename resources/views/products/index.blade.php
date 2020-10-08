@@ -69,7 +69,7 @@
                                 <td align="center">@if(!empty($produto->image))<img src="{{ asset($produto->image) }}" width="50" height="50"/> @else - @endif</td>
                                 <td align="center">{{$produto->name}}</td>
                                 <td align="center">{{$produto->description}}</td>
-                                <td align="center">{{$produto->brand_id ? $produto->brand_id : '-'}}</td>
+                                <td align="center">{{$produto->brand_id ? $produto->brand->name: '-'}}</td>
                                 <td align="center">
                                     <a href="{{ route('product.edit',$produto->id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
                                         <i class="fas fa-info-circle"></i>
