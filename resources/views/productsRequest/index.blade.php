@@ -2,20 +2,31 @@
 @section('main-content')
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-
-
-
-
-
-
-
-
+<link href="{{ asset('css/gijgo.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .nao_selecionado {
             color: #fff;
             background-color: #f1f1f1;
             border-color: #c7ccda;
         }
+
+        .table-condensed {
+            top: 55px;
+            left: 342px;
+            z-index: 10;
+            display: block;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        td.today.active.day {
+            color: #fff;
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+
     </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="col-lg-10 order-lg-1">
@@ -30,6 +41,7 @@
                         </span>
                     <span class="text">Novo</span>
                 </a>
+
                 <table class="mt-lg-3 table table-striped table-bordered table-hover table-responsive-lg">
                     <thead>
                     <tr align="center">
@@ -48,15 +60,23 @@
                     <tbody>
                         <tr align="center" class="">
                             <th scope="row"></th>
-                            <td align="center"><input class="form-control"  id="datepicker" type="text"></td>
+                            <td align="center">
+                                <input id="date" width="auto"  value="{{ date('d/m/Y') }}" />
+                            </td>
                             <td align="center">{{ Auth::user()->name }}</td>
                             <td align="center">5</td>
-                            <td align="center">Imagem</td>
+                            <td align="center">@if(!empty($produto->image))<img src="{{ asset($produto->image) }}" width="50" height="50"/> @else - @endif</td>
                             <td align="center">Produto</td>
                             <td align="center">Medidas</td>
                             <td align="center">Marca</td>
                             <td align="center">Categoria</td>
-                            <td align="center">Ação</td>
+                            <td align="center">
+                                <a href="" class="btn btn-primary btn-circle btn-sm produto" title="Adicionar Produto">
+                                    <i class="fas fa-cart-plus"></i>
+                                </a>
+                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Produto" data-id=""><i class="fa fa-cart-arrow-down"></i></a>
+                                <a href="#" class="btn btn-success btn-circle btn-sm excluir" title="Novo Produto" data-id=""><i class="fas fa-cart-plus"></i></a>
+                            </td>
                         </tr>
 {{--                    @forelse(solicitacao as $f)--}}
 {{--                        <tr align="center" class="{{ $f->tipo == 'R' ? 'table-danger': 'table-primary'}}">--}}
@@ -86,18 +106,40 @@
                         </div>
                     </div>
                 </div>
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+                <script src="{{ asset('js/gijgo.min.js') }}" type="text/javascript"></script>
+
+                <script type="text/javascript">
+                    var yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() -1);
+                    var hoje = new Date();
+                    var ano = hoje.getFullYear();
+                    var ultimoDia = new Date(ano, 12, 0);
+                    $('#date').datepicker({
+                        uiLibrary: 'bootstrap4',
+                        iconsLibrary: 'fontawesome',
+                        locale: 'pt-br',
+                        weekStart: 1,
+                        daysOfWeekHighlighted: "6,0",
+                        autoclose: true,
+                        todayHighlight: true,
+                        format: 'd/m/yyyy',
+                        minDate: yesterday,
+                        maxDate: new Date(ultimoDia),
+                    });
+                </script>
             </div>
         </div>
     </div>
 @endsection
 
-{{--<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>--}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
 
 <script>
 
-function abreModalFeedback(codigo) {
+    function abreModalFeedback(codigo) {
         if(codigo) {
             $.ajax({
                 url:'feedback/'+ codigo,
@@ -196,19 +238,8 @@ function abreModalFeedback(codigo) {
                 }
             })
         });
-
-        $("#admin .btn").on('click', function(){
-
-        });
     });
 
 </script>
 
 
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script>
-    $(function() {
-        $( "#datepicker" ).datepicker();
-    });
-</script>

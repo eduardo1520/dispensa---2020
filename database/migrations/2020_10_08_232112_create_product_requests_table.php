@@ -15,6 +15,7 @@ class CreateProductRequestsTable extends Migration
     {
         Schema::create('product_requests', function (Blueprint $table) {
             $table->id();
+            $table->date('data')->nullable();
             $table->integer('qtde')->nullable();
             $table->integer('user_id')->nullable();
             $table->integer('product_id')->nullable();
