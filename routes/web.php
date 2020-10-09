@@ -41,6 +41,9 @@ Route::resource('/measure', 'MeasureController');
 
 Route::resource('/product', 'ProductController');
 
+Route::resource('/product-request', 'ProductRequestController');
+
+
 Route::post('/product/fileupload/','ProductController@uploadFiles')->name('fileupload');
 Route::post('/product/remover/','ProductController@removeProdutos')->name('prod_cancelados');
 

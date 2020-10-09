@@ -78,8 +78,8 @@
                 <span>{{ __('Baixa de Produtos') }}</span>
             </a>
         </li>
-        <li class="nav-item {{ Nav::isRoute('profile.index') }}">
-            <a class="nav-link" href="{{ route('profile.index') }}">
+        <li class="nav-item {{ Nav::isRoute('product-request.index') }}">
+            <a class="nav-link" href="{{ route('product-request.index') }}">
                 <i class="fas fa-fw fa-user"></i>
                 <span>{{ __('Solicitação de Produtos') }}</span>
             </a>
