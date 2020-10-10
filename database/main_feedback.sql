@@ -1,0 +1,13 @@
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (1, 'R', 'Teste de reclamação....', 'B', 1, null, '2020-10-02 17:52:24', '2020-10-02 17:52:24');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (2, 'S', 'Teste de sugestão...', 'B', 1, null, '2020-10-02 20:14:09', '2020-10-02 20:14:09');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (3, 'R', 'Teste de reclamação...', 'A', 1, null, '2020-10-02 20:17:51', '2020-10-02 20:17:51');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (4, 'R', 'Teste de reclamação...', 'A', 1, null, '2020-10-02 20:19:40', '2020-10-02 20:19:40');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (5, 'S', 'Teste de reclamação 2....', 'B', 1, null, '2020-10-02 20:20:47', '2020-10-02 21:35:00');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (6, 'S', 'Teste de reclamação...', 'B', 1, '2020-10-02 20:28:57', '2020-10-02 20:21:00', '2020-10-02 20:28:57');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (7, 'S', 'Teste de reclamação...', 'B', 1, '2020-10-02 20:28:53', '2020-10-02 20:22:49', '2020-10-02 20:28:53');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (8, 'R', 'Teste', 'A', 1, '2020-10-02 20:28:48', '2020-10-02 20:25:42', '2020-10-02 20:28:48');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (9, 'R', 'Teste', 'B', 1, '2020-10-02 20:28:44', '2020-10-02 20:25:53', '2020-10-02 20:28:44');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (10, 'S', 'Oi Edu, continue assim!', 'B', 2, null, '2020-10-02 21:59:46', '2020-10-02 21:59:46');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (11, 'R', 'Está  demorando para terminar mais consigo esperar mais um pouco....', 'B', 2, null, '2020-10-02 22:01:18', '2020-10-02 22:01:18');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (12, 'S', 'Testando 123....', 'B', 1, null, '2020-10-04 13:08:55', '2020-10-04 13:08:55');
+INSERT INTO feedback (id, tipo, descricao, prioridade, user_id, deleted_at, created_at, updated_at) VALUES (13, 'R', 'Testando 123...', 'A', 1, null, '2020-10-04 13:09:18', '2020-10-04 13:09:18');

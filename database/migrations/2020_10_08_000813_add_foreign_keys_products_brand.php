@@ -13,8 +13,8 @@ class AddForeignKeysProductsBrand extends Migration
      */
     public function up()
     {
-        Schema::table('product', function (Blueprint $table) {
-            $table->foreign('brand_id')->references('id')->on('brands');
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
         });
     }
 
@@ -25,8 +25,8 @@ class AddForeignKeysProductsBrand extends Migration
      */
     public function down()
     {
-        Schema::table('product', function (Blueprint $table) {
-            $table->dropForeign('brand_id');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropForeign(['brand_id']);
         });
     }
 }

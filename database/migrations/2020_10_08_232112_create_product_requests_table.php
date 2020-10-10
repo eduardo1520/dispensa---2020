@@ -17,11 +17,6 @@ class CreateProductRequestsTable extends Migration
             $table->id();
             $table->date('data')->nullable();
             $table->integer('qtde')->nullable();
-            $table->integer('user_id')->nullable();
-            $table->integer('product_id')->nullable();
-            $table->integer('brand_id')->nullable();
-            $table->integer('category_id')->nullable();
-            $table->integer('measure_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

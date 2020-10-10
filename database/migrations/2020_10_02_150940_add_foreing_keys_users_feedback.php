@@ -14,7 +14,7 @@ class AddForeingKeysUsersFeedback extends Migration
     public function up()
     {
         Schema::table('feedback', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         });
     }
 
@@ -26,7 +26,7 @@ class AddForeingKeysUsersFeedback extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign('user_id');
+            $table->dropForeign(['user_id']);
         });
     }
 }

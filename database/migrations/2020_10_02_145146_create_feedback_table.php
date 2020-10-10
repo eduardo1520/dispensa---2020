@@ -18,7 +18,6 @@ class CreateFeedbackTable extends Migration
             $table->enum('tipo',['S','R']);
             $table->text('descricao');
             $table->enum('prioridade',['B','A'])->default('B');
-            $table->integer('user_id');
             $table->softDeletes();
             $table->timestamps();
         });

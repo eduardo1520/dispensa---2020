@@ -13,14 +13,13 @@ class AddForeingKeysProductsRequest extends Migration
      */
     public function up()
     {
-        Schema::table('products_request', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('product_id')->references('id')->on('products');
-            $table->foreign('brand_id')->references('id')->on('brands');
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('measure_id')->references('id')->on('measures');
+        Schema::table('product_requests', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('measure_id')->constrained('measures')->onDelete('cascade');
         });
-
     }
 
     /**
@@ -30,12 +29,12 @@ class AddForeingKeysProductsRequest extends Migration
      */
     public function down()
     {
-        Schema::table('products_request', function (Blueprint $table) {
-            $table->dropForeign('user_id');
-            $table->dropForeign('product_id');
-            $table->dropForeign('brand_id');
-            $table->dropForeign('category_id');
-            $table->dropForeign('measure_id');
+        Schema::table('product_requests', function (Blueprint $table) {
+            $table->dropForeign('product_requests_user_id_foreign');
+            $table->dropForeign('product_requests_product_id_foreign');
+            $table->dropForeign('product_requests_brand_id_foreign');
+            $table->dropForeign('product_requests_category_id_foreign');
+            $table->dropForeign('product_requests_measure_id_foreign');
         });
     }
 }

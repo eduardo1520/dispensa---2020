@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
 use Illuminate\Http\Request;
 
 use App\ProductRequest;
@@ -16,8 +17,8 @@ class ProductRequestController extends Controller
     public function index()
     {
         $solicitacao = ProductRequest::all();
-
-        return view('productsRequest.index', compact('solicitacao'));
+        $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
+        return view('productsRequest.index', compact('solicitacao','comboProductSql'));
     }
 
     /**

@@ -14,6 +14,18 @@
             border-radius: .35rem;
             padding-top: 6px;
         }
+
+        [class*="col-"] .chosen-container {
+            width:98%!important;
+        }
+        [class*="col-"] .chosen-container .chosen-search input[type="text"] {
+            padding:2px 4%!important;
+            width:90%!important;
+            margin:5px 2%;
+        }
+        [class*="col-"] .chosen-container .chosen-drop {
+            width: 100%!important;
+        }
     </style>
     <div class="col-lg-10 order-lg-1">
         <div class="card shadow mb-4">
@@ -122,7 +134,6 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.min.js') }}"></script>
-
 <script>
     let jQuery = $.noConflict();
     jQuery(function() {
@@ -140,9 +151,8 @@
         jQuery('.chosen-select-deselect').chosen({ allow_single_deselect: true });
     });
 </script>
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="{{ asset('js/jquery.js') }}"></script>
+<script src="{{ asset('js/sweetalert2@10.js') }}"></script>
 
 
 <script>

@@ -1,8 +1,9 @@
 @extends('layouts.admin')
 @section('main-content')
 
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-<link href="{{ asset('css/gijgo.min.css') }}" rel="stylesheet" type="text/css" />
+    {{--    versão 1.11.2--}}
+    <link rel="stylesheet" href="{{ asset('css/jquery-ui.css') }}">
+    <link href="{{ asset('css/gijgo.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .nao_selecionado {
             color: #fff;
@@ -28,6 +29,7 @@
         }
 
     </style>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="col-lg-10 order-lg-1">
         <div class="card shadow mb-4">
@@ -41,6 +43,7 @@
                         </span>
                     <span class="text">Novo</span>
                 </a>
+
 
                 <table class="mt-lg-3 table table-striped table-bordered table-hover table-responsive-lg">
                     <thead>
@@ -58,45 +61,34 @@
                     </tr>
                     </thead>
                     <tbody>
-                        <tr align="center" class="">
+                        <tr align="center" class="pedido" data-codigo="1">
                             <th scope="row"></th>
                             <td align="center">
                                 <input id="date" width="auto"  value="{{ date('d/m/Y') }}" />
                             </td>
                             <td align="center">{{ Auth::user()->name }}</td>
-                            <td align="center">5</td>
+                            <td align="center" class="qtde">0</td>
                             <td align="center">@if(!empty($produto->image))<img src="{{ asset($produto->image) }}" width="50" height="50"/> @else - @endif</td>
-                            <td align="center">Produto</td>
-                            <td align="center">Medidas</td>
-                            <td align="center">Marca</td>
-                            <td align="center">Categoria</td>
+                            <td align="center" style="cursor: pointer" onclick="produtoCombo($(this).closest('[data-codigo]').data('codigo'))" class="produto">
+                                <span class="produto-nome" data-product_id>Produto</span>
+                                <select data-placeholder="Selecione um produto" class="form-control combo-produto" tabindex="3" name="produto_id" style="display: none" onchange="transformaProdutoComboSpan($(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-produto option:selected').text())">
+                                    @if(!empty($comboProductSql))
+                                        <option value="">Selecione um produto</option>
+                                        @foreach($comboProductSql as $value => $produto)
+                                            <option value="{{$value}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $produto }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </td>
+                            <td align="center" style="cursor: pointer">Medidas</td>
+                            <td align="center" style="cursor: pointer">Marca</td>
+                            <td align="center" style="cursor: pointer">Categoria</td>
                             <td align="center">
-                                <a href="" class="btn btn-primary btn-circle btn-sm produto" title="Adicionar Produto">
-                                    <i class="fas fa-cart-plus"></i>
-                                </a>
-                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Produto" data-id=""><i class="fa fa-cart-arrow-down"></i></a>
-                                <a href="#" class="btn btn-success btn-circle btn-sm excluir" title="Novo Produto" data-id=""><i class="fas fa-cart-plus"></i></a>
+                                <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm produto" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
+                                <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-danger btn-circle btn-sm produto"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
+                                <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm excluir" title="Novo Produto"      data-id=" "><i class="fas fa-cart-plus"></i></a>
                             </td>
                         </tr>
-{{--                    @forelse(solicitacao as $f)--}}
-{{--                        <tr align="center" class="{{ $f->tipo == 'R' ? 'table-danger': 'table-primary'}}">--}}
-{{--                            <th scope="row">{{$f->id}}</th>--}}
-{{--                            <td align="center">{{date('d/m/Y',strtotime($f->created_at))}}</td>--}}
-{{--                            <td align="center">{{ !empty($f->deleted_at) ? date('d/m/Y',strtotime($f->deleted_at)) : '-'}}</td>--}}
-{{--                            <td align="center">{{$f->tipo == 'R' ? 'Reclamação' : 'Sugestão'}}</td>--}}
-{{--                            <td align="center">{{Str::limit($f->descricao,100,'...')}}</td>--}}
-{{--                            <td align="center">{{$f->prioridade == 'A' ? 'Alta' : 'Baixa'}}</td>--}}
-{{--                            <td align="center">{{$f->user->name}}</td>--}}
-{{--                            <td align="center">--}}
-{{--                                <a href="#" class="btn btn-info btn-circle btn-sm feedback" title="Atualizar Feedback" data-toggle="modal" data-target="#feedbackModal"  onclick='abreModalFeedback({{ $f->id }});'>--}}
-{{--                                    <i class="fas fa-info-circle"></i>--}}
-{{--                                </a>--}}
-{{--                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Feedback" data-id="{{ $f->id }}"><i class="fas fa-trash"></i></a>--}}
-{{--                            </td>--}}
-{{--                        </tr>--}}
-{{--                    @empty--}}
-{{--                        <p class="mt-lg-3">Sem Solicitação de Produtos</p>--}}
-{{--                    @endforelse--}}
                     </tbody>
                 </table>
                 <div class="pl-lg-4">
@@ -107,7 +99,10 @@
                     </div>
                 </div>
 
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+                <script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.min.js') }}"></script>
+
+                <script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
                 <script src="{{ asset('js/gijgo.min.js') }}" type="text/javascript"></script>
 
                 <script type="text/javascript">
@@ -129,13 +124,18 @@
                         maxDate: new Date(ultimoDia),
                     });
                 </script>
+
+
             </div>
         </div>
     </div>
 @endsection
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script src="{{ asset('js/sweetalert2@10.js') }}"></script>
+{{-- versão 1.9.1 --}}
+<script src="{{ asset('js/jquery.js') }}"></script>
+
+
 
 <script>
 
@@ -215,6 +215,42 @@
         });
     }
 
+    function atualizaQtde(codigo, operacao)
+    {
+        $('.pedido').each(function (x,y) {
+            if($(this).closest('[data-codigo]').data('codigo') == codigo) {
+                let qtde = parseInt($(this).children('td.qtde').text());
+                if(operacao == '-' && qtde == 0) {
+                    alert('Não é permitido quantidade negativa!');
+                } else if(operacao == '+'){
+                    qtde++;
+                    $(this).children('td.qtde').empty().text(qtde);
+                } else {
+                    qtde--;
+                    $(this).children('td.qtde').empty().text(qtde);
+                }
+            }
+        })
+    }
+
+    function produtoCombo(codigo) {
+        $('.pedido').each(function (x,y) {
+            if($(this).closest('[data-codigo]').data('codigo') == codigo) {
+                $(this).children('td.produto').children('span').hide();
+                $(".combo-produto").show();
+            }
+        })
+    }
+
+    function transformaProdutoComboSpan(pai, id, nome) {
+        if($('.pedido').closest('[data-codigo]').data('codigo') == pai) {
+            $('.produto-nome').attr('data-product_id',id);
+            $('.produto-nome').text(nome);
+            $('.produto-nome').show();
+            $(".combo-produto").hide();
+        }
+    }
+
     $(document).ready(function(){
         $(".excluir").click(function(){
             Swal.fire({
@@ -239,7 +275,10 @@
             })
         });
     });
-
 </script>
+
+
+
+
 
 
