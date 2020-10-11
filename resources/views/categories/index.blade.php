@@ -1,46 +1,73 @@
 @extends('layouts.admin')
 @section('main-content')
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div class="col-lg-5 order-lg-1">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Listagens de Categorias</h6>
-            </div>
-            <div class="card-body">
-                <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria("");'>
-                    <span class="icon text-white-50">
-                      <i class="fa fa-cubes" aria-hidden="true"></i>
-                    </span>
-                    <span class="text">Novo</span>
-                </a>
-                <table class="mt-lg-3 table table-striped table-bordered table-hover">
-                    <thead>
-                    <tr align="center">
-                        <th>#</th>
-                        <th>Tipo</th>
-                        <th>Ação</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($categorias as $categoria)
-                        <tr align="center">
-                            <th scope="row">{{$categoria->id}}</th>
-                            <td align="center">{{$categoria->tipo}}</td>
-                            <td align="center">
-                                <a href="#" class="btn btn-info btn-circle btn-sm categoria" title="Atualizar Categoria" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria({{ $categoria->id }});'>
-                                    <i class="fas fa-info-circle"></i>
-                                </a>
-                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Categoria" data-id="{{ $categoria->id }}"><i class="fas fa-trash"></i></a>
-                            </td>
-                        </tr>
-                    @empty
-                        <p class="mt-lg-3">Sem categorias</p>
-                    @endforelse
-                    </tbody>
-                </table>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <div class="row">
+        <div class="col-lg-5 order-lg-1">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Listagens de Categorias</h6></div>
+                <div class="card-body">
+                    <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria("");'>
+                        <span class="icon text-white-50"><i class="fa fa-cubes" aria-hidden="true"></i></span>
+                        <span class="text">Novo</span>
+                    </a>
+                    <div class="row" align="center">
+                        <div class="col-8 col-lg-12 my-3 border">
+                            <div class="row">
+                                <div class="col-4 col-sm-4 col-md-4 col-lg-4 border">#</div>
+                                <div class="col-4 col-sm-4 col-md-4 col-lg-4 border">Tipo</div>
+                                <div class="col-4 col-sm-4 col-md-4 col-lg-4 border">Ação</div>
+                            </div>
+                            @forelse($categorias as $categoria)
+                                <div class="row">
+                                    <div class="col-4 col-sm-4 col-md-4 col-lg-4 border" style="padding-top: 10px;padding-bottom: 5px;">
+                                        {{$categoria->id}}
+                                    </div>
+                                    <div class="col-4 col-sm-4 col-md-4 col-lg-4 border" style="padding-top: 10px;padding-bottom: 5px;">
+                                        {{$categoria->tipo}}
+                                    </div>
+                                    <div class="col-4 col-sm-4 col-md-4 col-lg-4 border" style="padding-top: 10px;padding-bottom: 5px;">
+                                        <a href="#" class="btn btn-info btn-circle btn-sm categoria" title="Atualizar Categoria" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria({{ $categoria->id }});'>
+                                            <i class="fas fa-info-circle"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Categoria" data-id="{{ $categoria->id }}"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="mt-lg-3">Sem categorias</p>
+                            @endforelse
+                        </div>
+                    </div>
+{{--                    <table class="mt-lg-3 table table-striped table-bordered table-hover">--}}
+{{--                        <thead>--}}
+{{--                        <tr align="center">--}}
+{{--                            <th>#</th>--}}
+{{--                            <th>Tipo</th>--}}
+{{--                            <th>Ação</th>--}}
+{{--                        </tr>--}}
+{{--                        </thead>--}}
+{{--                        <tbody>--}}
+{{--                        @forelse($categorias as $categoria)--}}
+{{--                            <tr align="center">--}}
+{{--                                <th scope="row">{{$categoria->id}}</th>--}}
+{{--                                <td align="center">{{$categoria->tipo}}</td>--}}
+{{--                                <td align="center">--}}
+{{--                                    <a href="#" class="btn btn-info btn-circle btn-sm categoria" title="Atualizar Categoria" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria({{ $categoria->id }});'>--}}
+{{--                                        <i class="fas fa-info-circle"></i>--}}
+{{--                                    </a>--}}
+{{--                                    <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Categoria" data-id="{{ $categoria->id }}"><i class="fas fa-trash"></i></a>--}}
+{{--                                </td>--}}
+{{--                            </tr>--}}
+{{--                        @empty--}}
+{{--                            <p class="mt-lg-3">Sem categorias</p>--}}
+{{--                        @endforelse--}}
+{{--                        </tbody>--}}
+{{--                    </table>--}}
+                </div>
             </div>
         </div>
     </div>
+
 
 @endsection
 
