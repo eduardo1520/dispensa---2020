@@ -495,6 +495,34 @@
         </div>
     </div>
 </div>
+<div class="modal fade modalRequestProduct" tabindex="-1" aria-labelledby="modalRequestProduct" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titulo-produto">Detalhe do Produto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="form-marca" onchange="validaCampos('form-marca','btnMarca',['input']);">
+                        <div class="form-group">
+                            <span class="produto-nome" data-product_id>Produto</span>
+                            <select data-placeholder="Selecione um produto" class="form-control combo-produto" tabindex="3" name="produto_id" onchange="transformaProdutoComboSpan($(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-produto option:selected').text())">
+                                    <option value="">Selecione um produto</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnRequestProduto" onclick="">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>

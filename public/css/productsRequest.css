@@ -1,0 +1,31 @@
+.nao_selecionado {
+    color: #fff;
+    background-color: #f1f1f1;
+    border-color: #c7ccda;
+}
+
+.table-condensed {
+    top: 55px;
+    left: 342px;
+    z-index: 10;
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+td.today.active.day {
+    color: #fff;
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.m-left500 {
+    margin-left:500px;
+}
+
+.cabecalho {
+    padding-top: 10px;
+    padding-bottom: 0px;
+}

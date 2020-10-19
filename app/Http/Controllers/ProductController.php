@@ -295,4 +295,10 @@ class ProductController extends Controller
         }
         return implode(' ', $sql);
     }
+
+    public function productAjax()
+    {
+        $comboProductSql = Product::select('id','name')->orderby('name','asc')->get();
+        return response($comboProductSql,200);
+    }
 }
