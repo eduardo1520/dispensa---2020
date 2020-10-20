@@ -301,4 +301,14 @@ class ProductController extends Controller
         $comboProductSql = Product::select('id','name')->orderby('name','asc')->get();
         return response($comboProductSql,200);
     }
+
+    public function productImageAjax(Request $request)
+    {
+        if($request->id && $request->name) {
+            $productSql = Product::select('id','name','image','description')->where('id','=',$request->id)->orWhere('name','like',"%{$request->name}%")->orderby('name','asc')->get();
+            return response($productSql,200);
+        }
+
+        return response('Imagem não encontrada!',500);
+    }
 }

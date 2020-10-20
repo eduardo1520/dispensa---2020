@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
 use Illuminate\Http\Request;
 use App\Brand;
 
@@ -188,7 +189,12 @@ class BrandController extends Controller
                 }
             }
         }
-//        dd($sql);
         return implode(' ', $sql);
+    }
+
+    public function brandAjax()
+    {
+        $comboBrandSql = Brand::select('id','name')->orderby('name','asc')->get();
+        return response($comboBrandSql,200);
     }
 }

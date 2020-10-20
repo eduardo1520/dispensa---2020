@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Brand;
 use App\User;
 use Illuminate\Http\Request;
 use App\Category;
@@ -121,5 +122,11 @@ class CategoryController extends Controller
     public function novo()
     {
         return view('categories.category');
+    }
+
+    public function categoryAjax()
+    {
+        $comboCategorySql = Category::select('id','tipo')->orderby('tipo','asc')->get();
+        return response($comboCategorySql,200);
     }
 }

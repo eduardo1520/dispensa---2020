@@ -32,15 +32,18 @@ Route::get('/user/relatorio', 'UserController@relatorio')->name('relatorio');
 Route::resource('/user', 'UserController');
 
 Route::resource('/category', 'CategoryController');
+Route::post('/category/categoryAjax', 'CategoryController@categoryAjax')->name('categoryAjax');
 
 Route::resource('/feedback', 'FeedbackController');
 
 Route::resource('/feedback', 'FeedbackController');
 
 Route::resource('/measure', 'MeasureController');
+Route::post('/measure/measureAjax', 'MeasureController@measureAjax')->name('measureAjax');
 
 Route::resource('/product', 'ProductController');
 Route::post('/product/productAjax', 'ProductController@productAjax')->name('productAjax');
+Route::post('/product/productImageAjax', 'ProductController@productImageAjax')->name('productImageAjax');
 
 Route::resource('/product-request', 'ProductRequestController');
 
@@ -55,3 +58,4 @@ Route::get('/usuario/novo', function () {
 })->name('novo_usuario');
 
 Route::resource('/brand', 'BrandController');
+Route::post('/brand/brandAjax', 'BrandController@brandAjax')->name('brandAjax');

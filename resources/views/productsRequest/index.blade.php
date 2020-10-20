@@ -6,7 +6,6 @@
     <link href="{{ asset('css/gijgo.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/productsRequest.css') }}" rel="stylesheet" type="text/css" />
     <link href='https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
-    <link href="{{ asset('css/mdDateTimePicker.min.css') }}" rel="stylesheet" type="text/css" />
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="row">
@@ -16,12 +15,12 @@
                     <h6 class="m-0 font-weight-bold text-primary">Solicitação de Produtos</h6>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('product.create') }}" class="btn btn-success btn-icon-split">
-                        <span class="icon text-white-50">
-                            <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>
-                        </span>
-                        <span class="text">Novo</span>
-                    </a>
+{{--                    <a href="{{ route('product.create') }}" class="btn btn-success btn-icon-split">--}}
+{{--                        <span class="icon text-white-50">--}}
+{{--                            <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>--}}
+{{--                        </span>--}}
+{{--                        <span class="text">Novo</span>--}}
+{{--                    </a>--}}
                     <div class="row " align="center" id="tabela">
                         <div class="col-12 col-lg-12 my-3 border " id="filho">
                             <div class="row font-weight-bold">
@@ -36,7 +35,7 @@
                                 <div class="col-4 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                             </div>
                             <div class="row pedido" data-codigo="1">
-                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho">
+                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">
                                     <input class="date" width="auto"  value="{{ date('d/m/Y') }}" />
                                     <i class="fa fa-calendar d-none calendario" aria-hidden="true"></i>
                                 </div>
@@ -44,10 +43,10 @@
                                     {{ Auth::user()->name }}
                                 </div>
                                 <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe">0</div>
+                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem">-</div>
                                 <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho produto gj-cursor-pointer" onclick="produtoCombo($(this).closest('[data-codigo]').data('codigo'))">
                                     <span class="produto-nome" data-product_id>Produto</span>
-                                    <select data-placeholder="Selecione um produto" class="form-control combo-produto d-none" tabindex="3" name="produto_id"  onchange="transformaProdutoComboSpan($(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-produto option:selected').text())">--}}
+                                    <select class="form-control combo-produto d-none" tabindex="3" name="produto_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-produto option:selected').text(), 'produto-nome','combo-produto','data-product_id');getProductImage($(this).val(), $('.combo-produto option:selected').text())">
                                         @if(!empty($comboProductSql))
                                             <option value="">Selecione um produto</option>
                                             @foreach($comboProductSql as $value => $produto)
@@ -60,8 +59,8 @@
                                 <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe">0</div>
                                 <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe">0</div>
                                 <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho ">
-                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm produto" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
-                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-danger btn-circle btn-sm produto"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
+                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
+                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-danger btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
                                     <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm excluir" title="Novo Produto"      data-id=" "><i class="fas fa-cart-plus"></i></a>
                                 </div>
                                 </div>

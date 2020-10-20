@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
 use Illuminate\Http\Request;
 use App\Measure;
 
@@ -135,4 +136,9 @@ class MeasureController extends Controller
         }
     }
 
+    public function measureAjax()
+    {
+        $comboMeasureSql = Measure::select('id','nome','sigla' )->orderby('nome','asc')->get();
+        return response($comboMeasureSql,200);
+    }
 }

@@ -1,81 +1,7 @@
-function abreModalFeedback(codigo) {
-    if(codigo) {
-        $.ajax({
-            url:'feedback/'+ codigo,
-            type:'get',
-            dateType: 'json',
-            success: function(res) {
-                $("#descricao").val(res.descricao);
-                $("#feedback .btn").removeClass().addClass('btn nao_selecionado');
-                if(res.tipo == 'R') {
-                    $("#feedback .btn").each(function(){
-                        if($(this).data('id') == 'R') {
-                            $(this).removeClass('btn nao_selecionado').addClass('btn btn-danger');
-                        }
-                    });
-                    $("#prioridade_selecionada").show();
-                    $("#prioridade").val(res.prioridade);
-                } else {
-                    $("#feedback .btn").each(function(){
-                        if($(this).data('id') == 'S') {
-                            $(this).removeClass('btn nao_selecionado').addClass('btn btn-success');
-                        }
-                    });
-                    $("#prioridade_selecionada").hide();
-                }
-                $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="'+ res.tipo +'">');
-                $("#form-feedback").append('<input type="hidden" id="id" value="'+ res.id +'">');
-                $("#btnFeedback").text('Atualizar Feedback');
-                $('#feedbackModal').modal('show');
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    }
-}
-
-function atualizaFeedback(nome, codigo) {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        url:'category/'+ codigo,
-        type:'put',
-        dateType: 'json',
-        data:{
-            tipo: nome,
-            id: codigo
-        },
-        success: function(res) {
-            $('#modalFeedback').modal('hide');
-            window.location.reload();
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
-
-function apagarFeedback(codigo) {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        url:'feedback/'+ codigo,
-        type:'delete',
-        dateType: 'json',
-        success: function(res) {
-            window.location.reload();
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
 
 function atualizaQtde(codigo, operacao)
 {
+    $(".load").addClass("loading");
     $('.pedido').each(function (x,y) {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
             let qtde = parseInt($(this).children('div.qtde').text());
@@ -89,10 +15,12 @@ function atualizaQtde(codigo, operacao)
                 $(this).children('div.qtde').empty().text(qtde);
             }
         }
-    })
+    });
+    $("body").removeClass("loading");
 }
 
 function produtoCombo(codigo) {
+    $(".load").hide();
     $('.pedido').each(function (x,y) {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
             $(this).children('div.produto').children('span').hide();
@@ -100,15 +28,31 @@ function produtoCombo(codigo) {
             $(".combo-produto").show();
         }
     })
+    $(".load").hide();
 }
 
-function transformaProdutoComboSpan(pai, id, nome) {
-    if($('.pedido').closest('[data-codigo]').data('codigo') == pai) {
-        $('.produto-nome').attr('data-product_id',id);
-        $('.produto-nome').text(nome);
-        $('.produto-nome').show();
-        $(".combo-produto").hide();
+function transformaComboSpan(classe, pai, id, nome, campo, combo, data) {
+    // console.log(classe, pai, id, nome, campo, combo, data);
+    $(".load").show();
+    if($(`.${classe}`).closest('[data-codigo]').data('codigo') == pai) {
+        $(`.${campo}`).remove();
+        $(`.${combo}`).closest('div').append(`<span data-id="${id}" class="${campo}">${nome}</span>`);
+        $("."+ combo).hide();
     }
+    $(".load").hide();
+}
+
+function ativaCombo(classe, codigo, campo, combo) {
+    $(".load").show();
+    $(`.${classe}`).find(`.${campo}`).each(function (x,campo) {
+        if($(this).closest('[data-codigo]').data('codigo') == codigo) {
+            if($(campo).data('id') > 0) {
+                $(campo).remove();
+            }
+            $(`.${combo}`).show();
+        }
+    })
+    $(".load").hide();
 }
 
 function detectar_mobile() {
@@ -128,11 +72,14 @@ function detectar_mobile() {
         if($(window).width() <= 568) {
             $('.user').hide();
             $('.detalhe').hide();
-            $('.produto ').removeAttr('onclick')
+            $('.produto').removeAttr('onclick')
                           .attr('data-toggle',"modal")
                           .attr('data-target',".modalRequestProduct")
                           .attr('onclick',"abreModalRequestProduct()");
-            // data-toggle="modal" data-target=".modalRequestProduct"  onclick='abreModalCategoria("");'
+            $(".gj-datepicker").hide();
+
+            let hoje = new Date();
+            $(".data").append(`<span>${hoje.getDate()}/${hoje.getMonth() + 1}/${hoje.getFullYear()}</span>`);
         }
 
         if($(window).width() > 568) {
@@ -143,6 +90,7 @@ function detectar_mobile() {
 }
 
 function abreModalRequestProduct() {
+    $(".load").show();
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -156,10 +104,118 @@ function abreModalRequestProduct() {
                HTML += `<option value="${valor['id']}">${valor['name']}</option>`;
             });
 
-            $(".combo-produto").append(HTML);
+            $(".combo-prod").append(HTML);
+            comboMeasure();
+            comboBrand();
+            comboBrandCategory();
+            $(".load").hide();
+        },
+        error: function (error) {
+            $(".load").hide();
+            console.log(error);
+        }
+    });
+}
+
+function comboMeasure() {
+    $(".load").show();
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: `measure/measureAjax`,
+        type: 'post',
+        dateType: 'json',
+        success: function(res) {
+            let HTML = "";
+            $.each(res, function(codigo, valor) {
+               HTML += `<option value="${valor['id']}">${valor['nome']} - (${valor['sigla']})</option>`;
+            });
+
+            $(".combo-measure").append(HTML);
+            $(".load").hide();
 
         },
         error: function (error) {
+            $(".load").hide();
+            console.log(error);
+        }
+    });
+}
+
+function comboBrand() {
+    $(".load").show();
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: `brand/brandAjax`,
+        type: 'post',
+        dateType: 'json',
+        success: function(res) {
+            let HTML = "";
+            $.each(res, function(codigo, valor) {
+               HTML += `<option value="${valor['id']}">${valor['name']}</option>`;
+            });
+
+            $(".combo-brand").append(HTML);
+            $(".load").hide();
+        },
+        error: function (error) {
+            $(".load").hide();
+            console.log(error);
+        }
+    });
+}
+
+function comboBrandCategory() {
+    $(".load").show();
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: `category/categoryAjax`,
+        type: 'post',
+        dateType: 'json',
+        success: function(res) {
+            let HTML = "";
+            $.each(res, function(codigo, valor) {
+               HTML += `<option value="${valor['id']}">${valor['tipo']}</option>`;
+            });
+
+            $(".combo-category").append(HTML);
+            $(".load").hide();
+
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
+function getProductImage(id, name) {
+    $(".load").show();
+
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: `product/productImageAjax`,
+        type: 'post',
+        dateType: 'json',
+        data:{
+          id: id,
+          name: name
+        },
+        success: function(res) {
+            $(".imagem").empty().append(`<img src="${res[0].image}" alt="${res[0].description}" data-id="${res[0].id}" width="100px;" height="75px;">`);
+            $(".imagem-produto").removeClass('d-none');
+            $(".imagem-nome").text(res[0].name);
+            $(".imagem-descricao").text(res[0].description);
+            $(".load").hide();
+        },
+        error: function (error) {
+            $(".load").hide();
             console.log(error);
         }
     });

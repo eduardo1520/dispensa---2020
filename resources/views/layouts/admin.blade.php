@@ -505,15 +505,56 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <form id="form-marca" onchange="validaCampos('form-marca','btnMarca',['input']);">
-                        <div class="form-group">
-                            <span class="produto-nome" data-product_id>Produto</span>
-                            <select data-placeholder="Selecione um produto" class="form-control combo-produto" tabindex="3" name="produto_id" onchange="transformaProdutoComboSpan($(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-produto option:selected').text())">
-                                    <option value="">Selecione um produto</option>
-                            </select>
+                <div class="row " align="center" id="tabela">
+                    <div class="col-12 col-lg-12 my-3 border " id="filho">
+                        <div class="row font-weight-bold">
+                            <div class="col-3 col-sm-2 col-md-2 col-lg-2 border cabecalho">Produto</div>
+                            <div class="col-2 col-sm-2 col-md-2 col-lg-2 border cabecalho">Medida</div>
+                            <div class="col-3 col-sm-2 col-md-2 col-lg-2 border cabecalho">Marca</div>
+                            <div class="col-2 col-sm-2 col-md-2 col-lg-2 border cabecalho">Categoria</div>
+                            <div class="col-2 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                         </div>
-                    </form>
+                        <div class="row pedido-modal" data-codigo="1">
+                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho">
+                                <select data-placeholder="Selecione um produto" class="form-control combo-prod" tabindex="3" name="produto_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-prod option:selected').text(),'prod-nome','combo-prod','data-product_id');getProductImage($(this).val(), $('.combo-produto option:selected').text())">
+                                    <option value="">Selecione um produto</option>
+                                </select>
+                            </div>
+                            <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho measure-nome">
+                                <select data-placeholder="Selecione uma medida" class="form-control combo-measure" tabindex="3" name="unidade_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-measure option:selected').text(),'measure-nome','combo-measure','data-measure_id')">
+                                    <option value="">Selecione uma medida</option>
+                                </select>
+                            </div>
+                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho bread-nome">
+                                <select data-placeholder="Selecione uma marca" class="form-control combo-brand" tabindex="3" name="marca_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-brand option:selected').text(),'bread-nome','combo-brand','data-bread_id')">
+                                    <option value="">Selecione uma marca</option>
+                                </select>
+                            </div>
+                            <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho category-nome">
+                                <select data-placeholder="Selecione uma categoria" class="form-control combo-category" tabindex="3" name="categoria_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-category option:selected').text(),'category-nome','combo-category','data-category_id')">
+                                    <option value="">Selecione uma categoria</option>
+                                </select>
+                            </div>
+                            <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho">
+                                <a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm atualizar-produto" title="Atualizar Produtos"  onclick="event.preventDefault(); ativaCombo('pedido-modal',$(this).closest('[data-codigo]').data('codigo'),'prod-nome','combo-prod')">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2 d-none imagem-produto">
+                    <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho">
+                        <div class="imagem" align="center"><!--JS --></div>
+                    </div>
+                    <div class="col-6 col-sm-2 col-md-1 col-lg-2 border cabecalho">
+                        <div class="row">
+                            <div class="col-12 col-sm-2 col-md-1 col-lg-2 cabecalho imagem-nome"><!--JS --></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-sm-2 col-md-1 col-lg-2 cabecalho imagem-descricao"><!--JS --></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
