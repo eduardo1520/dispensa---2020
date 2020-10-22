@@ -29,10 +29,10 @@
                                 <div class="col-4 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                             </div>
                             <div class="row pedido" data-codigo="1">
-                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">
-                                    <input class="date desktop" width="auto"  value="{{ date('d/m/Y') }}" />
+                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
+                                    <input class="date desktop" width="auto"   value="{{ date('d/m/Y') }}" disabled  onclose=""/>
                                 </div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user">
+                                <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho usuario">
                                     {{ Auth::user()->name }}
                                 </div>
                                 <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
@@ -60,8 +60,8 @@
                                 </div>
                                 <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho ">
                                     <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
-                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-danger btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm" title="Novo Produto" onclick="addRow($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></a>
+                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-warning btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm" title="Novo Produto" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></a>
                                 </div>
                                 </div>
                             </div>
@@ -92,8 +92,17 @@
                 format: 'd/m/yyyy',
                 minDate: yesterday,
                 maxDate: new Date(ultimoDia),
+
             });
+
+            $(".date").datepicker().on('close', function() {
+                // console.log("changed", $(this).val(),$(this).closest('[data-codigo]').data('codigo'));
+                atualizaCampoData('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val());
+            });
+
         </script>
+
+
 @endsection
 
 <script src="{{ asset('js/sweetalert2@10.js') }}"></script>

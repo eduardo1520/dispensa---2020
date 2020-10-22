@@ -23,16 +23,17 @@ function getCombo(pai, codigo, span, classe, combo) {
     $(`.${pai}`).each(function () {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
             $(this).children('div.classe').children('span').hide();
-            $(`.${span}`).hide();
+            $(`span.${span}`).hide();
+            $(`.${combo}`).removeAttr('style');
             $(`.${combo}`).removeClass('d-none').show();
         }
     });
 }
 
-function transformaComboSpan(classe, pai, id, nome, campo, combo) {
-    if($(`.${classe}`).closest('[data-codigo]').data('codigo') == pai) {
-        $(`.${campo}`).remove();
+function transformaComboSpan(tabela, pai, id, nome, campo, combo,classe) {
+    if($(`.${tabela}`).closest('[data-codigo]').data('codigo') == pai) {
         $(`.${combo}`).closest('div').append(`<span data-id="${id}" class="${campo}">${nome}</span>`);
+        $(`div.${campo}`).attr('onclick',`getCombo('${tabela}','${pai}','${campo}','${classe}','${combo}')`);
         $(`.${combo}`).hide();
     }
 }
@@ -41,9 +42,12 @@ function ativaCombo(classe, codigo, campo, combo) {
     $(`.${classe}`).find(`.${campo}`).each(function (x,campo) {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
             if($(campo).data('id') > 0) {
-                $(campo).remove();
+                for (const c in combo) {
+                    let span = combo[c].split('-');
+                    $(`span.${span[1]}-nome`).hide();
+                    $(`.${combo[c]}`).show();
+                }
             }
-            $(`.${combo}`).show();
         }
     })
 }
@@ -238,6 +242,57 @@ function habilitaData() {
     $(".selecionado").empty().val($("#datetimepicker1").val());
     $(".gj-datepicker").show();
     $("#admin").find('span.input-group-append').removeClass('d-none');
+}
+
+function addRows(pai) {
+    pai = parseInt(pai);
+    if(pai == 1) {
+        pai = $('#filho > .pedido:last-child').data('codigo');
+    }
+    pai++;
+
+    let data = $(".date").val();
+
+    $('#filho').append(`<div class="row pedido" data-codigo="${pai}">
+                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">${data}</div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user">${$('.usuario').text()}</div>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem">-</div>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
+                        <span class="produto-nome" data-produto_id="">Produto</span>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer" onclick="getCombo('pedido',${pai},'medida-nome','medida','combo-medida')">
+                        <span class="medida-nome" data-medida_id="">Medida</span>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho marca  detalhe gj-cursor-pointer" onclick="getCombo('pedido',${pai},'marca-nome','marca','combo-marca')">
+                        <span class="marca-nome" data-marca_id="">Marca</span>
+                    </div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria">
+                        <span class="categoria-nome" data-category_id="">-</span>
+                    </div>
+                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho ">
+                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde(${pai}, '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
+                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde(${pai}, '-');" class="btn btn-warning btn-circle btn-sm" title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
+                        <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm novo" title="Novo Produto" onclick="addRows(${pai})"><i class="fas fa-cart-plus"></i></a>
+                        <a href="javascript:void(0);" class="btn btn-danger btn-circle btn-sm remove" title="Remove Produto" onclick="removeRows('pedido',${pai})"><i class="fas fa-trash"></i></a>
+                    </div>
+                  </div>`);
+}
+
+function removeRows(classe, pai) {
+    $(`.${classe}`).each(function(x,row){
+        $(row).data('codigo') == pai ? $(row).remove() : '';
+    });
+}
+
+function atualizaCampoData(tabela, codigo, data) {
+    $(`.${tabela}`).closest('[data-codigo]').each(function(x,row){
+        if($(row).data('codigo') > codigo) {
+            $(row).children('div.data').each(function(x,datas){
+                $(datas).text(data);
+            });
+        }
+    });
 }
 
 $(document).ready(function(){

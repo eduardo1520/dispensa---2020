@@ -32,6 +32,21 @@
             z-index:1000;
         }
 
+        .modal-body {
+            padding-top: 0px;
+            padding-bottom: 6px;
+        }
+
+        .modal-footer {
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .modal-header {
+            padding-top: 10px;
+            padding-bottom: 0px;
+        }
+
     </style>
 </head>
 <body id="page-top">
@@ -525,18 +540,18 @@
                             <div class="col-2 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                         </div>
                         <div class="row pedido-modal" data-codigo="1">
-                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho" onclick="getCombo('pedido-modal',$(this).closest('[data-codigo]').data('codigo'),'prod-nome','produto','combo-prod')">
-                                <select data-placeholder="Selecione um produto" class="form-control combo-prod" tabindex="3" name="produto_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-prod option:selected').text(),'prod-nome','combo-prod','data-product_id');getProductImage($(this).val(), $('.combo-produto option:selected').text());getCategory('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');">
+                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho prod-nome">
+                                <select data-placeholder="Selecione um produto" class="form-control combo-prod" tabindex="3" name="produto_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-prod option:selected').text(),'prod-nome','combo-prod','data-product_id','produto');getProductImage($(this).val(), $('.combo-produto option:selected').text());getCategory('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');">
                                     <option value="">Selecione um produto</option>
                                 </select>
                             </div>
                             <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho measure-nome">
-                                <select data-placeholder="Selecione uma medida" class="form-control combo-measure" tabindex="3" name="unidade_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-measure option:selected').text(),'measure-nome','combo-measure','data-measure_id')">
+                                <select data-placeholder="Selecione uma medida" class="form-control combo-measure" tabindex="3" name="unidade_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-measure option:selected').text(),'measure-nome','combo-measure','data-measure_id','medida')">
                                     <option value="">Selecione uma medida</option>
                                 </select>
                             </div>
-                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho bread-nome">
-                                <select data-placeholder="Selecione uma marca" class="form-control combo-brand" tabindex="3" name="marca_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-brand option:selected').text(),'bread-nome','combo-brand','data-bread_id')">
+                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho brand-nome">
+                                <select data-placeholder="Selecione uma marca" class="form-control combo-brand" tabindex="3" name="marca_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-brand option:selected').text(),'brand-nome','combo-brand','data-brand_id','marca')">
                                     <option value="">Selecione uma marca</option>
                                 </select>
                             </div>
@@ -544,7 +559,7 @@
                                 <span class="categoria-nome" data-category_id>-</span>
                             </div>
                             <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho">
-                                <a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm atualizar-produto" title="Atualizar Produtos"  onclick="event.preventDefault(); ativaCombo('pedido-modal',$(this).closest('[data-codigo]').data('codigo'),'prod-nome','combo-prod')">
+                                <a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm atualizar-produto" title="Atualizar Produtos"  onclick="event.preventDefault(); ativaCombo('pedido-modal',$(this).closest('[data-codigo]').data('codigo'),'prod-nome',['combo-prod','combo-measure','combo-brand'])">
                                     <i class="fas fa-exclamation-triangle"></i>
                                 </a>
                             </div>
