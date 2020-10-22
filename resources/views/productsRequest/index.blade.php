@@ -29,7 +29,7 @@
                                 <div class="col-4 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                             </div>
                             <div class="row pedido" data-codigo="1">
-                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" onclick="habilitaData(); ">
+                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">
                                     <input class="date desktop" width="auto"  value="{{ date('d/m/Y') }}" />
                                 </div>
                                 <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user">

@@ -71,6 +71,7 @@ function detectar_mobile() {
                           .attr('onclick',"abreModalRequestProduct()");
             $(".gj-datepicker").hide();
 
+            $('.data').attr('onclick','habilitaData();');
             let hoje = new Date();
 
             $(".data").attr('data-toggle',"modal").attr('data-target',".modalData");
