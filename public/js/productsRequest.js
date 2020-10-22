@@ -225,19 +225,18 @@ function getCategory(classe, pai,produto,campo) {
     });
 }
 
-function setData()
-{
+function setData() {
     $(".date").val($("#datetimepicker1").val()).hide();
     $(".selecionado").append($("#datetimepicker1").val());
-    $(".gj-datepicker").hide();
     $('.modalData').hide();
     $('.modalData').modal('hide');
 }
 
 function habilitaData() {
-    $(".input-group-append").hide();
+    $(".desktop, .input-group-append").addClass('d-none');
     $(".selecionado").empty().val($("#datetimepicker1").val());
     $(".gj-datepicker").show();
+    $("#admin").find('span.input-group-append').removeClass('d-none');
 }
 
 $(document).ready(function(){

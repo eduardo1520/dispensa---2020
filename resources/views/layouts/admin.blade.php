@@ -16,6 +16,7 @@
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <!-- Favicon -->
     <link href="{{ asset('img/favicon.png') }}" rel="icon" type="image/png">
+
     <style>
         .nao_selecionado {
             color: #fff;
@@ -583,7 +584,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-12" id="admin">
                         <input id="datetimepicker1"  data-format="dd/MM/yyyy hh:mm:ss" type="text"/>
                         <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
                     </div>
@@ -597,13 +598,17 @@
     </div>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
+<script src="{{ asset('js/gijgo.min.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
+    let dt = $.noConflict();
     var yesterday = new Date();
     yesterday.setDate(yesterday.getDate() -1);
     var hoje = new Date();
     var ano = hoje.getFullYear();
     var ultimoDia = new Date(ano, 12, 0);
-    $('#datetimepicker1').datepicker({
+    dt('#datetimepicker1').datepicker({
         uiLibrary: 'bootstrap4',
         iconsLibrary: 'fontawesome',
         locale: 'pt-br',
@@ -615,7 +620,7 @@
         minDate: yesterday,
         maxDate: new Date(ultimoDia),
         onSelect: function(date) {
-            $('#datetimepicker1').html(date);
+            dt('#datetimepicker1').html(date);$.noConflict();
         }
     });
 
