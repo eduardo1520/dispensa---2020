@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Category;
 use App\Product;
 use App\Brand;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ class ProductController extends Controller
         $marcas = Brand::orderBy('name','asc')->get();
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
         $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
+
+
         return view('products.index',compact('produtos','marcas','comboBrandSql','comboProductSql'));
     }
 
@@ -33,7 +36,8 @@ class ProductController extends Controller
         $titulo = "Cadastrar Produto";
         $marcas = Brand::orderBy('name','asc')->get();
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
-        return view('products.product', compact('titulo', 'marcas','comboBrandSql'));
+        $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
+        return view('products.product', compact('titulo', 'marcas','comboBrandSql','comboCategorySql'));
     }
 
     /**
@@ -48,7 +52,8 @@ class ProductController extends Controller
 
         if(!empty($data['pesquisar'])) {
             $filtros = $this->getFiltros($data);
-            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, b.name as marca from products p left join brands b on b.id = p.brand_id {$filtros}" . " order by p.name asc");
+            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, p.category_id, b.name as marca, c.tipo from products p
+                                    left join brands b on b.id = p.brand_id left join categories c on c.id = p.category_id {$filtros}" . " order by p.name asc");
             $pesquisa = $request->all();
             $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
             $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
@@ -59,6 +64,9 @@ class ProductController extends Controller
             'name' => 'required|string|max:50'
         ]);
 
+        if(!empty($data->category_id)) {
+            $data->category_id = Product::OUTROS;
+        }
         if($validacao->fails()){
             return redirect()->back()->withErrors($validacao)->withInput();
         }
@@ -117,7 +125,8 @@ class ProductController extends Controller
         $titulo = 'Atualizar Produto';
         $marcas = Brand::orderBy('name','asc')->get();
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
-        return view('products.product', compact('produto','titulo','marcas','comboBrandSql'));
+        $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
+        return view('products.product', compact('produto','titulo','marcas','comboBrandSql','comboCategorySql'));
     }
 
     /**
@@ -184,7 +193,12 @@ class ProductController extends Controller
             }
         }
 
+        if(empty($data['category_id'])) {
+            $data['category_id'] = Product::getFieldDefault();
+        }
+
         $resposta = $product->update($data);
+
         if($resposta)
             return redirect()->route('product.index')->with('success','Produto atualizado com sucesso!');
         return back()->with('error','Erro ao atualizar o produto!');
@@ -310,5 +324,15 @@ class ProductController extends Controller
         }
 
         return response('Imagem não encontrada!',500);
+    }
+
+    public function productCategoryAjax(Request $request)
+    {
+        if(!empty($request->id)) {
+            $produto = Product::find($request->id);
+            $dados = $produto->category->tipo;
+            return response($dados,200);
+        }
+        return response('Categoria não encontrada!',500);
     }
 }

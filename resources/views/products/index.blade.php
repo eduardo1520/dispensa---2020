@@ -95,11 +95,11 @@
                             <th>Produto</th>
                             <th>Descrição</th>
                             <th>Marca</th>
+                            <th>Categoria</th>
                             <th>Ação</th>
                         </tr>
                         </thead>
                         <tbody>
-
                         @forelse($produtos as $produto)
                             <tr align="center">
                                 <th scope="row">{{$produto->id}}</th>
@@ -107,6 +107,7 @@
                                 <td align="center">{{$produto->name}}</td>
                                 <td align="center">{{$produto->description}}</td>
                                 <td align="center">{{($produto->brand_id && !empty($produto->brand->name)) ? $produto->brand->name : (!empty($produto->marca) ? $produto->marca : '-')}}</td>
+                                <td align="center">{{($produto->category_id && !empty($produto->category->tipo)) ? $produto->category->tipo : (!empty($produto->tipo) ? $produto->tipo : '-')}}</td>
                                 <td align="center">
                                     <a href="{{ route('product.edit',$produto->id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
                                         <i class="fas fa-info-circle"></i>
@@ -131,6 +132,7 @@
         </div>
     </div>
 @endsection
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.min.js') }}"></script>

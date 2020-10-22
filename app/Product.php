@@ -12,7 +12,7 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id','name', 'description', 'image','brand_id'
+        'id','name', 'description', 'image','brand_id','category_id'
     ];
 
     protected $hidden = [
@@ -25,4 +25,17 @@ class Product extends Model
     {
         return $this->belongsTo('App\Brand');
     }
+
+    public function category()
+    {
+        return $this->belongsTo('App\Category');
+    }
+
+    public static function getFieldDefault()
+    {
+        $dados = \DB::select('select id from pantry.categories where tipo like "%Outros%"');
+        return $dados[0]->id;
+    }
+
+
 }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Brand;
+use App\Category;
 use App\Product;
+use App\Measure;
 use Illuminate\Http\Request;
 
 use App\ProductRequest;
@@ -18,7 +21,21 @@ class ProductRequestController extends Controller
     {
         $solicitacao = ProductRequest::all();
         $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
-        return view('productsRequest.index', compact('solicitacao','comboProductSql'));
+        $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
+//        $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
+
+        $comboMeasureSql = array_map(function ($combo) {
+            return $combo[$combo['id']][] = $combo['nome'] . " - (" . $combo['sigla'] . ")";
+        }, Measure::select('id','nome','sigla')->orderby('nome','asc')->get()->toArray());
+
+        $arr = [];
+        $arr['produto'] =  $comboProductSql;
+        $arr['medida'] =  $comboMeasureSql;
+        $arr['marca'] = $comboBrandSql;
+
+        $cont = count($arr);
+
+        return view('productsRequest.index', compact('solicitacao','cont','arr'));
     }
 
     /**
@@ -86,4 +103,5 @@ class ProductRequestController extends Controller
     {
         //
     }
+
 }

@@ -79,13 +79,13 @@
                         <h6 class="heading-small text-muted mb-4">Informações do produto</h6>
                         <div class="pl-lg-4">
                             <div class="row">
-                                <div class="col-lg-5">
+                                <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label" for="name">Nome<span class="small text-danger">*</span></label>
                                         <input type="text" id="name" class="form-control" name="name" placeholder="Nome" value="{{ isset($produto) && !empty($produto->name) ? $produto->name : old('name') }}" required>
                                     </div>
                                 </div>
-                                <div class="col-lg-7">
+                                <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label" for="brand_id">Marca</label>
                                         <select data-placeholder="Selecione uma marca" class="chosen-select-brand" multiple tabindex="3" name="brand_id" id="brand_id" value="">
@@ -95,6 +95,18 @@
                                                 @endforeach
                                             @endif
                                             <option value="999">Outros</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="form-control-label" for="category_id">Categoria</label>
+                                        <select data-placeholder="Selecione uma categoria" class="chosen-select-brand" multiple tabindex="3" name="category_id" id="category_id" value="">
+                                            @if(!empty($comboCategorySql))
+                                                @foreach($comboCategorySql as $value => $categoria)
+                                                    <option value="{{$value}}" {{ !empty($pesquisa['brand_id']) && in_array($value,$pesquisa['category_id'])  ? 'selected' : '' }}>{{ $categoria }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>
                                     </div>
                                 </div>

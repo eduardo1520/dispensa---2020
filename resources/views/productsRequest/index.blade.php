@@ -15,12 +15,6 @@
                     <h6 class="m-0 font-weight-bold text-primary">Solicitação de Produtos</h6>
                 </div>
                 <div class="card-body">
-{{--                    <a href="{{ route('product.create') }}" class="btn btn-success btn-icon-split">--}}
-{{--                        <span class="icon text-white-50">--}}
-{{--                            <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>--}}
-{{--                        </span>--}}
-{{--                        <span class="text">Novo</span>--}}
-{{--                    </a>--}}
                     <div class="row " align="center" id="tabela">
                         <div class="col-12 col-lg-12 my-3 border " id="filho">
                             <div class="row font-weight-bold">
@@ -35,7 +29,7 @@
                                 <div class="col-4 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                             </div>
                             <div class="row pedido" data-codigo="1">
-                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">
+                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" onclick="habilitaData();">
                                     <input class="date" width="auto"  value="{{ date('d/m/Y') }}" />
                                     <i class="fa fa-calendar d-none calendario" aria-hidden="true"></i>
                                 </div>
@@ -44,24 +38,31 @@
                                 </div>
                                 <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
                                 <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem">-</div>
-                                <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho produto gj-cursor-pointer" onclick="produtoCombo($(this).closest('[data-codigo]').data('codigo'))">
-                                    <span class="produto-nome" data-product_id>Produto</span>
-                                    <select class="form-control combo-produto d-none" tabindex="3" name="produto_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-produto option:selected').text(), 'produto-nome','combo-produto','data-product_id');getProductImage($(this).val(), $('.combo-produto option:selected').text())">
-                                        @if(!empty($comboProductSql))
-                                            <option value="">Selecione um produto</option>
-                                            @foreach($comboProductSql as $value => $produto)
-                                                <option value="{{$value}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $produto }}</option>
+                                @php
+                                    $i = 0;
+                                @endphp
+                                @while($cont > $i)
+                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
+                                        <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ ucfirst(array_keys($arr)[$i]) }}</span>
+                                        <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage($(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
+                                            <option value="">Selecione {{ substr(array_keys($arr)[$i], -1) == 'a' ? 'uma ' : 'um ' }}{{ ucfirst(array_keys($arr)[$i]) }}</option>
+                                            @foreach($arr[array_keys($arr)[$i]] as $idx => $valor)
+                                                <option value="{{$idx}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $valor }}</option>
                                             @endforeach
-                                        @endif
-                                    </select>
+                                        </select>
+                                    </div>
+                                    @php
+                                        $i++;
+                                    @endphp
+                                @endwhile
+
+                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria">
+                                    <span class="categoria-nome" data-category_id>-</span>
                                 </div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe">0</div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe">0</div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe">0</div>
                                 <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho ">
                                     <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
                                     <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-danger btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm excluir" title="Novo Produto"      data-id=" "><i class="fas fa-cart-plus"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm" title="Novo Produto" onclick="addRow($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></a>
                                 </div>
                                 </div>
                             </div>
@@ -70,100 +71,30 @@
                 </div>
             </div>
         </div>
-                                    {{--    <div class="col-lg-10 order-lg-1">--}}
-{{--        <div class="card shadow mb-4">--}}
-{{--            <div class="card-header py-3">--}}
-{{--                <h6 class="m-0 font-weight-bold text-primary">Solicitação de Produtos</h6>--}}
-{{--            </div>--}}
-{{--            <div class="card-body">--}}
-{{--                <a href="{{ route('product.create') }}" class="btn btn-success btn-icon-split">--}}
-{{--                        <span class="icon text-white-50">--}}
-{{--                          <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>--}}
-{{--                        </span>--}}
-{{--                    <span class="text">Novo</span>--}}
-{{--                </a>--}}
-{{--                <table class="mt-lg-3 table table-striped table-bordered table-hover table-responsive-lg">--}}
-{{--                    <thead>--}}
-{{--                    <tr align="center">--}}
-{{--                        <th>#</th>--}}
-{{--                        <th>Data</th>--}}
-{{--                        <th>Usuário</th>--}}
-{{--                        <th>Qtde</th>--}}
-{{--                        <th>Imagem</th>--}}
-{{--                        <th>Produto</th>--}}
-{{--                        <th>Medidas</th>--}}
-{{--                        <th>Marca</th>--}}
-{{--                        <th>Categoria</th>--}}
-{{--                        <th>Ação</th>--}}
-{{--                    </tr>--}}
-{{--                    </thead>--}}
-{{--                    <tbody>--}}
-{{--                        <tr align="center" class="pedido" data-codigo="1">--}}
-{{--                            <th scope="row"></th>--}}
-{{--                            <td align="center">--}}
-{{--                                <input id="date" width="auto"  value="{{ date('d/m/Y') }}" />--}}
-{{--                                    </td>--}}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.min.js') }}"></script>
+        <script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
+        <script src="{{ asset('js/gijgo.min.js') }}" type="text/javascript"></script>
 
-{{--                                    <td align="center">{{ Auth::user()->name }}</td>--}}
-{{--                                    <td align="center" class="qtde">0</td>--}}
-{{--                                    <td align="center">@if(!empty($produto->image))<img src="{{ asset($produto->image) }}" width="50" height="50"/> @else - @endif</td>--}}
-{{--                                    <td align="center" onclick="produtoCombo($(this).closest('[data-codigo]').data('codigo'))" class="produto gj-cursor-pointer">--}}
-{{--                                        <span class="produto-nome" data-product_id>Produto</span>--}}
-{{--                                        <select data-placeholder="Selecione um produto" class="form-control combo-produto d-none" tabindex="3" name="produto_id"  onchange="transformaProdutoComboSpan($(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-produto option:selected').text())">--}}
-{{--                                            @if(!empty($comboProductSql))--}}
-{{--                                                <option value="">Selecione um produto</option>--}}
-{{--                                                @foreach($comboProductSql as $value => $produto)--}}
-{{--                                                    <option value="{{$value}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $produto }}</option>--}}
-{{--                                                @endforeach--}}
-{{--                                            @endif--}}
-{{--                                        </select>--}}
-{{--                                    </td>--}}
-{{--                                    <td align="center" class="produto gj-cursor-pointer">Medidas</td>--}}
-{{--                                    <td align="center" class="produto gj-cursor-pointer">Marca</td>--}}
-{{--                                    <td align="center" class="produto gj-cursor-pointer">Categoria</td>--}}
-{{--                                    <td align="center">--}}
-{{--                                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm produto" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>--}}
-{{--                                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-danger btn-circle btn-sm produto"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>--}}
-{{--                                        <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm excluir" title="Novo Produto"      data-id=" "><i class="fas fa-cart-plus"></i></a>--}}
-{{--                                    </td>--}}
-{{--                                </tr>--}}
-{{--                            </tbody>--}}
-{{--                        </table>--}}
-{{--                        <div class="pl-lg-4">--}}
-{{--                            <div class="row">--}}
-{{--                                <div class="col text-center m-left500">--}}
-{{--        --}}{{--                            {{ solicitacao }}--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-                <script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.min.js') }}"></script>
-                <script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
-                <script src="{{ asset('js/gijgo.min.js') }}" type="text/javascript"></script>
-
-                <script type="text/javascript">
-                    var yesterday = new Date();
-                    yesterday.setDate(yesterday.getDate() -1);
-                    var hoje = new Date();
-                    var ano = hoje.getFullYear();
-                    var ultimoDia = new Date(ano, 12, 0);
-                    $('.date').datepicker({
-                        uiLibrary: 'bootstrap4',
-                        iconsLibrary: 'fontawesome',
-                        locale: 'pt-br',
-                        weekStart: 1,
-                        daysOfWeekHighlighted: "6,0",
-                        autoclose: true,
-                        todayHighlight: true,
-                        format: 'd/m/yyyy',
-                        minDate: yesterday,
-                        maxDate: new Date(ultimoDia),
-                    });
-                </script>
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
+        <script type="text/javascript">
+            var yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() -1);
+            var hoje = new Date();
+            var ano = hoje.getFullYear();
+            var ultimoDia = new Date(ano, 12, 0);
+            $('.date').datepicker({
+                uiLibrary: 'bootstrap4',
+                iconsLibrary: 'fontawesome',
+                locale: 'pt-br',
+                weekStart: 1,
+                daysOfWeekHighlighted: "6,0",
+                autoclose: true,
+                todayHighlight: true,
+                format: 'd/m/yyyy',
+                minDate: yesterday,
+                maxDate: new Date(ultimoDia),
+            });
+        </script>
 @endsection
 
 <script src="{{ asset('js/sweetalert2@10.js') }}"></script>

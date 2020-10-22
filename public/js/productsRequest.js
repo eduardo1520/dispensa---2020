@@ -19,31 +19,25 @@ function atualizaQtde(codigo, operacao)
     $("body").removeClass("loading");
 }
 
-function produtoCombo(codigo) {
-    $(".load").hide();
-    $('.pedido').each(function (x,y) {
+function getCombo(pai, codigo, span, classe, combo) {
+    $(`.${pai}`).each(function () {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
-            $(this).children('div.produto').children('span').hide();
-            $(".combo-produto").removeClass('d-none');
-            $(".combo-produto").show();
+            $(this).children('div.classe').children('span').hide();
+            $(`.${span}`).hide();
+            $(`.${combo}`).removeClass('d-none').show();
         }
-    })
-    $(".load").hide();
+    });
 }
 
-function transformaComboSpan(classe, pai, id, nome, campo, combo, data) {
-    // console.log(classe, pai, id, nome, campo, combo, data);
-    $(".load").show();
+function transformaComboSpan(classe, pai, id, nome, campo, combo) {
     if($(`.${classe}`).closest('[data-codigo]').data('codigo') == pai) {
         $(`.${campo}`).remove();
         $(`.${combo}`).closest('div').append(`<span data-id="${id}" class="${campo}">${nome}</span>`);
-        $("."+ combo).hide();
+        $(`.${combo}`).hide();
     }
-    $(".load").hide();
 }
 
 function ativaCombo(classe, codigo, campo, combo) {
-    $(".load").show();
     $(`.${classe}`).find(`.${campo}`).each(function (x,campo) {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
             if($(campo).data('id') > 0) {
@@ -52,7 +46,6 @@ function ativaCombo(classe, codigo, campo, combo) {
             $(`.${combo}`).show();
         }
     })
-    $(".load").hide();
 }
 
 function detectar_mobile() {
@@ -79,7 +72,10 @@ function detectar_mobile() {
             $(".gj-datepicker").hide();
 
             let hoje = new Date();
-            $(".data").append(`<span>${hoje.getDate()}/${hoje.getMonth() + 1}/${hoje.getFullYear()}</span>`);
+
+            $(".data").attr('data-toggle',"modal").attr('data-target',".modalData");
+            $(".data").append(`<span class="selecionado">${hoje.getDate()}/${hoje.getMonth() + 1}/${hoje.getFullYear()}</span>`);
+
         }
 
         if($(window).width() > 568) {
@@ -90,7 +86,6 @@ function detectar_mobile() {
 }
 
 function abreModalRequestProduct() {
-    $(".load").show();
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -108,17 +103,14 @@ function abreModalRequestProduct() {
             comboMeasure();
             comboBrand();
             comboBrandCategory();
-            $(".load").hide();
         },
         error: function (error) {
-            $(".load").hide();
             console.log(error);
         }
     });
 }
 
 function comboMeasure() {
-    $(".load").show();
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -133,18 +125,15 @@ function comboMeasure() {
             });
 
             $(".combo-measure").append(HTML);
-            $(".load").hide();
 
         },
         error: function (error) {
-            $(".load").hide();
             console.log(error);
         }
     });
 }
 
 function comboBrand() {
-    $(".load").show();
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -159,17 +148,14 @@ function comboBrand() {
             });
 
             $(".combo-brand").append(HTML);
-            $(".load").hide();
         },
         error: function (error) {
-            $(".load").hide();
             console.log(error);
         }
     });
 }
 
 function comboBrandCategory() {
-    $(".load").show();
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -184,7 +170,6 @@ function comboBrandCategory() {
             });
 
             $(".combo-category").append(HTML);
-            $(".load").hide();
 
         },
         error: function (error) {
@@ -194,7 +179,6 @@ function comboBrandCategory() {
 }
 
 function getProductImage(id, name) {
-    $(".load").show();
 
     $.ajax({
         headers: {
@@ -212,13 +196,48 @@ function getProductImage(id, name) {
             $(".imagem-produto").removeClass('d-none');
             $(".imagem-nome").text(res[0].name);
             $(".imagem-descricao").text(res[0].description);
-            $(".load").hide();
         },
         error: function (error) {
-            $(".load").hide();
             console.log(error);
         }
     });
+}
+
+function getCategory(classe, pai,produto,campo) {
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: `product/productCategoryAjax`,
+        type: 'post',
+        dateType: 'json',
+        data:{
+          id: produto
+        },
+        success: function(res) {
+            if($(`.${classe}`).closest('[data-codigo]').data('codigo') == pai) {
+                $(`.${campo}`).closest('div').empty().append(`<span class="${campo}">${res}</span>`);
+            }
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
+function setData()
+{
+    $(".date").val($("#datetimepicker1").val()).hide();
+    $(".selecionado").append($("#datetimepicker1").val());
+    $(".gj-datepicker").hide();
+    $('.modalData').hide();
+    $('.modalData').modal('hide');
+}
+
+function habilitaData() {
+    $(".input-group-append").hide();
+    $(".selecionado").empty().val($("#datetimepicker1").val());
+    $(".gj-datepicker").show();
 }
 
 $(document).ready(function(){

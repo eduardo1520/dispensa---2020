@@ -22,6 +22,15 @@
             background-color: #f1f1f1;
             border-color: #c7ccda;
         }
+
+        .gj-picker {
+            margin-top:-50px;
+            margin-left: 80px;
+            margin-bottom:0px;
+            position:absolute;
+            z-index:1000;
+        }
+
     </style>
 </head>
 <body id="page-top">
@@ -515,8 +524,8 @@
                             <div class="col-2 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                         </div>
                         <div class="row pedido-modal" data-codigo="1">
-                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho">
-                                <select data-placeholder="Selecione um produto" class="form-control combo-prod" tabindex="3" name="produto_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-prod option:selected').text(),'prod-nome','combo-prod','data-product_id');getProductImage($(this).val(), $('.combo-produto option:selected').text())">
+                            <div class="col-3 col-sm-2 col-md-1 col-lg-2 border cabecalho" onclick="getCombo('pedido-modal',$(this).closest('[data-codigo]').data('codigo'),'prod-nome','produto','combo-prod')">
+                                <select data-placeholder="Selecione um produto" class="form-control combo-prod" tabindex="3" name="produto_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-prod option:selected').text(),'prod-nome','combo-prod','data-product_id');getProductImage($(this).val(), $('.combo-produto option:selected').text());getCategory('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');">
                                     <option value="">Selecione um produto</option>
                                 </select>
                             </div>
@@ -530,10 +539,8 @@
                                     <option value="">Selecione uma marca</option>
                                 </select>
                             </div>
-                            <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho category-nome">
-                                <select data-placeholder="Selecione uma categoria" class="form-control combo-category" tabindex="3" name="categoria_id" onchange="transformaComboSpan('pedido-modal',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-category option:selected').text(),'category-nome','combo-category','data-category_id')">
-                                    <option value="">Selecione uma categoria</option>
-                                </select>
+                            <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho categoria">
+                                <span class="categoria-nome" data-category_id>-</span>
                             </div>
                             <div class="col-2 col-sm-2 col-md-1 col-lg-2 border cabecalho">
                                 <a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm atualizar-produto" title="Atualizar Produtos"  onclick="event.preventDefault(); ativaCombo('pedido-modal',$(this).closest('[data-codigo]').data('codigo'),'prod-nome','combo-prod')">
@@ -564,6 +571,55 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade modalData" tabindex="-1" aria-labelledby="modalData" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titulo-categoria">Calendário</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <input id="datetimepicker1"  data-format="dd/MM/yyyy hh:mm:ss" type="text"/>
+                        <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnData" onclick="setData()">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() -1);
+    var hoje = new Date();
+    var ano = hoje.getFullYear();
+    var ultimoDia = new Date(ano, 12, 0);
+    $('#datetimepicker1').datepicker({
+        uiLibrary: 'bootstrap4',
+        iconsLibrary: 'fontawesome',
+        locale: 'pt-br',
+        weekStart: 1,
+        daysOfWeekHighlighted: "6,0",
+        autoclose: true,
+        todayHighlight: true,
+        format: 'd/m/yyyy',
+        minDate: yesterday,
+        maxDate: new Date(ultimoDia),
+        onSelect: function(date) {
+            $('#datetimepicker1').html(date);
+        }
+    });
+
+</script>
 
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
