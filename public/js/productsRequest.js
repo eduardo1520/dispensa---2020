@@ -1,6 +1,5 @@
 
-function atualizaQtde(codigo, operacao)
-{
+function atualizaQtde(codigo, operacao) {
     $(".load").addClass("loading");
     $('.pedido').each(function (x,y) {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
@@ -90,6 +89,56 @@ function detectar_mobile() {
     }
 }
 
+function promise(url, method, params) {
+    // const params = { username: 'example' };
+    return fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':  document.head.querySelector("meta[name=csrf-token]").content
+                },
+                body: (params != undefined) ? JSON.stringify(params) : '',
+            });
+}
+
+function comboBrand() {
+    $promessa = promise(`brand/brandAjax`, 'post')
+        .then(response => {
+            return response.json();
+        }).then(combo => {
+            let element = document.querySelector(".combo-brand");
+            combo.forEach(function(value){
+                element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['name']}</option>`);
+            });
+        }).catch(error => {
+            console.log('erro:', error);
+        });
+}
+
+function comboMeasure() {
+    $promessa = promise(`measure/measureAjax`, 'post')
+        .then(response => {
+            return response.json();
+        }).then(combo => {
+            let element = document.querySelector(".combo-measure");
+            combo.forEach(function(value){
+                element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['nome']} - (${value['sigla']})</option>`);
+            });
+        });
+}
+
+function comboCategory() {
+    $promessa = promise(`category/categoryAjax`, 'post')
+        .then(response => {
+            return response.json();
+        }).then(combo => {
+            let element = document.querySelector(".combo-category");
+            combo.forEach(function(value){
+                element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['tipo']}</option>`);
+            });
+        });
+}
+
 function abreModalRequestProduct() {
     $.ajax({
         headers: {
@@ -107,75 +156,7 @@ function abreModalRequestProduct() {
             $(".combo-prod").append(HTML);
             comboMeasure();
             comboBrand();
-            comboBrandCategory();
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
-
-function comboMeasure() {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        url: `measure/measureAjax`,
-        type: 'post',
-        dateType: 'json',
-        success: function(res) {
-            let HTML = "";
-            $.each(res, function(codigo, valor) {
-               HTML += `<option value="${valor['id']}">${valor['nome']} - (${valor['sigla']})</option>`;
-            });
-
-            $(".combo-measure").append(HTML);
-
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
-
-function comboBrand() {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        url: `brand/brandAjax`,
-        type: 'post',
-        dateType: 'json',
-        success: function(res) {
-            let HTML = "";
-            $.each(res, function(codigo, valor) {
-               HTML += `<option value="${valor['id']}">${valor['name']}</option>`;
-            });
-
-            $(".combo-brand").append(HTML);
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
-
-function comboBrandCategory() {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        url: `category/categoryAjax`,
-        type: 'post',
-        dateType: 'json',
-        success: function(res) {
-            let HTML = "";
-            $.each(res, function(codigo, valor) {
-               HTML += `<option value="${valor['id']}">${valor['tipo']}</option>`;
-            });
-
-            $(".combo-category").append(HTML);
-
+            comboCategory();
         },
         error: function (error) {
             console.log(error);
