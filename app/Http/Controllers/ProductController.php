@@ -328,8 +328,9 @@ class ProductController extends Controller
 
     public function productCategoryAjax(Request $request)
     {
-        if(!empty($request->id)) {
-            $produto = Product::find($request->id);
+//        dd($request['id']);
+        if(!empty($request['id'])) {
+            $produto = Product::find($request['id']);
             $dados = $produto->category->tipo;
             return response($dados,200);
         }

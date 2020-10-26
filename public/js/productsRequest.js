@@ -1,6 +1,5 @@
 
 function atualizaQtde(codigo, operacao) {
-    $(".load").addClass("loading");
     $('.pedido').each(function (x,y) {
         if($(this).closest('[data-codigo]').data('codigo') == codigo) {
             let qtde = parseInt($(this).children('div.qtde').text());
@@ -15,7 +14,6 @@ function atualizaQtde(codigo, operacao) {
             }
         }
     });
-    $("body").removeClass("loading");
 }
 
 function getCombo(pai, codigo, span, classe, combo) {
@@ -124,48 +122,47 @@ function comboMeasure() {
             combo.forEach(function(value){
                 element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['nome']} - (${value['sigla']})</option>`);
             });
+        }).catch(error => {
+            console.log('Deu erro,', error);
         });
 }
 
-function comboCategory() {
-    $promessa = promise(`category/categoryAjax`, 'post')
+function comboProduto() {
+    $promessa = promise(`product/productAjax`, 'post')
         .then(response => {
             return response.json();
         }).then(combo => {
-            let element = document.querySelector(".combo-category");
+            let element = document.querySelector(".combo-prod");
             combo.forEach(function(value){
-                element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['tipo']}</option>`);
+                element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['name']})</option>`);
             });
+        }).catch(error => {
+            console.log('Deu erro,', error);
         });
 }
 
 function abreModalRequestProduct() {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        url: `product/productAjax`,
-        type: 'post',
-        dateType: 'json',
-        success: function(res) {
-            let HTML = "";
-            $.each(res, function(codigo, valor) {
-               HTML += `<option value="${valor['id']}">${valor['name']}</option>`;
-            });
+    comboProduto();
+    comboMeasure();
+    comboBrand();
+}
 
-            $(".combo-prod").append(HTML);
-            comboMeasure();
-            comboBrand();
-            comboCategory();
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
+function getCategory(classe, pai,produto,campo) {
+    $promessa = promise(`product/productCategoryAjax`, 'post', {id:produto})
+        .then(response => {
+            return response.text();
+        }).then(categoria => {
+            if (document.querySelector(`.${classe}`).getAttribute('data-codigo') == pai) {
+                let element = document.querySelector(`.${campo}`);
+                element.innerHTML="";
+                element.insertAdjacentHTML('beforeend', `<span class="${campo}">${categoria}</span>`);
+            }
+        }).catch(error => {
+            console.log('Deu erro,', error);
+        });
 }
 
 function getProductImage(id, name) {
-
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -189,28 +186,6 @@ function getProductImage(id, name) {
     });
 }
 
-function getCategory(classe, pai,produto,campo) {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        url: `product/productCategoryAjax`,
-        type: 'post',
-        dateType: 'json',
-        data:{
-          id: produto
-        },
-        success: function(res) {
-            if($(`.${classe}`).closest('[data-codigo]').data('codigo') == pai) {
-                $(`.${campo}`).closest('div').empty().append(`<span class="${campo}">${res}</span>`);
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
-
 function setData() {
     $(".date").val($("#datetimepicker1").val()).hide();
     $(".selecionado").append($("#datetimepicker1").val());
@@ -220,23 +195,21 @@ function setData() {
 
 function habilitaData() {
     $(".desktop, .input-group-append").addClass('d-none');
+    // document.querySelectorAll('.desktop .input-group-append')
     $(".selecionado").empty().val($("#datetimepicker1").val());
     $(".gj-datepicker").show();
     $("#admin").find('span.input-group-append').removeClass('d-none');
 }
 
 function addRows(pai) {
-    pai = parseInt(pai);
-    if(pai == 1) {
-        pai = $('#filho > .pedido:last-child').data('codigo');
-    }
-    pai++;
 
-    let data = $(".date").val();
+    let element = document.querySelector(`.date`);
+    let data = element.value;
+    pai = parseInt(document.querySelectorAll("#filho > .pedido").length) + 1;
 
-    $('#filho').append(`<div class="row pedido" data-codigo="${pai}">
+    document.querySelector(`#filho`).insertAdjacentHTML('beforeend',`<div class="row pedido" data-codigo="${pai}">
                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">${data}</div>
-                    <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user">${$('.usuario').text()}</div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user">${document.querySelector(`.usuario`).innerText}</div>
                     <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
                     <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem">-</div>
                     <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
@@ -261,43 +234,19 @@ function addRows(pai) {
 }
 
 function removeRows(classe, pai) {
-    $(`.${classe}`).each(function(x,row){
-        $(row).data('codigo') == pai ? $(row).remove() : '';
+    document.querySelectorAll(`.${classe}`).forEach(function(div){
+        div.getAttribute('data-codigo') == pai ? div.remove() : '';
     });
 }
 
 function atualizaCampoData(tabela, codigo, data) {
-    $(`.${tabela}`).closest('[data-codigo]').each(function(x,row){
-        if($(row).data('codigo') > codigo) {
-            $(row).children('div.data').each(function(x,datas){
-                $(datas).text(data);
-            });
+    document.querySelectorAll(`.${tabela}`).forEach(function(row){
+        if(row.getAttribute('data-codigo') > codigo) {
+            row.querySelector('div.data').innerHTML= data;
         }
     });
 }
 
 $(document).ready(function(){
     detectar_mobile();
-    $(".excluir").click(function(){
-        Swal.fire({
-            title: 'Deseja realmente excluir?',
-            text: "O item escolhido será apagado!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Apagar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let codigo = $(this).data('id');
-                apagarFeedback(codigo);
-                Swal.fire(
-                    'Sucesso!',
-                    'O item selecionado foi apagado.',
-                    'success'
-                )
-            }
-        })
-    });
 });

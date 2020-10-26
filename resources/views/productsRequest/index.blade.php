@@ -32,7 +32,7 @@
                                 <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
                                     <input class="date desktop" width="auto"   value="{{ date('d/m/Y') }}" disabled  onclose=""/>
                                 </div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho usuario">
+                                <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user usuario">
                                     {{ Auth::user()->name }}
                                 </div>
                                 <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
