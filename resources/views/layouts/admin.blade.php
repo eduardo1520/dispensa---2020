@@ -593,7 +593,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="titulo-categoria">Calendário</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="setData()">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -607,7 +607,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnData" onclick="setData()">Cadastrar</button>
+                <button type="button" class="btn btn-primary" id="btnData" onclick="setData()" data-dismiss="modal">Cadastrar</button>
             </div>
         </div>
     </div>
