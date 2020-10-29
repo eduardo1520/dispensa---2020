@@ -68,17 +68,33 @@ function detectar_mobile() {
                value.style['padding-left'] = '5px';
                value.style['padding-right'] = '5px';
             });
-
             let hoje = new Date();
+            const qtde = document.querySelectorAll('div.qtde');
+            qtde.forEach(function(div){
+                div.classList.add('d-none');
+            });
+            const produto = document.querySelectorAll('div.prod');
+            produto.forEach(function(div){
+                div.setAttribute('class', 'col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho');
+            });
+            const data = document.querySelectorAll('div.data');
+            data.forEach(function(div){
+                div.remove();
+            });
+            document.querySelector('.pedido').insertAdjacentHTML('afterbegin',`<div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" onclick="habilitaData()" data-toggle="modal" data-target=".modalData" style="padding-left: 5px; padding-right: 5px;">
+                        <div role="wrapper" class="gj-datepicker gj-datepicker-bootstrap gj-unselectable input-group d-none" style="width: auto;">
+                            <input class="date desktop form-control" width="auto" value="29/10/2020" disabled="" onclose="" data-type="datepicker" data-guid="309eaf3c-77d5-4dd5-75dc-cdbbc6d17664" data-datepicker="true" role="input" day="2020-9-29">
+                            <span class="input-group-append" role="right-icon">
+                                <button class="btn btn-outline-secondary border-left-0" type="button">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                </button>
+                            </span>
+                        </div>
+                            <span class="selecionado">${hoje.getDate()}/${hoje.getFullYear()}</span>
+                        </div>`);
 
-            const data = document.querySelectorAll('div.data div.gj-datepicker');
-            console.log(data[0].nextElementSibling);
-
-            // data.forEach(function(div){
-            //     console.log(div);
-                // div.remove('span');
-                // div.insertAdjacentHTML('beforeend',`<span class="selecionado">${hoje.getDate()}/${hoje.getFullYear()}</span>`);
-            // });
+            document.querySelector('.acao').classList.add('d-none');
+            document.querySelector('.drop').classList.remove('d-none');
 
         }
         if(window.screen.width <= 568) {
@@ -107,7 +123,7 @@ function detectar_mobile() {
                 div.setAttribute('onclick','habilitaData()');
                 div.setAttribute('data-toggle',"modal");
                 div.setAttribute('data-target',".modalData");
-                div.insertAdjacentHTML('beforeend',`<span class="selecionado">${hoje.getDate()}/${hoje.getMonth() + 1}/${hoje.getFullYear()}</span>`);
+                // div.insertAdjacentHTML('beforeend',`<span class="selecionado">${hoje.getDate()}/${hoje.getMonth() + 1}/${hoje.getFullYear()}</span>`);
             });
         }
         if(window.screen.width > 568) {
