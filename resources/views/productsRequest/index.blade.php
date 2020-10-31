@@ -15,7 +15,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Solicitação de Produtos</h6>
                 </div>
                 <div class="card-body">
-                    <div class="row " align="center" id="tabela">
+                    <div class="row d-none" align="center" id="tabela">
                         <div class="col-12 col-lg-12 my-3 border " id="filho">
                             <div class="row font-weight-bold">
                                 <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho">Data</div>
