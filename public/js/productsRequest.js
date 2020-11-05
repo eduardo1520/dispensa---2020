@@ -79,7 +79,12 @@ function detectar_mobile() {
                 div.setAttribute('data-toggle','modal');
                 div.setAttribute('data-target','.modalRequestProduct');
                 div.setAttribute('onclick',"abreModalRequestProduct()");
-                div.setAttribute('class', 'col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho');
+
+                if(window.screen.width > 320) {
+                    div.setAttribute('class', 'col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho');
+                } else {
+                    div.setAttribute('class', 'col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho');
+                }
             });
             const datepicker = document.querySelectorAll('div.pedido > div.data > div.gj-datepicker');
             datepicker.forEach(function(div){
@@ -107,6 +112,7 @@ function detectar_mobile() {
                 div.classList.add('d-none');
             });
             const produto = document.querySelectorAll('div.prod');
+
             produto.forEach(function(div){
                 div.setAttribute('class', 'col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho');
             });
@@ -116,14 +122,14 @@ function detectar_mobile() {
             });
             document.querySelector('.pedido').insertAdjacentHTML('afterbegin',`<div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" onclick="habilitaData()" data-toggle="modal" data-target=".modalData" style="padding-left: 5px; padding-right: 5px;">
                         <div role="wrapper" class="gj-datepicker gj-datepicker-bootstrap gj-unselectable input-group d-none" style="width: auto;">
-                            <input class="date desktop form-control" width="auto" value="29/10/2020" disabled="" onclose="" data-type="datepicker" data-guid="309eaf3c-77d5-4dd5-75dc-cdbbc6d17664" data-datepicker="true" role="input" day="2020-9-29">
+                            <input class="date desktop form-control" width="auto" value="${("0" + hoje.getDate()).slice(-2)}/${hoje.getFullYear()}" disabled="" onclose="" data-type="datepicker" data-guid="309eaf3c-77d5-4dd5-75dc-cdbbc6d17664" data-datepicker="true" role="input" day="2020-9-29">
                             <span class="input-group-append" role="right-icon">
                                 <button class="btn btn-outline-secondary border-left-0" type="button">
                                     <i class="fa fa-calendar" aria-hidden="true"></i>
                                 </button>
                             </span>
                         </div>
-                            <span class="selecionado">${hoje.getDate()}/${hoje.getFullYear()}</span>
+                            <span class="selecionado">${("0" + hoje.getDate()).slice(-2)}/${hoje.getFullYear()}</span>
                         </div>`);
 
             document.querySelector('.acao').classList.add('d-none');
@@ -251,29 +257,49 @@ function addRows(pai) {
     let element = document.querySelector(`.date`);
     let data = element.value;
     pai = parseInt(document.querySelectorAll("#filho > .pedido").length) + 1;
-    document.querySelector(`#filho`).insertAdjacentHTML('beforeend',`<div class="row pedido" data-codigo="${pai}">
-                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">${data}</div>
-                    <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user">${document.querySelector(`.usuario`).innerText}</div>
-                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
-                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem">-</div>
-                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
-                        <span class="produto-nome" data-produto_id="">Produto</span>
-                    </div>
-                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer" onclick="getCombo('pedido',${pai},'medida-nome','medida','combo-medida')">
-                        <span class="medida-nome" data-medida_id="">Medida</span>
-                    </div>
-                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho marca  detalhe gj-cursor-pointer" onclick="getCombo('pedido',${pai},'marca-nome','marca','combo-marca')">
-                        <span class="marca-nome" data-marca_id="">Marca</span>
-                    </div>
-                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria">
-                        <span class="categoria-nome" data-category_id="">-</span>
-                    </div>
-                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho ">
+    let botoes;
+    if(window.screen.width > 320) {
+        botoes = `<div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho ">
                         <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde(${pai}, '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
                         <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde(${pai}, '-');" class="btn btn-warning btn-circle btn-sm" title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
                         <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm novo" title="Novo Produto" onclick="addRows(${pai})"><i class="fas fa-cart-plus"></i></a>
                         <a href="javascript:void(0);" class="btn btn-danger btn-circle btn-sm remove" title="Remove Produto" onclick="removeRows('pedido',${pai})"><i class="fas fa-trash"></i></a>
+                    </div>`;
+    } else {
+        botoes = `<div class="btn-group drop dropleft">
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></button>
+                                    <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <div>
+                                            <a class="dropdown-item" href="#"><i class="fas fa-cart-plus" > </i> Aumentar Quantidade</a>
+                                        </div>
+                                        <div>
+                                            <a class="dropdown-item" href="#"><i class="fa fa-cart-arrow-down"></i> Diminuir Quantidade</a>
+                                        </div>
+                                    </div>
+                                </div>`;
+    }
+
+    document.querySelector(`#filho`).insertAdjacentHTML('beforeend',`<div class="row pedido" data-codigo="${pai}">
+                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">${data}</div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user ${window.screen.width <= 568 ? 'd-none': ''}">${document.querySelector(`.usuario`).innerText}</div>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde ${window.screen.width <= 568 ? 'd-none': ''}">0</div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem ${window.screen.width <= 320 ? 'd-none': ''}">-</div>
+                    <div class="${window.screen.width <= 568 ? 'col-4 col-sm-2 col-md-1 col-lg-1': 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
+                        <span class="produto-nome" data-produto_id="">Produto</span>
                     </div>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer ${window.screen.width <= 320 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'medida-nome','medida','combo-medida')">
+                        <span class="medida-nome" data-medida_id="">Medida</span>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho marca  detalhe gj-cursor-pointer ${window.screen.width <= 320 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'marca-nome','marca','combo-marca')">
+                        <span class="marca-nome" data-marca_id="">Marca</span>
+                    </div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria ${window.screen.width <= 320 ? 'd-none': ''}">
+                        <span class="categoria-nome" data-category_id="">-</span>
+                    </div>
+                        ${botoes}
                   </div>`);
 }
 
