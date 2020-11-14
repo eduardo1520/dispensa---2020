@@ -32,6 +32,7 @@ function transformaComboSpan(tabela, pai, id, nome, campo, combo,classe) {
         $(`.${combo}`).closest('div').append(`<span data-id="${id}" class="${campo}">${nome}</span>`);
         $(`div.${campo}`).attr('onclick',`getCombo('${tabela}','${pai}','${campo}','${classe}','${combo}')`);
         $(`.${combo}`).hide();
+        getCategory('tabela', pai,id,'categoria');
     }
 }
 // TODO
@@ -234,13 +235,13 @@ function getCategory(classe, pai,produto,campo) {
         .then(response => {
             return response.text();
         }).then(categoria => {
-            if (document.querySelector(`.${classe}`).getAttribute('data-codigo') == pai) {
-                let element = document.querySelector(`.${campo}`);
-                element.innerHTML="";
-                element.insertAdjacentHTML('beforeend', `<span class="${campo}">${categoria}</span>`);
-            }
+            let cat = document.querySelectorAll(`.${classe} > .${campo}`);
+            cat.forEach(function(value){
+                value.innerHTML="";
+                value.insertAdjacentHTML('beforeend', `<span class="${campo}">${categoria}</span>`);
+            });
         }).catch(error => {
-            console.log('Deu erro,', error);
+            log('Deu erro:',error);
         });
 }
 
@@ -267,6 +268,7 @@ function addRows(pai) {
                     </div>`;
     } else {
         botoes = `<div class="btn-group drop dropleft">
+                                     <a href="javascript:void(0);" class="btn btn-danger btn-circle btn-sm remove" title="Remove Produto" onclick="removeRows('pedido',${pai})"><i class="fas fa-trash"></i></a>
                                     <button type="button" class="btn btn-sm btn-success" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></button>
                                     <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="sr-only">Toggle Dropdown</span>
@@ -285,18 +287,19 @@ function addRows(pai) {
     document.querySelector(`#filho`).insertAdjacentHTML('beforeend',`<div class="row pedido" data-codigo="${pai}">
                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">${data}</div>
                     <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user ${window.screen.width <= 568 ? 'd-none': ''}">${document.querySelector(`.usuario`).innerText}</div>
-                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde ${window.screen.width <= 568 ? 'd-none': ''}">0</div>
-                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem ${window.screen.width <= 320 ? 'd-none': ''}">-</div>
-                    <div class="${window.screen.width <= 568 ? 'col-4 col-sm-2 col-md-1 col-lg-1': 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
-                        <span class="produto-nome" data-produto_id="">Produto</span>
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde ${window.screen.width < 568 ? 'd-none': ''}">0</div>
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem ${window.screen.width <= 320 || window.screen.width == 568 ? 'd-none': ''}">-</div>
+                    <div class="${window.screen.width == 320 ? 'col-3 col-sm-2 col-md-1 col-lg-1': 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
+<!--                    <div class="${window.screen.width < 568 ? 'col-4 col-sm-2 col-md-1 col-lg-1': 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">-->
+                        <span class="produto-nome" data-produto_id="">${window.screen.width == 320 ? 'Prod.' : 'Produto'}</span>
                     </div>
-                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer ${window.screen.width <= 320 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'medida-nome','medida','combo-medida')">
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer ${window.screen.width <= 320  || window.screen.width == 568 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'medida-nome','medida','combo-medida')">
                         <span class="medida-nome" data-medida_id="">Medida</span>
                     </div>
-                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho marca  detalhe gj-cursor-pointer ${window.screen.width <= 320 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'marca-nome','marca','combo-marca')">
+                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho marca  detalhe gj-cursor-pointer ${window.screen.width <= 320  || window.screen.width == 568 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'marca-nome','marca','combo-marca')">
                         <span class="marca-nome" data-marca_id="">Marca</span>
                     </div>
-                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria ${window.screen.width <= 320 ? 'd-none': ''}">
+                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria ${window.screen.width <= 320  || window.screen.width == 568 ? 'd-none': ''}">
                         <span class="categoria-nome" data-category_id="">-</span>
                     </div>
                         ${botoes}
