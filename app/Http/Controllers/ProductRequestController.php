@@ -22,7 +22,7 @@ class ProductRequestController extends Controller
         $solicitacao = ProductRequest::all();
         $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
-//        $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
+        $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
 
         $comboMeasureSql = array_map(function ($combo) {
             return $combo[$combo['id']][] = $combo['nome'] . " - (" . $combo['sigla'] . ")";
@@ -32,6 +32,7 @@ class ProductRequestController extends Controller
         $arr['produto'] =  $comboProductSql;
         $arr['medida'] =  $comboMeasureSql;
         $arr['marca'] = $comboBrandSql;
+        $arr['categoria'] = $comboCategorySql;
 
         $cont = count($arr);
 
@@ -56,7 +57,18 @@ class ProductRequestController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dados = $request->all();
+        $categoria = Product::find($dados['product_id']);
+        $dados['category_id'] = $categoria->category_id;
+        $dados['user_id'] = \Auth::user()->id;
+        $dados['data'] = !empty($dados['data']) ? $dados['data'] : date('Y-m-d');
+
+        $resposta = ProductRequest::create($dados);
+
+        if($resposta)
+            return response('Requisição do Produto criado com sucesso!',200);
+        return response('Erro ao criar a requisição do produto!',500);
+
     }
 
     /**

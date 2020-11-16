@@ -28,66 +28,126 @@
                                 <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe">Categoria</div>
                                 <div class="col-4 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                             </div>
-                            <div class="row pedido" data-codigo="1">
-                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
-                                    <input class="date desktop" width="auto"   value="{{ date('d/m/Y') }}" disabled  onclose=""/>
-                                </div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user usuario">
-                                    {{ Auth::user()->name }}
-                                </div>
-                                <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem">-</div>
-                                @php
-                                    $i = 0;
-                                @endphp
-                                @while($cont > $i)
-                                    <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
-                                        <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ ucfirst(array_keys($arr)[$i]) }}</span>
-                                        <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage($(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
-                                            <option value="">Selecione {{ substr(array_keys($arr)[$i], -1) == 'a' ? 'uma ' : 'um ' }}{{ ucfirst(array_keys($arr)[$i]) }}</option>
-                                            @foreach($arr[array_keys($arr)[$i]] as $idx => $valor)
-                                                <option value="{{$idx}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $valor }}</option>
-                                            @endforeach
-                                        </select>
+                            @forelse($solicitacao as $sol)
+                                <div class="row pedido" data-codigo="{{ $sol->id }}">
+                                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
+                                        <input class="date desktop" width="auto"   value="{{ $sol->data }}" disabled  onclose=""/>
                                     </div>
+                                    <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user usuario">
+                                        {{ $sol->user->name }}
+                                    </div>
+                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
+                                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem"><img src="{{ $sol->product->image }}" alt="{{ $sol->product->description }}" data-id="{{ $sol->product->id }}" width="100px;" height="75px;"></div>
                                     @php
-                                        $i++;
+                                        $i = 0;
+                                        $campo = '';
                                     @endphp
-                                @endwhile
+                                    @while($cont > $i)
+                                        <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
+                                            @switch(array_keys($arr)[$i])
+                                                @case('produto')
+                                                    <?php
+                                                        $campo = $sol->product_id;
+                                                    ?>
+                                                @break
+                                                @case('categoria')
+                                                    <?php
+                                                        $campo = $sol->category_id;
+                                                    ?>
+                                                @break
+                                                @case('marca')
+                                                    <?php
+                                                        $campo = $sol->brand_id;
+                                                    ?>
+                                                @break
+                                                @case('medida')
+                                                    <?php
+                                                        $campo = $sol->measure_id;
+                                                    ?>
+                                                @break
+                                                @endswitch
 
-                                <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria">
-                                    <span class="categoria-nome" data-category_id>-</span>
+                                                <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
+
+                                                <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage($(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
+                                                    <option value="">Selecione {{ substr(array_keys($arr)[$i], -1) == 'a' ? 'uma ' : 'um ' }}{{ ucfirst(array_keys($arr)[$i]) }}</option>
+                                                    @foreach($arr[array_keys($arr)[$i]] as $idx => $valor)
+                                                        <option value="{{$idx}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $valor }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                    @endwhile
+                                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho acao">
+                                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
+                                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-warning btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm" title="Novo Produto" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></a>
+                                    </div>
                                 </div>
-
-                                <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho acao">
-                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
-                                    <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-warning btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm" title="Novo Produto" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></a>
-                                </div>
-                                <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-                                <style>
-                                    .drop {
-                                        margin-top: 5px;
-                                        margin-left: 10px;
-                                        margin-bottom: 5px;
-                                    }
-                                </style>
-
-                                <div class="btn-group drop dropleft d-none">
-                                    <button type="button" class="btn btn-sm btn-success" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></button>
-                                    <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="sr-only">Toggle Dropdown</span>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <div>
-                                            <a class="dropdown-item" href="#"><i class="fas fa-cart-plus" > </i> Aumentar Quantidade</a>
+                            @empty
+                                <div class="row pedido" data-codigo="1">
+                                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
+                                        <input class="date desktop" width="auto"   value="{{ date('d/m/Y') }}" disabled  onclose=""/>
+                                    </div>
+                                    <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user usuario">
+                                        {{ Auth::user()->name }}
+                                    </div>
+                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
+                                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem">-</div>
+                                    @php
+                                        $i = 0;
+                                    @endphp
+                                    @while($cont > $i)
+                                        <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
+                                            <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ ucfirst(array_keys($arr)[$i]) }}</span>
+                                            <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage($(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
+                                                <option value="">Selecione {{ substr(array_keys($arr)[$i], -1) == 'a' ? 'uma ' : 'um ' }}{{ ucfirst(array_keys($arr)[$i]) }}</option>
+                                                @foreach($arr[array_keys($arr)[$i]] as $idx => $valor)
+                                                    <option value="{{$idx}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $valor }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
-                                        <div>
-                                            <a class="dropdown-item" href="#"><i class="fa fa-cart-arrow-down"></i> Diminuir Quantidade</a>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                    @endwhile
+
+                                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria">
+                                        <span class="categoria-nome" data-category_id>-</span>
+                                    </div>
+
+                                    <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho acao">
+                                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
+                                        <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-warning btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm" title="Novo Produto" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></a>
+                                    </div>
+                                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+                                    <style>
+                                        .drop {
+                                            margin-top: 5px;
+                                            margin-left: 10px;
+                                            margin-bottom: 5px;
+                                        }
+                                    </style>
+
+                                    <div class="btn-group drop dropleft d-none">
+                                        <button type="button" class="btn btn-sm btn-success" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></button>
+                                        <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <div>
+                                                <a class="dropdown-item" href="#"><i class="fas fa-cart-plus" > </i> Aumentar Quantidade</a>
+                                            </div>
+                                            <div>
+                                                <a class="dropdown-item" href="#"><i class="fa fa-cart-arrow-down"></i> Diminuir Quantidade</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

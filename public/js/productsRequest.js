@@ -134,7 +134,7 @@ function detectar_mobile() {
                         </div>`);
 
             document.querySelector('.acao').classList.add('d-none');
-            document.querySelector('.drop').classList.remove('d-none');
+            // document.querySelector('.drop').classList.remove('d-none');
 
         }
 
@@ -320,6 +320,23 @@ function atualizaCampoData(tabela, codigo, data) {
     });
 }
 
+function salvaRequesicaoProduto(produto, medida, marca) {
+    let params = {product_id: produto, measure_id: medida ,brand_id: marca};
+    $promessa = promise(`productRequest/productRequestAjax`, 'post', params)
+        .then(response => {
+            return response.text();
+        }).then(resultado => {
+            let modalproduto = document.querySelector('.modalRequestProduct ');
+            modalproduto.classList.remove('show');
+            modalproduto.setAttribute('style','display:none');
+            let backdrop = document.querySelector('.modal-backdrop');
+            backdrop.classList.remove('show');
+            alert(resultado);
+        }).catch(error => {
+            console.log('erro:', error);
+        });
+}
+
 // Funções Utilizadas Dinamicamente.
 
 function habilitaData() {
@@ -349,4 +366,20 @@ function log(dado) {
 }
 window.onload=function() {
     detectar_mobile();
+
+    document.addEventListener('click', function (event) {
+        // If the clicked element doesn't have the right selector, bail
+        if (!event.target.matches('#btnRequestProduto')) return;
+        // Don't follow the link
+        event.preventDefault();
+        // Log the clicked element in the console
+        // console.log(event.target);
+        let produto = document.querySelector('.prod-nome > span');
+        let medida = document.querySelector('.measure-nome > span');
+        let marca = document.querySelector('.brand-nome > span');
+
+        salvaRequesicaoProduto(produto.getAttribute('data-id'), medida.getAttribute('data-id'), marca.getAttribute('data-id'));
+
+    }, false);
+
 }

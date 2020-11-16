@@ -328,12 +328,14 @@ class ProductController extends Controller
 
     public function productCategoryAjax(Request $request)
     {
-//        dd($request['id']);
         if(!empty($request['id'])) {
             $produto = Product::find($request['id']);
-            $dados = $produto->category->tipo;
-            return response($dados,200);
+            if($produto) {
+                $dados = $produto->category->tipo;
+                return response($dados,200);
+            }
+            return response('Categoria não encontrada!',200);
         }
-        return response('Categoria não encontrada!',500);
+        return response('Erro:',500);
     }
 }

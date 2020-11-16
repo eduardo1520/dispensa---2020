@@ -46,8 +46,9 @@ Route::post('/product/productAjax', 'ProductController@productAjax')->name('prod
 Route::post('/product/productImageAjax', 'ProductController@productImageAjax')->name('productImageAjax');
 Route::post('/product/productCategoryAjax', 'ProductController@productCategoryAjax')->name('productCategoryAjax');
 
-Route::resource('/product-request', 'ProductRequestController');
 
+Route::resource('/product-request', 'ProductRequestController');
+Route::post('/productRequest/productRequestAjax', 'ProductRequestController@store')->name('productRequestAjax');
 
 Route::post('/product/fileupload/','ProductController@uploadFiles')->name('fileupload');
 Route::post('/product/remover/','ProductController@removeProdutos')->name('prod_cancelados');
