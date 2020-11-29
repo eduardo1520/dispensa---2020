@@ -134,8 +134,6 @@ function detectar_mobile() {
                         </div>`);
 
             document.querySelector('.acao').classList.add('d-none');
-            // document.querySelector('.drop').classList.remove('d-none');
-
         }
 
     } else {
@@ -290,7 +288,6 @@ function addRows(pai) {
                     <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde ${window.screen.width < 568 ? 'd-none': ''}">0</div>
                     <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem ${window.screen.width <= 320 || window.screen.width == 568 ? 'd-none': ''}">-</div>
                     <div class="${window.screen.width == 320 ? 'col-3 col-sm-2 col-md-1 col-lg-1': 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
-<!--                    <div class="${window.screen.width < 568 ? 'col-4 col-sm-2 col-md-1 col-lg-1': 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">-->
                         <span class="produto-nome" data-produto_id="">${window.screen.width == 320 ? 'Prod.' : 'Produto'}</span>
                     </div>
                     <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer ${window.screen.width <= 320  || window.screen.width == 568 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'medida-nome','medida','combo-medida')">
@@ -314,9 +311,20 @@ function removeRows(classe, pai) {
 
 function atualizaCampoData(tabela, codigo, data) {
     document.querySelectorAll(`.${tabela}`).forEach(function(row){
-        if(row.getAttribute('data-codigo') > codigo) {
-            row.querySelector('div.data').innerHTML= data;
+        if(row.getAttribute('data-codigo') >= codigo) {
+            row.querySelector('div.data').classList.add('gj-cursor-pointer');
+            row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
+            row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
+            row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
+            row.querySelector('div.data > .dt_dinamica').innerHTML = data;
         }
+    });
+}
+
+function habilitaData2(tabela) {
+    document.querySelectorAll(`.${tabela}`).forEach(function(row){
+        row.querySelector('div.data > .dt_dinamica').classList.add('d-none');
+        row.querySelector('div.data > .gj-datepicker').classList.remove('d-none');
     });
 }
 

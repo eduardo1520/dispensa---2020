@@ -8,6 +8,7 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <input type="hidden" name="solicitacao" id="solicitacao" value="{{ $solicitacao[0]->id }}">
     <div class="row">
         <div class="col-lg-10 order-lg-1">
             <div class="card shadow mb-4">
@@ -31,7 +32,12 @@
                             @forelse($solicitacao as $sol)
                                 <div class="row pedido" data-codigo="{{ $sol->id }}">
                                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
-                                        <input class="date desktop" width="auto"   value="{{ $sol->data }}" disabled  onclose=""/>
+                                        <span class="dt_dinamica"></span>
+                                        @if(!empty($sol->data))
+                                            <input class="date desktop" width="auto" value="{{date("d/m/Y", strtotime($sol->data))}}" disabled  onclose="atualizaCampoData('pedido',{{ $sol->id }}, document.querySelector('.desktop').value)"/>
+                                        @else
+                                            <input class="date desktop" width="auto" value="{{date("d/m/Y", strtotime($sol->data))}}" disabled  onclose=""/>
+                                        @endif
                                     </div>
                                     <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user usuario">
                                         {{ $sol->user->name }}
@@ -47,22 +53,30 @@
                                             @switch(array_keys($arr)[$i])
                                                 @case('produto')
                                                     <?php
-                                                        $campo = $sol->product_id;
+                                                        if(!empty($sol)) {
+                                                            $campo = $sol->product_id;
+                                                        }
                                                     ?>
                                                 @break
                                                 @case('categoria')
                                                     <?php
-                                                        $campo = $sol->category_id;
+                                                        if(!empty($sol)) {
+                                                            $campo = $sol->category_id;
+                                                        }
                                                     ?>
                                                 @break
                                                 @case('marca')
                                                     <?php
-                                                        $campo = $sol->brand_id;
+                                                        if(!empty($sol)) {
+                                                            $campo = $sol->brand_id;
+                                                        }
                                                     ?>
                                                 @break
                                                 @case('medida')
                                                     <?php
-                                                        $campo = $sol->measure_id;
+                                                        if(!empty($sol)) {
+                                                            $campo = $sol->measure_id;
+                                                        }
                                                     ?>
                                                 @break
                                                 @endswitch
@@ -84,6 +98,7 @@
                                         <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
                                         <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-warning btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
                                         <a href="javascript:void(0);" class="btn btn-success btn-circle btn-sm" title="Novo Produto" onclick="addRows($(this).closest('[data-codigo]').data('codigo'))"><i class="fas fa-cart-plus"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-danger btn-circle btn-sm remove" title="Remove Produto" onclick="removeRows('pedido',{{ $sol->id }})"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </div>
                             @empty
@@ -179,10 +194,15 @@
 
         });
 
-        $(".date").datepicker().on('close', function() {
-            // console.log("changed", $(this).val(),$(this).closest('[data-codigo]').data('codigo'));
-            atualizaCampoData('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val());
-        });
+        if(document.querySelector('#solicitacao').value > 0) {
+            let dtpick = document.querySelectorAll('.pedido');
+            dtpick.forEach(function(div){
+               let dados = div.querySelectorAll('.pedido > .data > .gj-datepicker > .date');
+               dados.forEach(function(v){
+                   atualizaCampoData('pedido',div.getAttribute('data-codigo'), v.value);
+               });
+            });
+        }
 
     </script>
 
