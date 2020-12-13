@@ -6,9 +6,8 @@ use App\Brand;
 use App\Category;
 use App\Product;
 use App\Measure;
-use Illuminate\Http\Request;
-
 use App\ProductRequest;
+use Illuminate\Http\Request;
 
 class ProductRequestController extends Controller
 {
@@ -114,6 +113,29 @@ class ProductRequestController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function atualiza(Request $request)
+    {
+        $dados = $request->all();
+        $dados['data'] = $this->trataDataBanco($dados['data']);
+        $resultado = ProductRequest::find($dados['id'])->update($dados);
+
+        if($resultado) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    protected function trataDataBanco($data)
+    {
+        if($data) {
+            return implode("-",array_reverse(explode("/",$data)));
+        } else {
+            return '';
+        }
     }
 
 }

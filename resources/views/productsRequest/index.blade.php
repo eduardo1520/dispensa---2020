@@ -82,7 +82,6 @@
                                                 @endswitch
 
                                                 <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
-
                                                 <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage($(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
                                                     <option value="">Selecione {{ substr(array_keys($arr)[$i], -1) == 'a' ? 'uma ' : 'um ' }}{{ ucfirst(array_keys($arr)[$i]) }}</option>
                                                     @foreach($arr[array_keys($arr)[$i]] as $idx => $valor)
@@ -132,7 +131,6 @@
                                     <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe  categoria">
                                         <span class="categoria-nome" data-category_id>-</span>
                                     </div>
-
                                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho acao">
                                         <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '+');" class="btn btn-primary btn-circle btn-sm" title="Adicionar Produto"><i class="fas fa-cart-plus"></i></a>
                                         <a href="javascript:void(0);" onclick="event.preventDefault(); atualizaQtde($(this).closest('[data-codigo]').data('codigo'), '-');" class="btn btn-warning btn-circle btn-sm"  title="Excluír Produto"><i class="fa fa-cart-arrow-down"></i></a>
@@ -191,7 +189,6 @@
             format: 'd/m/yyyy',
             minDate: yesterday,
             maxDate: new Date(ultimoDia),
-
         });
 
         if(document.querySelector('#solicitacao').value > 0) {

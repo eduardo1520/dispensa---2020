@@ -12,7 +12,7 @@ class ProductRequest extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id','qtde', 'user_id', 'product_id','brand_id', 'category_id','measure_id'
+        'id','qtde', 'user_id', 'product_id','brand_id', 'category_id','measure_id','data'
     ];
 
     protected $hidden = [

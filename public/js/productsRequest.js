@@ -317,6 +317,7 @@ function atualizaCampoData(tabela, codigo, data) {
             row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
             row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
             row.querySelector('div.data > .dt_dinamica').innerHTML = data;
+            atualizaData(row.getAttribute('data-codigo'), data);
         }
     });
 }
@@ -343,6 +344,20 @@ function salvaRequesicaoProduto(produto, medida, marca) {
         }).catch(error => {
             console.log('erro:', error);
         });
+}
+
+function atualizaData(codigo, data) {
+    let params = {id: codigo, data: data };
+    $promessa = promise(`productRequest/atualiza`, 'post', params)
+        .then(response => {
+            return response.text();
+        }).then(mensagem => {
+
+        }).catch(error => {
+            console.log('erro', error);
+        });
+
+    // alert("Data atualiza com sucesso!");
 }
 
 // Funções Utilizadas Dinamicamente.
