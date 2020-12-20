@@ -42,14 +42,14 @@
                                     <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user usuario">
                                         {{ $sol->user->name }}
                                     </div>
-                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">0</div>
+                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">{{ $sol->qtde ? $sol->qtde : 0}}</div>
                                     <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem"><img src="{{ $sol->product->image }}" alt="{{ $sol->product->description }}" data-id="{{ $sol->product->id }}" width="100px;" height="75px;"></div>
                                     @php
                                         $i = 0;
                                         $campo = '';
                                     @endphp
                                     @while($cont > $i)
-                                        <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
+                                        <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" data-codigo="{{$sol->id}}" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
                                             @switch(array_keys($arr)[$i])
                                                 @case('produto')
                                                     <?php
@@ -80,9 +80,8 @@
                                                     ?>
                                                 @break
                                                 @endswitch
-
-                                                <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
-                                                <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage($(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
+                                                <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
+                                                <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage({$sol->id},$(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
                                                     <option value="">Selecione {{ substr(array_keys($arr)[$i], -1) == 'a' ? 'uma ' : 'um ' }}{{ ucfirst(array_keys($arr)[$i]) }}</option>
                                                     @foreach($arr[array_keys($arr)[$i]] as $idx => $valor)
                                                         <option value="{{$idx}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $valor }}</option>
@@ -116,7 +115,7 @@
                                     @while($cont > $i)
                                         <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
                                             <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ ucfirst(array_keys($arr)[$i]) }}</span>
-                                            <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage($(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
+                                            <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"  onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');{{ array_keys($arr)[$i] == 'produto' ? "getProductImage({$sol->id},$(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());getCategory('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(),'categoria');" : ""}};">
                                                 <option value="">Selecione {{ substr(array_keys($arr)[$i], -1) == 'a' ? 'uma ' : 'um ' }}{{ ucfirst(array_keys($arr)[$i]) }}</option>
                                                 @foreach($arr[array_keys($arr)[$i]] as $idx => $valor)
                                                     <option value="{{$idx}}" {{ !empty($pesquisa['id']) && in_array($value,$pesquisa['id'])  ? 'selected' : '' }}>{{ $valor }}</option>

@@ -1,28 +1,36 @@
-// TODO
+
 function atualizaQtde(codigo, operacao) {
-    $('.pedido').each(function (x,y) {
-        if($(this).closest('[data-codigo]').data('codigo') == codigo) {
-            let qtde = parseInt($(this).children('div.qtde').text());
+    document.querySelectorAll(`.pedido`).forEach(function(row){
+        if(row.getAttribute('data-codigo') == codigo) {
+            let qtde = parseInt(row.querySelector('.qtde').innerHTML);
             if(operacao == '-' && qtde == 0) {
                 alert('Não é permitido quantidade negativa!');
             } else if(operacao == '+'){
                 qtde++;
-                $(this).children('div.qtde').empty().text(qtde);
+                row.querySelector('.qtde').innerHTML = qtde;
             } else {
                 qtde--;
-                $(this).children('div.qtde').empty().text(qtde);
+                row.querySelector('.qtde').innerHTML = qtde;
             }
+            atualizarQtde(codigo, qtde);
         }
     });
 }
 // TODO
 function getCombo(pai, codigo, span, classe, combo) {
-    $(`.${pai}`).each(function () {
-        if($(this).closest('[data-codigo]').data('codigo') == codigo) {
-            $(this).children('div.classe').children('span').hide();
-            $(`span.${span}`).hide();
-            $(`.${combo}`).removeAttr('style');
-            $(`.${combo}`).removeClass('d-none').show();
+    // $(`.${pai}`).each(function () {
+    //     if($(this).closest('[data-codigo]').data('codigo') == codigo) {
+            // $(this).children('div.classe').children('span').hide();
+            // $(`span.${span}`).hide();
+            // $(`.${combo}`).removeAttr('style');
+            // $(`.${combo}`).removeClass('d-none').show();
+    //     }
+    // });
+
+    document.querySelectorAll(`.${pai}`).forEach(function(row){
+        if(row.getAttribute('data-codigo') == codigo) {
+            row.querySelector(`div>span.${span}`).classList.add('d-none');
+            row.querySelector(`div>.${combo}`).classList.remove('d-none');
         }
     });
 }
@@ -34,6 +42,13 @@ function transformaComboSpan(tabela, pai, id, nome, campo, combo,classe) {
         $(`.${combo}`).hide();
         getCategory('tabela', pai,id,'categoria');
     }
+
+    // document.querySelectorAll(`.${tabela}`).forEach(function(row){
+    //     if(row.getAttribute('data-codigo') == pai) {
+    //         log(row, campo);
+    //         row.insertAdjacentHTML('beforeend', `<span data-id="${id}" class="${campo}">${nome}</span>`);
+    //     }
+    // });
 }
 // TODO
 function ativaCombo(classe, codigo, campo, combo) {
@@ -151,16 +166,19 @@ function detectar_mobile() {
     },0);
 }
 
-function getProductImage(id, name) {
+function getProductImage(pai, id, name) {
     promise(`product/productImageAjax`,'post', {id:id, name:name})
         .then(response => {
             return response.json();
         })
         .then(produto => {
-            const imagem = document.querySelectorAll('.pedido > div.imagem');
+            const imagem = document.querySelectorAll('.pedido');
+            // const imagem = document.querySelectorAll('.pedido > div.imagem');
             imagem.forEach(function(value){
-                value.innerHTML = "";
-                value.insertAdjacentHTML('beforeend', `<img src="${produto[0].image}" alt="${produto[0].description}" data-id="${produto[0].id}" width="100px;" height="75px;">`);
+                if(value.getAttribute('data-codigo') == pai) {
+                    value.querySelector('div.imagem').innerHTML = "";
+                    value.querySelector('div.imagem').insertAdjacentHTML('beforeend', `<img src="${produto[0].image}" alt="${produto[0].description}" data-id="${produto[0].id}" width="100px;" height="75px;">`);
+                }
             });
             document.querySelector('.imagem-produto').classList.remove('d-none');
             const imagem_produto = document.querySelectorAll('.imagem-produto > .cabecalho > .imagem');
@@ -233,10 +251,12 @@ function getCategory(classe, pai,produto,campo) {
         .then(response => {
             return response.text();
         }).then(categoria => {
-            let cat = document.querySelectorAll(`.${classe} > .${campo}`);
+            let cat = document.querySelectorAll(`.${classe}`);
             cat.forEach(function(value){
-                value.innerHTML="";
-                value.insertAdjacentHTML('beforeend', `<span class="${campo}">${categoria}</span>`);
+                if(value.getAttribute('data-codigo') == pai) {
+                    value.querySelector(`.${campo}`).innerHTML="";
+                    value.querySelector(`.${campo}`).insertAdjacentHTML('beforeend', `<span class="${campo}">${categoria}</span>`);
+                }
             });
         }).catch(error => {
             log('Deu erro:',error);
@@ -357,7 +377,18 @@ function atualizaData(codigo, data) {
             console.log('erro', error);
         });
 
-    // alert("Data atualiza com sucesso!");
+}
+
+function atualizarQtde(codigo, qtde) {
+    let params = {id: codigo, qtde: qtde };
+    $promessa = promise(`productRequest/atualiza`, 'post', params)
+        .then(response => {
+            return response.text();
+        }).then(mensagem => {
+
+        }).catch(error => {
+            console.log('erro', error);
+        });
 }
 
 // Funções Utilizadas Dinamicamente.

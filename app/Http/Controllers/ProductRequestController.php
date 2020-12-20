@@ -118,7 +118,9 @@ class ProductRequestController extends Controller
     public function atualiza(Request $request)
     {
         $dados = $request->all();
-        $dados['data'] = $this->trataDataBanco($dados['data']);
+        if(!empty($dados['data'])) {
+            $dados['data'] = $this->trataDataBanco($dados['data']);
+        }
         $resultado = ProductRequest::find($dados['id'])->update($dados);
 
         if($resultado) {
