@@ -34,21 +34,23 @@ function getCombo(pai, codigo, span, classe, combo) {
         }
     });
 }
-// TODO
-function transformaComboSpan(tabela, pai, id, nome, campo, combo,classe) {
-    if($(`.${tabela}`).closest('[data-codigo]').data('codigo') == pai) {
-        $(`.${combo}`).closest('div').append(`<span data-id="${id}" class="${campo}">${nome}</span>`);
-        $(`div.${campo}`).attr('onclick',`getCombo('${tabela}','${pai}','${campo}','${classe}','${combo}')`);
-        $(`.${combo}`).hide();
-        getCategory('tabela', pai,id,'categoria');
-    }
 
-    // document.querySelectorAll(`.${tabela}`).forEach(function(row){
-    //     if(row.getAttribute('data-codigo') == pai) {
-    //         log(row, campo);
-    //         row.insertAdjacentHTML('beforeend', `<span data-id="${id}" class="${campo}">${nome}</span>`);
-    //     }
-    // });
+// TODO trabalhar no carregamento do value para ser gravado no banco de dados.
+
+function transformaComboSpan(tabela, pai, id, nome, campo) {
+    document.querySelectorAll(`.${tabela}`).forEach(function(row){
+        if(row.getAttribute('data-codigo') == pai) {
+            var select = row.querySelector('select');
+            var option = select.children[select.selectedIndex];
+            var texto = option.textContent;
+            row.querySelector('.combo-produto').classList.add('d-none');
+            row.querySelector(`.${campo}`).classList.remove('d-none');
+            var cb = row.getAttribute('data-codigo');
+            log(cb);
+            // cb.setAttribute('data-codigo',option.value);
+            row.querySelector(`.${campo}`).innerHTML = texto;
+        }
+    });
 }
 // TODO
 function ativaCombo(classe, codigo, campo, combo) {
@@ -173,7 +175,6 @@ function getProductImage(pai, id, name) {
         })
         .then(produto => {
             const imagem = document.querySelectorAll('.pedido');
-            // const imagem = document.querySelectorAll('.pedido > div.imagem');
             imagem.forEach(function(value){
                 if(value.getAttribute('data-codigo') == pai) {
                     value.querySelector('div.imagem').innerHTML = "";
@@ -418,9 +419,9 @@ function abreModalRequestProduct() {
 function log(dado) {
     console.log(dado);
 }
+
 window.onload=function() {
     detectar_mobile();
-
     document.addEventListener('click', function (event) {
         // If the clicked element doesn't have the right selector, bail
         if (!event.target.matches('#btnRequestProduto')) return;
@@ -433,7 +434,6 @@ window.onload=function() {
         let marca = document.querySelector('.brand-nome > span');
 
         salvaRequesicaoProduto(produto.getAttribute('data-id'), medida.getAttribute('data-id'), marca.getAttribute('data-id'));
-
     }, false);
 
 }
