@@ -363,8 +363,36 @@ function addRows(pai) {
 }
 
 function removeRows(classe, pai) {
+    let produto = '';
     document.querySelectorAll(`.${classe}`).forEach(function(div){
-        div.getAttribute('data-codigo') == pai ? div.remove() : '';
+        if(div.getAttribute('data-codigo') == pai) {
+            produto = div.querySelector(`div > span.produto-nome`).innerHTML;
+        }
+    });
+
+    Swal.fire({
+        title: "Deseja realmente excluir o produto " + (produto != '') ? produto.toLowerCase() : '' + "?",
+        text: "O item escolhido será apagado!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Apagar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.querySelectorAll(`.${classe}`).forEach(function(div){
+                div.getAttribute('data-codigo') == pai ? div.remove() : '';
+            });
+
+            removeProduto(pai);
+
+            Swal.fire(
+                'Sucesso!',
+                'O item selecionado foi apagado.',
+                'success'
+            )
+        }
     });
 }
 
@@ -440,6 +468,17 @@ function atualizarQtde(codigo, qtde) {
 function atualizarProduto(data) {
     // let params = {id: codigo, product_id: produto };
     $promessa = promise(`productRequest/atualiza`, 'post', data)
+        .then(response => {
+            return response.text();
+        }).then(mensagem => {
+
+        }).catch(error => {
+            console.log('erro', error);
+        });
+}
+
+function removeProduto(id) {
+    $promessa = promise(`productRequest/remover`, 'post', {'id':id})
         .then(response => {
             return response.text();
         }).then(mensagem => {

@@ -30,7 +30,8 @@
                                 <div class="col-4 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                             </div>
                             @forelse($solicitacao as $sol)
-                                <div class="row pedido" data-codigo="{{ $sol->id }}">
+
+                                <div class="row pedido {{ !empty($sol->deleted_at) ? "d-none": "" }}" data-codigo="{{ $sol->id }}" >
                                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
                                         <span class="dt_dinamica"></span>
                                         @if(!empty($sol->data))
@@ -99,11 +100,7 @@
                                                 @break
                                                 @endswitch
                                             @php
-                                                #if(array_keys($arr)[$i] == 'marca') {
-                                                    #echo $arr[array_keys($arr)[$i]][$campo];
-                                                    #print_r($sol->brand_id);
-                                                    #print_r($arr['marca']);
-                                                #}
+
                                             @endphp
 
                                                 <span class="{{ $pointer }} {{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>

@@ -18,7 +18,7 @@ class ProductRequestController extends Controller
      */
     public function index()
     {
-        $solicitacao = ProductRequest::all();
+        $solicitacao = ProductRequest::withTrashed()->get();
         $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
         $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
@@ -110,9 +110,19 @@ class ProductRequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $dados = $request->all();
+
+        if($dados['id']) {
+            $resultado = ProductRequest::find($dados['id'])->delete();
+        }
+
+        if($resultado) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function atualiza(Request $request)
