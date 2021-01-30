@@ -43,12 +43,33 @@ function transformaComboSpan(tabela, pai, id, nome, campo) {
             var select = row.querySelector('select');
             var option = select.children[select.selectedIndex];
             var texto = option.textContent;
-            row.querySelector('.combo-produto').classList.add('d-none');
-            row.querySelector(`.${campo}`).classList.remove('d-none');
-            var cb = row.getAttribute('data-codigo');
-            log(cb);
-            // cb.setAttribute('data-codigo',option.value);
-            row.querySelector(`.${campo}`).innerHTML = texto;
+
+            if(texto !== "Selecione um Produto") {
+                row.querySelector('.combo-produto').classList.add('d-none');
+                row.querySelector(`.${campo}`).classList.remove('d-none');
+                row.querySelector(`.${campo}`).setAttribute('value',option.value);
+                row.querySelector(`.${campo}`).innerHTML = texto;
+                let params = {id: pai, product_id: option.value };
+                atualizarProduto(params);
+                // return;
+            }
+            row.querySelectorAll('div').forEach(function(r){
+                if(r.classList.contains('medida') != null && r.classList.contains('medida') == true &&  r.querySelector(`.${campo}`) != null) {
+                    var select = r.querySelector('select');
+                    var option = select.children[select.selectedIndex];
+                    var texto = option.textContent;
+                    r.querySelector('.combo-medida').classList.add('d-none');
+                    r.querySelector(`.${campo}`).classList.remove('d-none');
+                    r.querySelector(`.${campo}`).setAttribute('value',option.value);
+                    r.querySelector(`.${campo}`).innerHTML = texto;
+                    let params = {id: pai, measure_id: option.value };
+                    atualizarProduto(params);
+                    return;
+                }
+
+            });
+
+
         }
     });
 }
@@ -266,7 +287,7 @@ function getCategory(classe, pai,produto,campo) {
 
 function setData() {
     let d = new Date();
-    let hoje = `${d.getDate()}/${d.getMonth() +1}/${d.getFullYear()}`
+    let hoje = `${d.getDate()}/${d.getMonth() +1}/${d.getFullYear()}`;
     const data = document.querySelector('.date');
     data.setAttribute('value', (document.querySelector('#datetimepicker1').value != '') ? document.querySelector('#datetimepicker1').value : hoje);
     const selecionado = document.querySelector('.selecionado');
@@ -338,7 +359,14 @@ function atualizaCampoData(tabela, codigo, data) {
             row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
             row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
             row.querySelector('div.data > .dt_dinamica').innerHTML = data;
-            atualizaData(row.getAttribute('data-codigo'), data);
+
+            let d = new Date();
+            let mes = (d.getMonth() +1) < 10 ? `0${d.getMonth() +1}` : d.getMonth() +1;
+            let hoje = `${d.getDate()}/${mes}/${d.getFullYear()}`;
+
+            if(data > hoje) {
+                atualizaData(row.getAttribute('data-codigo'), data);
+            }
         }
     });
 }
@@ -383,6 +411,18 @@ function atualizaData(codigo, data) {
 function atualizarQtde(codigo, qtde) {
     let params = {id: codigo, qtde: qtde };
     $promessa = promise(`productRequest/atualiza`, 'post', params)
+        .then(response => {
+            return response.text();
+        }).then(mensagem => {
+
+        }).catch(error => {
+            console.log('erro', error);
+        });
+}
+
+function atualizarProduto(data) {
+    // let params = {id: codigo, product_id: produto };
+    $promessa = promise(`productRequest/atualiza`, 'post', data)
         .then(response => {
             return response.text();
         }).then(mensagem => {
