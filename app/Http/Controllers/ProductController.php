@@ -338,4 +338,17 @@ class ProductController extends Controller
         }
         return response('Erro:',500);
     }
+
+    public function productBrandAjax(Request $request)
+    {
+        if(!empty($request['id'])) {
+            $produto = Product::find($request['id']);
+            if($produto) {
+                $dados = $produto->brand->name;
+                return response($dados,200);
+            }
+            return response('Marca não encontrada!',200);
+        }
+        return response('Erro:',500);
+    }
 }

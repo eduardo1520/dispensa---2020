@@ -285,6 +285,23 @@ function getCategory(classe, pai,produto,campo) {
         });
 }
 
+function getBrand(classe, pai,produto,campo) {
+    $promessa = promise(`product/productBrandAjax`, 'post', {id:produto})
+        .then(response => {
+            return response.text();
+        }).then(marca => {
+            let marcas = document.querySelectorAll(`.${classe}`);
+            marcas.forEach(function(value){
+                if(value.getAttribute('data-codigo') == pai) {
+                    value.querySelector(`.${campo}`).innerHTML="";
+                    value.querySelector(`.${campo}`).insertAdjacentHTML('beforeend', `<span class="${campo}">${marca}</span>`);
+                }
+            });
+        }).catch(error => {
+            log('Deu erro:',error);
+        });
+}
+
 function setData() {
     let d = new Date();
     let hoje = `${d.getDate()}/${d.getMonth() +1}/${d.getFullYear()}`;
