@@ -112,10 +112,14 @@ class ProductRequestController extends Controller
      */
     public function destroy(Request $request)
     {
+
         $dados = $request->all();
 
         if($dados['id']) {
-            $resultado = ProductRequest::find($dados['id'])->delete();
+            $resultado = ProductRequest::find($dados['id']);
+            if($resultado) {
+                $resultado->delete();
+            }
         }
 
         if($resultado) {

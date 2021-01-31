@@ -61,8 +61,8 @@
                                                 $pointer = 'gj-cursor-pointer';
                                                 $onclick = true;
                                             @endphp
-
                                         @endif
+
                                             @if($onclick == true)
                                                 <div class="{{ $pointer }} {{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}}" data-codigo="{{$sol->id}}" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
                                             @else
@@ -99,11 +99,9 @@
                                                     ?>
                                                 @break
                                                 @endswitch
-                                            @php
 
-                                            @endphp
 
-                                                <span class="{{ $pointer }} {{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
+                                                <span class="{{ $pointer }} {{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}" data-filho="{{$campo}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
                                                 <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"
                                                         onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');
                                                         {{ array_keys($arr)[$i] == 'produto' ? "getProductImage({$sol->id},$(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());
@@ -139,6 +137,7 @@
                                     @php
                                         $i = 0;
                                     @endphp
+                                    ....
                                     @while($cont > $i)
                                         <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
                                             <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ ucfirst(array_keys($arr)[$i]) }}</span>

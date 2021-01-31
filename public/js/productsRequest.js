@@ -50,9 +50,22 @@ function transformaComboSpan(tabela, pai, id, nome, campo) {
                 row.querySelector(`.${campo}`).setAttribute('value',option.value);
                 row.querySelector(`.${campo}`).innerHTML = texto;
                 let params = {id: pai, product_id: option.value };
+
+                row.querySelectorAll('div > span').forEach(function(r){
+                    if(r.classList.contains('marca-nome')) {
+                        params['brand_id'] = r.getAttribute('data-filho');
+                    }
+
+                    if(r.classList.contains('categoria-nome')) {
+                        params['category_id'] = r.getAttribute('data-filho');
+                    }
+
+                });
                 atualizarProduto(params);
                 // return;
             }
+
+            // atualiza a medida do produto
             row.querySelectorAll('div').forEach(function(r){
                 if(r.classList.contains('medida') != null && r.classList.contains('medida') == true &&  r.querySelector(`.${campo}`) != null) {
                     var select = r.querySelector('select');
@@ -259,10 +272,17 @@ function comboProduto() {
         .then(response => {
             return response.json();
         }).then(combo => {
-            let element = document.querySelector(".combo-prod");
-            combo.forEach(function(value){
-                element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['name']}</option>`);
+            let element = document.querySelector(".combo-prod" );
+
+            document.querySelectorAll('div .produto > span.produto-nome').forEach(function(value){
+                value.classList.add('d-none');
+                combo.forEach(function(value){
+                    element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['name']}</option>`);
+                });
+
             });
+
+
         }).catch(error => {
             console.log('Deu erro,', error);
         });
@@ -271,13 +291,13 @@ function comboProduto() {
 function getCategory(classe, pai,produto,campo) {
     $promessa = promise(`product/productCategoryAjax`, 'post', {id:produto})
         .then(response => {
-            return response.text();
+            return response.json();
         }).then(categoria => {
             let cat = document.querySelectorAll(`.${classe}`);
             cat.forEach(function(value){
                 if(value.getAttribute('data-codigo') == pai) {
                     value.querySelector(`.${campo}`).innerHTML="";
-                    value.querySelector(`.${campo}`).insertAdjacentHTML('beforeend', `<span class="${campo}">${categoria}</span>`);
+                    value.querySelector(`.${campo}`).insertAdjacentHTML('beforeend', `<span data-filho="${categoria.category_id}" >${categoria.tipo}</span>`);
                 }
             });
         }).catch(error => {
@@ -288,13 +308,13 @@ function getCategory(classe, pai,produto,campo) {
 function getBrand(classe, pai,produto,campo) {
     $promessa = promise(`product/productBrandAjax`, 'post', {id:produto})
         .then(response => {
-            return response.text();
+            return response.json();
         }).then(marca => {
             let marcas = document.querySelectorAll(`.${classe}`);
             marcas.forEach(function(value){
                 if(value.getAttribute('data-codigo') == pai) {
                     value.querySelector(`.${campo}`).innerHTML="";
-                    value.querySelector(`.${campo}`).insertAdjacentHTML('beforeend', `<span class="${campo}">${marca}</span>`);
+                    value.querySelector(`.${campo}`).insertAdjacentHTML('beforeend', `<span data-filho="${marca.brand_id}" >${marca.name}</span>`);
                 }
             });
         }).catch(error => {
@@ -341,6 +361,8 @@ function addRows(pai) {
                                 </div>`;
     }
 
+    mountRow();
+
     document.querySelector(`#filho`).insertAdjacentHTML('beforeend',`<div class="row pedido" data-codigo="${pai}">
                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data">${data}</div>
                     <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user ${window.screen.width <= 568 ? 'd-none': ''}">${document.querySelector(`.usuario`).innerText}</div>
@@ -348,6 +370,9 @@ function addRows(pai) {
                     <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem ${window.screen.width <= 320 || window.screen.width == 568 ? 'd-none': ''}">-</div>
                     <div class="${window.screen.width == 320 ? 'col-3 col-sm-2 col-md-1 col-lg-1': 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getCombo('pedido',${pai},'produto-nome','produto','combo-produto')">
                         <span class="produto-nome" data-produto_id="">${window.screen.width == 320 ? 'Prod.' : 'Produto'}</span>
+                        <select name="" id="produto_id" class="form-control combo-prod " tabindex="3">
+
+                        </select>
                     </div>
                     <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer ${window.screen.width <= 320  || window.screen.width == 568 ? 'd-none': ''}" onclick="getCombo('pedido',${pai},'medida-nome','medida','combo-medida')">
                         <span class="medida-nome" data-medida_id="">Medida</span>
@@ -360,6 +385,15 @@ function addRows(pai) {
                     </div>
                         ${botoes}
                   </div>`);
+}
+
+function mountRow() {
+
+    // montar o combo de produtos
+    comboProduto();
+    // montar o combo de medidas
+    comboBrand();
+
 }
 
 function removeRows(classe, pai) {

@@ -7,6 +7,7 @@ use App\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use function PHPUnit\Framework\isNull;
 
 class ProductController extends Controller
 {
@@ -331,7 +332,7 @@ class ProductController extends Controller
         if(!empty($request['id'])) {
             $produto = Product::find($request['id']);
             if($produto) {
-                $dados = $produto->category->tipo;
+                $dados = ['category_id' => $produto->category_id, 'tipo' => $produto->category->tipo];
                 return response($dados,200);
             }
             return response('Categoria não encontrada!',200);
@@ -341,14 +342,17 @@ class ProductController extends Controller
 
     public function productBrandAjax(Request $request)
     {
-        if(!empty($request['id'])) {
-            $produto = Product::find($request['id']);
-            if($produto) {
-                $dados = $produto->brand->name;
-                return response($dados,200);
+        try{
+            if(!empty($request['id'])) {
+                $produto = Product::find($request['id']);
+                if(is_object($produto) && isset($produto->brand->name)) {
+                    $dados = ['brand_id' => $produto->brand_id, 'name' => $produto->brand->name];
+                    return response($dados,200);
+                }
+                return response('Marca não encontrada!',200);
             }
-            return response('Marca não encontrada!',200);
+        } catch (Exception $error) {
+            return response('Erro:',500);
         }
-        return response('Erro:',500);
     }
 }
