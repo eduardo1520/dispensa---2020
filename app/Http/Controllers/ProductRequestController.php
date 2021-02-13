@@ -135,14 +135,19 @@ class ProductRequestController extends Controller
         if(!empty($dados['data'])) {
             $dados['data'] = $this->trataDataBanco($dados['data']);
         }
-        $resultado = ProductRequest::find($dados['id'])->update($dados);
 
-        if($resultado) {
-            return true;
-        } else {
-            return false;
+        $data = date('Y-m-d');
+
+        if(!empty(ProductRequest::find($dados['id'])) && $dados['data'] >= $data) {
+
+            $resultado = ProductRequest::find($dados['id'])->update($dados);
+
+            if($resultado) {
+                return true;
+            } else {
+                return false;
+            }
         }
-
     }
 
     protected function trataDataBanco($data)

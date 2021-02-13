@@ -439,12 +439,18 @@ function atualizaCampoData(tabela, codigo, data) {
             row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
             row.querySelector('div.data > .dt_dinamica').innerHTML = data;
 
-            let d = new Date();
-            let mes = (d.getMonth() +1) < 10 ? `0${d.getMonth() +1}` : d.getMonth() +1;
-            let hoje = `${d.getDate()}/${mes}/${d.getFullYear()}`;
+            let hoje = new Date();
 
-            if(data > hoje) {
-                atualizaData(row.getAttribute('data-codigo'), data);
+            let dado = data.split('/');
+
+            let m  = dado[1].split('0').filter((el) =>{
+                if(el != null) return el;
+            });
+
+            let dt_antiga = new Date(`${dado[2]}-${m}-${dado[0]}` );
+
+            if(dt_antiga < hoje) {
+                atualizaData(row.getAttribute('data-codigo'), `${hoje.getFullYear()}-${hoje.getMonth() < 10 ? (hoje.getMonth()+1):hoje.getMonth()}-${hoje.getDate()}`);
             }
         }
     });
