@@ -35,9 +35,13 @@
                                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
                                         <span class="dt_dinamica"></span>
                                         @if(!empty($sol->data))
-                                            <input class="date desktop" width="auto" value="{{date("d/m/Y", strtotime($sol->data))}}" disabled  onclose="atualizaCampoData('pedido',{{ $sol->id }}, document.querySelector('.desktop').value)"/>
+                                            @php
+                                                $data = !empty($sol->deleted_at) ? date("d/m/Y"):date("d/m/Y", strtotime($sol->data));
+                                            @endphp
+                                            <input class="date desktop" width="auto" value="{{$data}}" disabled  onclose="atualizaCampoData('pedido',{{ $sol->id }}, document.querySelector('.desktop').value)"/>
+                                            <input type="hidden" class="data" value="{{$data}}">
                                         @else
-                                            <input class="date desktop" width="auto" value="{{date("d/m/Y", strtotime($sol->data))}}" disabled  onclose=""/>
+                                            <input class="date desktop" width="auto" value="{{$data}}" disabled  onclose=""/>
                                         @endif
                                     </div>
                                     <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user usuario">
@@ -100,7 +104,6 @@
                                                 @break
                                                 @endswitch
 
-
                                                 <span class="{{ $pointer }} {{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}" data-filho="{{$campo}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
                                                 <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"
                                                         onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');
@@ -137,7 +140,6 @@
                                     @php
                                         $i = 0;
                                     @endphp
-                                    ....
                                     @while($cont > $i)
                                         <div class="{{ array_keys($arr)[$i] == 'produto' ? 'col-4 col-sm-2 col-md-1 col-lg-2' : 'col-2 col-sm-2 col-md-1 col-lg-1'}}  border cabecalho {{ array_keys($arr)[$i] }}  {{ array_keys($arr)[$i] != 'produto' ? 'detalhe' : ''}} gj-cursor-pointer" onclick="getCombo('pedido',$(this).closest('[data-codigo]').data('codigo'),'{{ array_keys($arr)[$i] }}-nome','{{ array_keys($arr)[$i] }}','combo-{{ array_keys($arr)[$i] }}')">
                                             <span class="{{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id>{{ ucfirst(array_keys($arr)[$i]) }}</span>
@@ -217,11 +219,18 @@
         });
 
         if(document.querySelector('#solicitacao').value > 0) {
+
+            let dt = document.querySelectorAll('.data > input');
+            let data = null;
+            dt.forEach(function(input){
+                data = input.value;
+            });
+
             let dtpick = document.querySelectorAll('.pedido');
             dtpick.forEach(function(div){
                let dados = div.querySelectorAll('.pedido > .data > .gj-datepicker > .date');
-               dados.forEach(function(v){
-                   atualizaCampoData('pedido',div.getAttribute('data-codigo'), v.value);
+                   dados.forEach(function(v){
+                       atualizaCampoData('pedido',div.getAttribute('data-codigo'), data);
                });
             });
         }

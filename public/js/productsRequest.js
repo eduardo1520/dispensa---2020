@@ -430,9 +430,12 @@ function removeRows(classe, pai) {
     });
 }
 
+// TODO Precisa ser refatorado foi encontrado problemas na lógica de captura dos dados.
 function atualizaCampoData(tabela, codigo, data) {
-    document.querySelectorAll(`.${tabela}`).forEach(function(row){
-        if(row.getAttribute('data-codigo') >= codigo) {
+    let i = 0;
+
+    document.querySelectorAll(`.${tabela}`).forEach(function(row,idx){
+        if(row.getAttribute('data-codigo') == codigo) {
             row.querySelector('div.data').classList.add('gj-cursor-pointer');
             row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
             row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
@@ -448,12 +451,31 @@ function atualizaCampoData(tabela, codigo, data) {
             });
 
             let dt_antiga = new Date(`${dado[2]}-${m}-${dado[0]}` );
-
-            if(dt_antiga < hoje) {
-                atualizaData(row.getAttribute('data-codigo'), `${hoje.getFullYear()}-${hoje.getMonth() < 10 ? (hoje.getMonth()+1):hoje.getMonth()}-${hoje.getDate()}`);
+            // log(dt_antiga + " - " + hoje);
+            if(dt_antiga.getUTCDate() <= hoje.getUTCDate()) {
+                log(data);
+                //let d = `${hoje.getFullYear()}-${hoje.getMonth() < 10 ? (hoje.getMonth()+1):hoje.getMonth()}-${hoje.getDate()}`;
+                let data_br = `${hoje.getDate()}/${hoje.getMonth() < 10 ? '0' + (hoje.getMonth()+1):hoje.getMonth()}/${hoje.getFullYear()}`;
+                let d = `${dt_antiga.getFullYear()}-${dt_antiga.getMonth() < 10 ? '0' + (dt_antiga.getMonth()+1):dt_antiga.getMonth()}-${dt_antiga.getDate()}`;
+                atualizaData(row.getAttribute('data-codigo'), d);
+                row.querySelector('div.data > .dt_dinamica').innerHTML = data_br;
             }
+            // else {
+            //     log('Bug')
+            // }
+            //
+            // else if(dt_antiga.getUTCDate() < hoje.getUTCDate()) {
+            //     log(data)
+            //     let mes = dt_antiga.getUTCMonth() < 10 ? "0"+(dt_antiga.getUTCMonth() +1) : (dt_antiga.getUTCMonth() +1);
+            //     let dt_selecionada = `${dt_antiga.getUTCDate()}/${mes}/${dt_antiga.getUTCFullYear()}`;
+            //     atualizaData(row.getAttribute('data-codigo'), dt_selecionada);
+            //     let data_br = `${dt_antiga.getDate()}/${dt_antiga.getMonth() < 10 ? '0' + (dt_antiga.getMonth()+1):dt_antiga.getMonth()}/${dt_antiga.getFullYear()}`;
+            //     row.querySelector('div.data > .dt_dinamica').innerHTML = data_br;
+            //     log(data_br);
+            // }
         }
     });
+
 }
 
 function habilitaData2(tabela) {
