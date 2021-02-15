@@ -430,52 +430,52 @@ function removeRows(classe, pai) {
     });
 }
 
-// TODO Precisa ser refatorado foi encontrado problemas na lógica de captura dos dados.
-function atualizaCampoData(tabela, codigo, data) {
-    let i = 0;
+function atualizaCampoDataAll(tabela, codigo, data) {
+    let hoje = new Date();
+    let dado = data.split('/');
+    let m  = dado[1].split('0').filter((el) =>{
+        if(el != null) return el;
+    });
+    let dt_antiga = new Date(`${dado[2]}-${m}-${dado[0]}` );
+    let d = `${hoje.getDate()}-${hoje.getMonth()+1}-${hoje.getFullYear()}`;
 
-    document.querySelectorAll(`.${tabela}`).forEach(function(row,idx){
-        if(row.getAttribute('data-codigo') == codigo) {
+    if(dataDiff(dt_antiga, hoje) === 'menor') {
+        document.querySelectorAll(`.${tabela}`).forEach(function(row){
             row.querySelector('div.data').classList.add('gj-cursor-pointer');
             row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
             row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
             row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
-            row.querySelector('div.data > .dt_dinamica').innerHTML = data;
+            row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(d, '-');
+        });
+        atualizaData(codigo, dataBD(d, '-'));
+    } else if(dataDiff(dt_antiga, hoje) === 'maior') {
+        document.querySelectorAll(`.${tabela}`).forEach(function(row){
+            row.querySelector('div.data').classList.add('gj-cursor-pointer');
+            row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
+            row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
+            row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
+            row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(data, '/');
+        });
+    } else {
+        document.querySelectorAll(`.${tabela}`).forEach(function(row){
+            row.querySelector('div.data').classList.add('gj-cursor-pointer');
+            row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
+            row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
+            row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
+            row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(d, '-');
+        });
+    }
+}
 
-            let hoje = new Date();
-
-            let dado = data.split('/');
-
-            let m  = dado[1].split('0').filter((el) =>{
-                if(el != null) return el;
-            });
-
-            let dt_antiga = new Date(`${dado[2]}-${m}-${dado[0]}` );
-            // log(dt_antiga + " - " + hoje);
-            if(dt_antiga.getUTCDate() <= hoje.getUTCDate()) {
-                log(data);
-                //let d = `${hoje.getFullYear()}-${hoje.getMonth() < 10 ? (hoje.getMonth()+1):hoje.getMonth()}-${hoje.getDate()}`;
-                let data_br = `${hoje.getDate()}/${hoje.getMonth() < 10 ? '0' + (hoje.getMonth()+1):hoje.getMonth()}/${hoje.getFullYear()}`;
-                let d = `${dt_antiga.getFullYear()}-${dt_antiga.getMonth() < 10 ? '0' + (dt_antiga.getMonth()+1):dt_antiga.getMonth()}-${dt_antiga.getDate()}`;
-                atualizaData(row.getAttribute('data-codigo'), d);
-                row.querySelector('div.data > .dt_dinamica').innerHTML = data_br;
-            }
-            // else {
-            //     log('Bug')
-            // }
-            //
-            // else if(dt_antiga.getUTCDate() < hoje.getUTCDate()) {
-            //     log(data)
-            //     let mes = dt_antiga.getUTCMonth() < 10 ? "0"+(dt_antiga.getUTCMonth() +1) : (dt_antiga.getUTCMonth() +1);
-            //     let dt_selecionada = `${dt_antiga.getUTCDate()}/${mes}/${dt_antiga.getUTCFullYear()}`;
-            //     atualizaData(row.getAttribute('data-codigo'), dt_selecionada);
-            //     let data_br = `${dt_antiga.getDate()}/${dt_antiga.getMonth() < 10 ? '0' + (dt_antiga.getMonth()+1):dt_antiga.getMonth()}/${dt_antiga.getFullYear()}`;
-            //     row.querySelector('div.data > .dt_dinamica').innerHTML = data_br;
-            //     log(data_br);
-            // }
-        }
+function atualizaCampoData(tabela, codigo, data) {
+    document.querySelectorAll(`.${tabela}`).forEach(function(row){
+        row.querySelector('div.data').classList.add('gj-cursor-pointer');
+        row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
+        row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
+        row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
+        row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(data, '/');
+        atualizaData(row.getAttribute('data-codigo'), dataBD(data.replaceAll('/','-'),'-'));
     });
-
 }
 
 function habilitaData2(tabela) {
@@ -567,6 +567,55 @@ function habilitaData() {
         value.classList.remove('d-none');
     });
 }
+
+
+function dataBD(data, separador) {
+    let mes = '';
+    if(separador == '/') {
+        data = data.split('/');
+        mes = data[1] < 10 ? "0" + parseInt(data[1]) : data[1]
+        data = `${data[2]}/${mes}/${data[0]}`;
+    }
+    else if(separador == '-') {
+        data = data.split('-');
+        mes = data[1] < 10 ? "0" + parseInt(data[1]) : data[1]
+        data = `${data[2]}-${mes}-${data[0]}`;
+    }
+    return data;
+}
+
+function dataBR(data, separador) {
+    let mes = '';
+    if(separador == '/') {
+        data = data.split('/');
+        mes = data[1] < 10 ? "0" + parseInt(data[1]) : data[1];
+        data = `${data[0]}/${mes}/${data[2]}`;
+    }
+    else if(separador == '-') {
+        data = data.split('-');
+        mes = data[1] < 10 ? "0" + parseInt(data[1]) : data[1];
+        data = `${data[0]}-${mes}-${data[2]}`;
+    }
+    return data;
+}
+
+function dataDiff(data1, data2) {
+
+        let d1 = new Date(data1);
+        let d2 = new Date(data2);
+        let resultado = 0;
+
+        if(`${d1.getDate()}${d1.getMonth()}${d1.getFullYear()}` > `${d2.getDate()}${d2.getMonth()}${d2.getFullYear()}`) {
+            resultado = 'maior';
+        } else if(`${d1.getDate()}${d1.getMonth()}${d1.getFullYear()}` < `${d2.getDate()}${d2.getMonth()}${d2.getFullYear()}`) {
+            resultado = 'menor';
+        } else {
+            resultado = 'igual';
+        }
+
+        return resultado;
+}
+
 
 function abreModalRequestProduct() {
     comboProduto();

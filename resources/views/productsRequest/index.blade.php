@@ -30,7 +30,6 @@
                                 <div class="col-4 col-sm-2 col-md-2 col-lg-2 border cabecalho">Ação</div>
                             </div>
                             @forelse($solicitacao as $sol)
-
                                 <div class="row pedido {{ !empty($sol->deleted_at) ? "d-none": "" }}" data-codigo="{{ $sol->id }}" >
                                     <div class="col-4 col-sm-2 col-md-1 col-lg-2 border cabecalho data" >
                                         <span class="dt_dinamica"></span>
@@ -230,7 +229,7 @@
             dtpick.forEach(function(div){
                let dados = div.querySelectorAll('.pedido > .data > .gj-datepicker > .date');
                    dados.forEach(function(v){
-                       atualizaCampoData('pedido',div.getAttribute('data-codigo'), data);
+                       atualizaCampoDataAll('pedido',div.getAttribute('data-codigo'), data);
                });
             });
         }
