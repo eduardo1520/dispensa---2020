@@ -22,10 +22,11 @@ class ProductRequestController extends Controller
         $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
         $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
+        $combo = Measure::select('id','nome','sigla')->orderby('nome','asc')->get()->toArray();
 
-        $comboMeasureSql = array_map(function ($combo) {
-            return $combo[$combo['id']][] = $combo['nome'] . " - (" . $combo['sigla'] . ")";
-        }, Measure::select('id','nome','sigla')->orderby('nome','asc')->get()->toArray());
+        foreach ($combo as $c) {
+            $comboMeasureSql[$c['id']] = $c['nome'] . " - (" . $c['sigla'] . ")";
+        }
 
         $arr = [];
         $arr['produto'] =  $comboProductSql;
@@ -132,22 +133,41 @@ class ProductRequestController extends Controller
     public function atualiza(Request $request)
     {
         $dados = $request->all();
+
         if(!empty($dados['data'])) {
             $dados['data'] = $this->trataDataBanco($dados['data']);
-        }
-
-        $data = date('Y-m-d');
-
-        if(!empty(ProductRequest::find($dados['id'])) && $dados['data'] >= $data) {
-
-            $resultado = ProductRequest::find($dados['id'])->update($dados);
-
-            if($resultado) {
-                return true;
-            } else {
-                return false;
+            $data = date('Y-m-d');
+            if(!empty(ProductRequest::find($dados['id'])) && $dados['data'] >= $data) {
+                $resultado = ProductRequest::find($dados['id'])->update($dados);
+                if($resultado) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
+
+        $dados['data'] = date('Y-m-d');
+        $dados['user_id'] = \Auth::user()->id;
+
+        $resultado = ProductRequest::updateOrCreate([
+            'id'   => $dados['id'],
+        ],[
+            'brand_id'    => isset($dados['brand_id']) ? $dados['brand_id'] : 30,
+            'category_id' => isset($dados['category_id']) ? $dados['category_id'] : 5,
+            'data'        => $dados['data'],
+            'measure_id'  => isset($dados['measure_id']) ? $dados['measure_id'] : 10 ,
+            'product_id'  => $dados['product_id'],
+            'qtde'        => isset($dados['qtde']) ? $dados['qtde'] : 0,
+            'user_id'     => $dados['user_id']
+        ]);
+
+        if($resultado) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     protected function trataDataBanco($data)

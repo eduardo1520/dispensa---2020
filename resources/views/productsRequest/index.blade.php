@@ -102,7 +102,6 @@
                                                     ?>
                                                 @break
                                                 @endswitch
-
                                                 <span class="{{ $pointer }} {{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}" data-filho="{{$campo}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
                                                 <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"
                                                         onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');
