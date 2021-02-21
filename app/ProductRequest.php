@@ -21,6 +21,10 @@ class ProductRequest extends Model
 
     protected  $dates = ['deleted_at'];
 
+    public function pegaCampos()
+    {
+        return $this->fillable;
+    }
     public function brand()
     {
         return $this->belongsTo('App\Brand');

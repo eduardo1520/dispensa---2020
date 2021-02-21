@@ -31,7 +31,9 @@ function getCombo(pai, codigo, span, classe, combo) {
 
     document.querySelectorAll(`.${pai}`).forEach(function(row){
         if(row.getAttribute('data-codigo') == codigo) {
-            row.querySelector(`div>span.${span}`).classList.add('d-none');
+            if(row.querySelector('div>span.produto-nome').classList.contains('produto-nome')) {
+                row.querySelector(`div>span.${span}`).setAttribute('style','display:none');
+            }
             row.querySelector(`div>.${combo}`).classList.remove('d-none');
         }
     });
@@ -40,8 +42,10 @@ function getCombo(pai, codigo, span, classe, combo) {
 function getComboDinamico(pai, codigo, span, classe, combo) {
     document.querySelectorAll(`.${pai}`).forEach(function(row){
         if(row.getAttribute('data-codigo') == codigo) {
-            row.querySelector(`div>span.${span}`).classList.add('d-none');
-            row.querySelector(`div>.${combo}`).classList.remove('d-none');
+            if(row.querySelector('div.produto>span').classList.contains('produto-nome')) {
+                row.querySelector(`div>span.${span}`).remove();
+            }
+            row.querySelector(`div>.${combo}`).removeAttribute('style');
         }
     });
 }
@@ -58,7 +62,7 @@ function transformaComboSpan(tabela, pai, id, nome, campo) {
 
             if(texto !== "Selecione um Produto") {
                 row.querySelector('.combo-produto').classList.add('d-none');
-                row.querySelector(`.${campo}`).classList.remove('d-none');
+                row.querySelector(`.${campo}`).removeAttribute('style');
                 row.querySelector(`.${campo}`).setAttribute('value',option.value);
                 row.querySelector(`.${campo}`).innerHTML = texto;
                 let params = {id: pai, product_id: option.value };
@@ -81,9 +85,8 @@ function transformaComboSpan(tabela, pai, id, nome, campo) {
                     var select = r.querySelector('select');
                     var option = select.children[select.selectedIndex];
                     var texto = option.textContent;
-
                     r.querySelector('.combo-medida').classList.add('d-none');
-                    r.querySelector(`.${campo}`).classList.remove('d-none');
+                    r.querySelector(`.${campo}`).removeAttribute('style');
                     r.querySelector(`.${campo}`).setAttribute('value',option.value);
                     r.querySelector(`.${campo}`).innerHTML = texto;
 
@@ -106,10 +109,8 @@ function transformaComboSpanDinamico(tabela, pai, id, nome, campo) {
             var texto = option.textContent;
 
             if(texto !== "Selecione um Produto") {
-                row.querySelector(`.${campo}`).classList.add('d-none');
-                row.querySelector(`.produto-nome`).classList.remove('d-none');
-                row.querySelector(`.${campo}`).setAttribute('value',option.value);
-                row.querySelector(`.produto-nome`).innerHTML = texto;
+                row.querySelector('div>.produto').insertAdjacentHTML('afterbegin',`<span class="produto-nome" data-produto_id="" data-codigo="${pai}" data-filho="${option.value}">${texto}</span>`);
+                row.querySelector('div>.produto>select.dinamico').setAttribute("style","display:none");
 
                 let params = {id: pai, product_id: option.value };
 
@@ -123,6 +124,10 @@ function transformaComboSpanDinamico(tabela, pai, id, nome, campo) {
                     }
 
                 });
+
+                row.querySelector(`div>.produto>span.produto-nome`).setAttribute('data-codigo',pai)
+                row.querySelector(`div>.produto>span.produto-nome`).setAttribute('data-filho',option.value)
+                row.querySelector(`div>.produto>span.produto-nome`).innerHTML = texto;
 
                 atualizarProduto(params);
                 return;
@@ -442,8 +447,8 @@ function addRows(pai) {
         <div class="col-1 col-sm-2 col-md-1 col-lg-2 border cabecalho user ${window.screen.width <= 568 ? 'd-none' : ''}">${document.querySelector(`.usuario`).innerText}</div>
         <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde ${window.screen.width < 568 ? 'd-none' : ''}">0</div>
         <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem ${window.screen.width <= 320 || window.screen.width == 568 ? 'd-none' : ''}">-</div>
-        <div class="${window.screen.width == 320 ? 'col-3 col-sm-2 col-md-1 col-lg-1' : 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onchange="getComboDinamico('pedido',${pai},'produto-nome','produto','combo-produto')">
-            <span class="produto-nome" data-produto_id="">${window.screen.width == 320 ? 'Prod.' : 'Produto'}</span>
+        <div class="${window.screen.width == 320 ? 'col-3 col-sm-2 col-md-1 col-lg-1' : 'col-2 col-sm-2 col-md-1 col-lg-1'}  border cabecalho produto   gj-cursor-pointer" onclick="getComboDinamico('pedido',${pai},'produto-nome','produto','combo-produto')">
+            <span class="dinamico" data-produto_id="" style="display:none">${window.screen.width == 320 ? 'Prod.' : 'Produto'}</span>
             <select name="" id="produto_id" class="form-control combo-produto dinamico" tabindex="3" onchange='transformaComboSpanDinamico("pedido","${pai}","", "","dinamico");getProductImage("${pai}","","")'></select>
         </div>
         <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho medida  detalhe gj-cursor-pointer ${window.screen.width <= 320 || window.screen.width == 568 ? 'd-none' : ''}" onchange="getComboDinamico('pedido',${pai},'medida-nome','medida','combo-medida')">
@@ -518,7 +523,7 @@ function atualizaCampoDataAll(tabela, codigo, data) {
             row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
             row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
             row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
-            row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(d, '-');
+            row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(d, '-').replaceAll('-','/');;
         });
         atualizaData(codigo, dataBD(d, '-'));
     } else if(dataDiff(dt_antiga, hoje) === 'maior') {
@@ -535,7 +540,7 @@ function atualizaCampoDataAll(tabela, codigo, data) {
             row.querySelector('div.data > .gj-datepicker').classList.add('d-none');
             row.querySelector('div.data').setAttribute('onclick',"habilitaData2('" + tabela +"')");
             row.querySelector('div.data > .dt_dinamica').classList.remove('d-none');
-            row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(d, '-');
+            row.querySelector('div.data > .dt_dinamica').innerHTML = dataBR(d, '-').replaceAll('-','/');
         });
     }
 }

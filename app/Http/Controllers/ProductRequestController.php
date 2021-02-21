@@ -18,6 +18,9 @@ class ProductRequestController extends Controller
      */
     public function index()
     {
+
+        $this->atualizaProductRequest();
+
         $solicitacao = ProductRequest::withTrashed()->get();
         $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
@@ -58,9 +61,12 @@ class ProductRequestController extends Controller
     public function store(Request $request)
     {
         $dados = $request->all();
-        $categoria = Product::find($dados['product_id']);
-        $dados['category_id'] = $categoria->category_id;
+        $produto = Product::find($dados['product_id']);
+        $dados['category_id'] = $produto->category_id;
         $dados['user_id'] = \Auth::user()->id;
+        $dados['brand_id'] = 30;
+        $dados['measure_id'] = 10;
+        $dados['produto_id'] = $produto->id;
         $dados['data'] = !empty($dados['data']) ? $dados['data'] : date('Y-m-d');
 
         $resposta = ProductRequest::create($dados);
@@ -102,7 +108,27 @@ class ProductRequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(!empty($request['data'])) {
+            $dados['data'] = $this->trataDataBanco($request['data']);
+            $data = date('Y-m-d');
+            if(!empty(ProductRequest::find($id)) && $dados['data'] >= $data) {
+                $resultado = ProductRequest::find($id)->update($dados);
+                if($resultado) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        if(ProductRequest::find($id)) {
+            $resultado = ProductRequest::find($id)->update($request->all());
+            if($resultado) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
@@ -132,41 +158,21 @@ class ProductRequestController extends Controller
 
     public function atualiza(Request $request)
     {
-        $dados = $request->all();
+        return $request['id'] && ProductRequest::find($request['id']) ? $this->update($request, $request['id']) : $this->store($request);
+    }
 
-        if(!empty($dados['data'])) {
-            $dados['data'] = $this->trataDataBanco($dados['data']);
-            $data = date('Y-m-d');
-            if(!empty(ProductRequest::find($dados['id'])) && $dados['data'] >= $data) {
-                $resultado = ProductRequest::find($dados['id'])->update($dados);
-                if($resultado) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
+    private function trataCampoProdRequest($dados)
+    {
 
-        $dados['data'] = date('Y-m-d');
-        $dados['user_id'] = \Auth::user()->id;
+        $prod= new ProductRequest();
+        $campos = $prod->pegaCampos();
 
-        $resultado = ProductRequest::updateOrCreate([
-            'id'   => $dados['id'],
-        ],[
-            'brand_id'    => isset($dados['brand_id']) ? $dados['brand_id'] : 30,
-            'category_id' => isset($dados['category_id']) ? $dados['category_id'] : 5,
-            'data'        => $dados['data'],
-            'measure_id'  => isset($dados['measure_id']) ? $dados['measure_id'] : 10 ,
-            'product_id'  => $dados['product_id'],
-            'qtde'        => isset($dados['qtde']) ? $dados['qtde'] : 0,
-            'user_id'     => $dados['user_id']
-        ]);
+//        $table = $prod->getTable();
+//        $columns  = \Schema::getColumnListing($table);
+        dd($campos);
 
-        if($resultado) {
-            return true;
-        } else {
-            return false;
-        }
+        dd($dados);
+        return [];
 
     }
 
@@ -179,4 +185,17 @@ class ProductRequestController extends Controller
         }
     }
 
+    public function atualizaProductRequest()
+    {
+        $prod_req = ProductRequest::all();
+        foreach ($prod_req as $p) {
+            $produto = Product::select('id', 'brand_id', 'category_id')->where('id', $p['product_id'])->first();
+
+//            if( $p->find($produto['id'])) {
+//                print_r(['id' => $produto['id'], 'brand_id' => $produto['brand_id'], 'category_id' => $produto['category_id']]);
+//            }
+//            dd(['brand_id' => $produto['brand_id'], 'category_id' => $produto['category_id']]);
+            $p->find($p['id'])->update(['brand_id' => $produto['brand_id'], 'category_id' => $produto['category_id']]);
+        }
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Category;
 use App\Product;
 use App\Brand;
+use App\ProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -200,6 +201,28 @@ class ProductController extends Controller
 
         $resposta = $product->update($data);
 
+        // Quando for atualizado o produto o mesmo deve refletir na lista de requisição de produto
+
+        $prod_req = new ProductRequest();
+        $obj = $prod_req->select('id')->where('product_id',$id)->first();
+
+        if(isset($obj['id'])) {
+
+            if(isset($data['brand_id'])) {
+                $data = [
+                    'brand_id' => $data['brand_id']
+                ];
+            }
+
+            if(isset($data['category_id'])) {
+                $data = [
+                    'category_id' => $data['category_id']
+                ];
+            }
+
+            $prod_req->select('id')->where('product_id',$id)->update($data);
+        }
+
         if($resposta)
             return redirect()->route('product.index')->with('success','Produto atualizado com sucesso!');
         return back()->with('error','Erro ao atualizar o produto!');
@@ -355,4 +378,5 @@ class ProductController extends Controller
             return response('Erro:',500);
         }
     }
+
 }
