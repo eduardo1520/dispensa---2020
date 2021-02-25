@@ -91,8 +91,8 @@
         @endif
         <!-- Divider -->
         <hr class="sidebar-divider">
-        <li class="nav-item {{ Nav::isRoute('profile.index') }}">
-            <a class="nav-link" href="{{ route('profile.index') }}">
+        <li class="nav-item {{ Nav::isRoute('puchase-order.index') }}">
+            <a class="nav-link" href="{{ route('puchase-order.index') }}">
                 <i class="fas fa-file-upload"></i>
                 <span>{{ __('Pedido de Compras') }}</span>
             </a>

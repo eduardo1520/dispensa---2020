@@ -64,3 +64,7 @@ Route::get('/usuario/novo', function () {
 
 Route::resource('/brand', 'BrandController');
 Route::post('/brand/brandAjax', 'BrandController@brandAjax')->name('brandAjax');
+
+
+Route::resource('/puchase-order', 'PurchaseOrderController');
+Route::post('/puchase-order/productImageAjax', 'PurchaseOrderController@getProductImages');
