@@ -241,7 +241,7 @@
 <script src="{{ asset('js/sweetalert2@10.js') }}"></script>
 {{-- versão 1.9.1 --}}
 <script src="{{ asset('js/jquery.js') }}"></script>
-<script src="{{ asset('js/productsRequest.js') }}"></script>
+<script src="{{ asset('js/products-request.js') }}"></script>
 
 
 

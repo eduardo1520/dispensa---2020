@@ -1,4 +1,4 @@
-const lib = require('../../public/js/productsRequest')
+const lib = require('../../public/js/products-request')
 
 // describe('Funções com Promise', () =>{
 //    test('Validando o combo de unidades', () => {

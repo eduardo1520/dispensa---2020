@@ -46,6 +46,7 @@ Route::post('/product/productAjax', 'ProductController@productAjax')->name('prod
 Route::post('/product/productImageAjax', 'ProductController@productImageAjax')->name('productImageAjax');
 Route::post('/product/productCategoryAjax', 'ProductController@productCategoryAjax')->name('productCategoryAjax');
 Route::post('/product/productBrandAjax', 'ProductController@productBrandAjax')->name('productBrandAjax');
+Route::post('/product/getProductOneAjax', 'ProductController@getProductOneAjax')->name('getProductOneAjax');
 
 
 Route::resource('/product-request', 'ProductRequestController');

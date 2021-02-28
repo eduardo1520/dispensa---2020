@@ -16,6 +16,7 @@ class PurchaseOrderController extends Controller
     {
         $produtos = Product::orderBy('name', 'ASC')->get();
         return view('PurchaseOrder.index', compact('produtos'));
+//        return view('PurchaseOrder.duallistbox', compact('produtos'));
     }
 
     /**

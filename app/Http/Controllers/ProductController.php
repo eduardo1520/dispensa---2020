@@ -340,6 +340,16 @@ class ProductController extends Controller
         return response($comboProductSql,200);
     }
 
+    public function getProductOneAjax(Request $request)
+    {
+        if($request->id) {
+            $product = Product::select('products.*','categories.tipo')->join('categories', function ($join) {
+                $join->on('products.category_id', '=', 'categories.id');
+            })->where('products.id', '=',$request->id)->get();
+            return response($product,200);
+        }
+    }
+
     public function productImageAjax(Request $request)
     {
         if($request->id && $request->name) {

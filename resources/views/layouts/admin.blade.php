@@ -435,6 +435,27 @@
     </div>
 </div>
 
+<div class="modal fade" id="pedidoModal" tabindex="-1" aria-labelledby="pedidoModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloPedido">Selecione um Produto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="my-icon-select"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"  onclick="">OK</button>
+{{--                <button type="button" class="btn btn-primary" onclick="" id="btnPedido" disabled>Selecionar Produto</button>--}}
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="modal fade" id="medidaModal" tabindex="-1" aria-labelledby="medidaModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">

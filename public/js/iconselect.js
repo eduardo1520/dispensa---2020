@@ -112,7 +112,15 @@ function IconSelect($$elementID, $$parameters) {
             if(_selectedIndex != -1) _icons[_selectedIndex].element.setAttribute('class','icon');
             _selectedIndex = $index;
             _View.selectedIconImgElement.setAttribute('src', icon.iconFilePath);
-            if(_selectedIndex != -1) _icons[_selectedIndex].element.setAttribute('class','icon selected');
+            if(_selectedIndex != -1) {
+                _icons[_selectedIndex].element.setAttribute('class','icon selected');
+
+                let codigo_produto = document.querySelector('#my-icon-select-box-scroll > div > .selected > img').getAttribute('icon-value');
+
+                if(codigo_produto && $index > 0) {
+                    getProductOne(codigo_produto);
+                }
+            }
         }
 
         _View.iconSelectElement.dispatchEvent(new Event('changed'));
