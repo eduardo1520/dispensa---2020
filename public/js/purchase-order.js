@@ -30,19 +30,70 @@ function removeProdutoLista(id) {
     }
 }
 
+function getComboMedidas() {
+    let combo = [];
+    let selected = '';
+    promise(`measure/measureAjax`, 'post')
+        .then(response => {
+            return response.json();
+        })
+        .then(medidas => {
+            medidas.forEach(function(m){
+                selected = m.id == 6 ? 'selected' : '';
+                combo.push(`<option value="${m.id}" ${selected}>${m.nome} - ${m.sigla}</option>`);
+        });
+    });
+
+    return combo;
+}
+
+function getProductMeasurements(id, qtde = 1)
+{
+    promise(`productMeasurements/getProductMeasuresAjax`, 'post', {product_id: id, qtde: qtde})
+        .then(response => {
+            return response.json();
+        })
+        .then(valor => {
+            document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
+                if(prod.getAttribute('id') == id) {
+                    let produto_nome = prod.querySelector('div >.produto').innerHTML;
+                    let arr = produto_nome.split('- ');
+                    let nome = arr.length > 1 ? arr[1] : arr[0];
+                    prod.querySelector('div >.produto').innerHTML = `[${valor}] - ` + nome;
+                }
+            })
+
+        });
+}
+
+function  atualizaQtdeProduto(id) {
+    document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
+        if(prod.getAttribute('id') == id) {
+            var select = prod.querySelector('select.qtde');
+            var option = select.children[select.selectedIndex];
+            var texto = option.textContent;
+
+            getProductMeasurements(id, parseInt(texto));
+
+        }
+    });
+}
+
+
 function getProductOne(codigo) {
     let encontrou = false;
     document.querySelectorAll(`.pedido > tbody > tr`).forEach(function (p) {
 
         if(p.getAttribute('id') == codigo) {
             encontrou = true;
-            // log(p.querySelector('td'));
             alert(`O produto ${p.querySelector('td').innerHTML.toLowerCase()} já foi adicionado na lista!`);
             return;
         }
     });
 
     if (encontrou === false) {
+        let combo = getComboMedidas();
+
         promise(`product/getProductOneAjax`, 'post', {'id': codigo})
             .then(response => {
                 return response.json();
@@ -51,11 +102,19 @@ function getProductOne(codigo) {
                 produto = produto[0];
                 let pedido = `<tr align="center" id='${produto.id}'>
                                 <th scope="row" >
-                                    <select name="qtde" class="qtde form-control">
+                                    <select name="medida" class="medida form-control" onchange="getProductMeasurements(${produto.id})">
+                                        ${combo}
+                                    </select>
+                                </th>
+                                <th scope="center" >
+                                    <select name="qtde" class="qtde form-control" onchange="atualizaQtdeProduto(${produto.id})">
                                         ${Array.from({length:12}, (_,i) => '<option value=' + i + '>' + (i+1) + '</option>')}
                                     </select>
                                 </th>
-                                <td align="center">${produto.name}</td>
+                                <td align="center">
+                                    <div><img src="${produto.image}" alt="${produto.description}" data-id="${produto.id}" width="100px;" height="75px;"></div>
+                                    <div class="mt-1"><small class="text-muted produto">${produto.name}</small></div>
+                                </td>
                                 <td align="center">${produto.description}</td>
                                 <td align="center">${produto.tipo}</td>
                                 <td>
@@ -68,8 +127,9 @@ function getProductOne(codigo) {
 
         });
     }
-
 }
+
+
 
 var iconSelect;
 

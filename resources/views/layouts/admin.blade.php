@@ -83,6 +83,7 @@
                         <a class="collapse-item" href="{{ route('measure.index') }}">Medidas</a>
                         <a class="collapse-item" href="{{ route('brand.index') }}">Marcas</a>
                         <a class="collapse-item" href="{{ route('product.index') }}">Produtos</a>
+                        <a class="collapse-item" href="produtos.html">Produtos por Medidas</a>
                         <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
 
                     </div>
@@ -121,6 +122,7 @@
                         <h6 class="collapse-header">Páginas:</h6>
                         <a class="collapse-item" href="categorias.html">Categorias</a>
                         <a class="collapse-item" href="produtos.html">Produtos</a>
+                        <a class="collapse-item" href="produtos.html">Produtos por Medidas</a>
                         <a class="collapse-item" href="{{ route('feedback.index') }}">Feedback</a>
                         <a class="collapse-item" href="{{ route('relatorio') }}">Usuários</a>
                         <a class="collapse-item" href="logs.html">Logs</a>
@@ -352,7 +354,7 @@
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
-                    <span>Copyright &copy; Eduardo Oliveira 2020</span>
+                    <span>Copyright &copy; Eduardo Oliveira {{ date('Y') }}</span>
                 </div>
             </div>
         </footer>

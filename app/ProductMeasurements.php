@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Measure extends Model
+class ProductMeasurements extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
-        'id','nome','sigla'
+        'id','product_id','measure_id','qtde'
     ];
 
     protected $hidden = [
@@ -21,8 +21,14 @@ class Measure extends Model
 
     protected  $dates = ['deleted_at'];
 
-    public function productMeasurements()
+    public function products()
     {
-        return $this->belongsTo('App\ProductMeasurements');
+        return $this->hasMany('App\Product');
     }
+
+    public function brand()
+    {
+        return $this->hasMany('App\Brand');
+    }
+
 }

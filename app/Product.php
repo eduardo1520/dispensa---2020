@@ -31,6 +31,11 @@ class Product extends Model
         return $this->belongsTo('App\Category');
     }
 
+    public function productMeasurements()
+    {
+        return $this->belongsTo('App\ProductMeasurements');
+    }
+
     public static function getFieldDefault()
     {
         $dados = \DB::select('select id from pantry.categories where tipo like "%Outros%"');

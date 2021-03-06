@@ -20,6 +20,7 @@
                         <table class="mt-lg-3 table table-striped table-bordered  table-responsive-lg pedido">
                             <thead>
                             <tr align="center">
+                                <th>Medida</th>
                                 <th>Qtde</th>
                                 <th>Produto</th>
                                 <th>Descrição</th>
