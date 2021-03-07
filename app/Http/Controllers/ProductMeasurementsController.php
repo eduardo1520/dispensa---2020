@@ -14,7 +14,23 @@ class ProductMeasurementsController extends Controller
      */
     public function index()
     {
-        //
+
+//        $items = DB::table('items')
+//            ->select("items.id","items.name"
+//                ,DB::raw("(GROUP_CONCAT(items_city.name SEPARATOR '@')) as `cities`"))
+//            ->leftjoin("items_city","items_city.item_id","=","items.id")
+//            ->groupBy('items.id')
+//            ->get();
+
+        $produtos_measurements = \DB::table('pantry.product_measurements')
+            ->select("products.id","products.name","products.image"
+                ,\DB::raw("(GROUP_CONCAT(CONCAT(measures.nome, ' - (', measures.sigla, ')') SEPARATOR ', ')) as `medidas`"))
+            ->join("measures","measures.id","=","product_measurements.measure_id")
+            ->join('pantry.products', 'products.id', '=', 'product_measurements.product_id')
+            ->groupBy('products.id','products.name','products.image')
+            ->orderby('products.name','asc')
+            ->paginate(10);
+        return view('productMeasurements.index', compact('produtos_measurements'));
     }
 
     /**
@@ -69,7 +85,9 @@ class ProductMeasurementsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Atenção a tabela de listagem está utilizando o pantry.products.id devido a regra de negócio de agrupamento de medidas,
+        // utilizar um filtro para efetuar as trocas de ids nas atualizações da tabela pantry.product_measurements
+        // ( pantry.products.id --> pantry.product_measurements.id )
     }
 
     /**
@@ -86,9 +104,16 @@ class ProductMeasurementsController extends Controller
     public function getProductMeasuresAjax(Request $request)
     {
         $dados = $request->all();
-        $produto = ProductMeasurements::select('qtde')->where('product_id',$request['product_id'])->first();
-//        $dados = ProductMeasurements::select('qtde')->where('product_id',$request['product_id'])->toSql();
-        return response($produto['qtde'] * $dados['qtde']);
+        $produto = ProductMeasurements::select('qtde','measure_id')->where('product_id',$request['product_id'])->first();
 
+        if($dados['measure_id'] == 6) {
+            return response($dados['qtde'] * 1);
+        }
+        elseif($produto['measure_id'] == $dados['measure_id']) {
+            return response($produto['qtde'] * $dados['qtde']);
+        }
+        else {
+            return false;
+        }
     }
 }

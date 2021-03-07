@@ -47,15 +47,44 @@ function getComboMedidas() {
     return combo;
 }
 
-function getProductMeasurements(id, qtde = 1)
-{
-    promise(`productMeasurements/getProductMeasuresAjax`, 'post', {product_id: id, qtde: qtde})
+function getTextCombo(objeto, componente) {
+    let select = objeto.querySelector(`${componente}`);
+    let option = select.children[select.selectedIndex];
+    let texto  = option.textContent;
+    return texto;
+}
+
+function getValueCombo(objeto, componente) {
+    let select = objeto.querySelector(`${componente}` );
+    let option = select.children[select.selectedIndex];
+    return parseInt(option.value);
+}
+
+function getProductMeasurements(produto, qtde = 1) {
+    let medida = '';
+    let qtd = '';
+    document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
+        if(prod.getAttribute('id') == produto) {
+            medida = getValueCombo(prod, 'select.medida');
+        }
+    });
+
+    document.querySelectorAll('.pedido > tbody > tr').forEach(function (qt) {
+        if(qt.getAttribute('id') == produto) {
+            qtd = getTextCombo(qt, 'select.qtde') > 1 ? getTextCombo(qt, 'select.qtde') : qtde;
+        }
+    });
+
+
+    let combo = getComboMedidas();
+
+    promise(`productMeasurements/getProductMeasuresAjax`, 'post', {product_id: produto, measure_id: medida, qtde: qtd})
         .then(response => {
             return response.json();
         })
         .then(valor => {
             document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
-                if(prod.getAttribute('id') == id) {
+                if(prod.getAttribute('id') == produto) {
                     let produto_nome = prod.querySelector('div >.produto').innerHTML;
                     let arr = produto_nome.split('- ');
                     let nome = arr.length > 1 ? arr[1] : arr[0];
@@ -63,16 +92,59 @@ function getProductMeasurements(id, qtde = 1)
                 }
             })
 
-        });
+        }).catch(error => {
+            let timerInterval;
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                html: 'Medida não permitida!',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading()
+                    timerInterval = setInterval(() => {
+
+                    }, 100)
+                },
+                willClose: () => {
+
+                    document.querySelectorAll('.pedido > tbody > tr').forEach(function (pro) {
+
+                        if(pro.getAttribute('id') == produto) {
+
+                            pro.querySelectorAll('select.medida > option').forEach(function (prod) {
+                                prod.remove();
+                            });
+
+                            pro.querySelectorAll('select.qtde > option').forEach(function (qt) {
+                                qt.remove();
+                            });
+
+                            pro.querySelector('select.qtde').insertAdjacentHTML("afterbegin", `${Array.from({length:12}, (_,i) => '<option value=' + i + '>' + (i+1) + '</option>').join('')}`);
+
+                            pro.querySelector('select.medida').insertAdjacentHTML("afterbegin", `${combo.join('')}`);
+
+                            document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
+                                if(prod.getAttribute('id') == produto) {
+                                    let produto_nome = prod.querySelector('div >.produto').innerHTML;
+                                    let arr = produto_nome.split('- ');
+                                    let nome = arr.length > 1 ? arr[1] : arr[0];
+                                    prod.querySelector('div >.produto').innerHTML = nome;
+                                }
+                            });
+                        }
+                    });
+                    clearInterval(timerInterval)
+                },
+                footer: 'Tente novamente...'
+            })
+    });
 }
 
 function  atualizaQtdeProduto(id) {
     document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
         if(prod.getAttribute('id') == id) {
-            var select = prod.querySelector('select.qtde');
-            var option = select.children[select.selectedIndex];
-            var texto = option.textContent;
-
+            var texto  = getTextCombo(prod, 'select.qtde');
             getProductMeasurements(id, parseInt(texto));
 
         }
@@ -86,7 +158,16 @@ function getProductOne(codigo) {
 
         if(p.getAttribute('id') == codigo) {
             encontrou = true;
-            alert(`O produto ${p.querySelector('td').innerHTML.toLowerCase()} já foi adicionado na lista!`);
+
+            Swal.fire({
+                title: 'Atenção!',
+                text: `O produto ${p.querySelector('td > div > small.produto').innerHTML.toLowerCase()} já foi adicionado na lista!`,
+                imageUrl: `${p.querySelector('td > div > img').getAttribute('src')}`,
+                imageWidth: 400,
+                imageHeight: 200,
+                imageAlt: `${p.querySelector('td > div > small.produto').innerHTML.toLowerCase()}`,
+            });
+
             return;
         }
     });
@@ -106,7 +187,7 @@ function getProductOne(codigo) {
                                         ${combo}
                                     </select>
                                 </th>
-                                <th scope="center" >
+                                <th scope="center">
                                     <select name="qtde" class="qtde form-control" onchange="atualizaQtdeProduto(${produto.id})">
                                         ${Array.from({length:12}, (_,i) => '<option value=' + i + '>' + (i+1) + '</option>')}
                                     </select>

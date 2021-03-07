@@ -83,7 +83,7 @@
                         <a class="collapse-item" href="{{ route('measure.index') }}">Medidas</a>
                         <a class="collapse-item" href="{{ route('brand.index') }}">Marcas</a>
                         <a class="collapse-item" href="{{ route('product.index') }}">Produtos</a>
-                        <a class="collapse-item" href="produtos.html">Produtos por Medidas</a>
+                        <a class="collapse-item" href="{{ route('productMeasurements.index') }}">Produtos por Medidas</a>
                         <a class="collapse-item" href="{{ route('user.index') }}">Usuários</a>
 
                     </div>

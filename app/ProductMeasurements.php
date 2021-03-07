@@ -21,14 +21,20 @@ class ProductMeasurements extends Model
 
     protected  $dates = ['deleted_at'];
 
-    public function products()
+//    public function products()
+//    {
+//        return $this->hasMany('App\Product');
+//    }
+
+    public function product()
     {
-        return $this->hasMany('App\Product');
+        return $this->belongsTo('App\Product');
     }
 
-    public function brand()
+
+    public function measure()
     {
-        return $this->hasMany('App\Brand');
+        return $this->hasMany('App\Measure');
     }
 
 }
