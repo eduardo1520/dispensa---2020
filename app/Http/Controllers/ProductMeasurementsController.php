@@ -73,7 +73,9 @@ class ProductMeasurementsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $product_measurements = $this->getProductMeasurementForProductID($id);
+        $titulo = "Edição de Produtos por Medidas";
+        return view('productMeasurements.product_measurements', compact('product_measurements','titulo'));
     }
 
     /**
@@ -115,5 +117,14 @@ class ProductMeasurementsController extends Controller
         else {
             return false;
         }
+    }
+
+    public function getProductMeasurementForProductID($id)
+    {
+        if($id) {
+            $resultado = ProductMeasurements::where('product_id',$id)->get();
+        }
+
+        return $resultado;
     }
 }

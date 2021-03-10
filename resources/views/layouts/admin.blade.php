@@ -646,21 +646,27 @@
     var hoje = new Date();
     var ano = hoje.getFullYear();
     var ultimoDia = new Date(ano, 12, 0);
-    dt('#datetimepicker1').datepicker({
-        uiLibrary: 'bootstrap4',
-        iconsLibrary: 'fontawesome',
-        locale: 'pt-br',
-        weekStart: 1,
-        daysOfWeekHighlighted: "6,0",
-        autoclose: true,
-        todayHighlight: true,
-        format: 'd/m/yyyy',
-        minDate: yesterday,
-        maxDate: new Date(ultimoDia),
-        onSelect: function(date) {
-            dt('#datetimepicker1').html(date);$.noConflict();
-        }
-    });
+
+    try {
+        dt('#datetimepicker1').datepicker({
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            locale: 'pt-br',
+            weekStart: 1,
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            format: 'd/m/yyyy',
+            minDate: yesterday,
+            maxDate: new Date(ultimoDia),
+            onSelect: function(date) {
+                dt('#datetimepicker1').html(date);$.noConflict();
+            }
+        });
+    } catch(error) {
+
+    }
+
 
 </script>
 

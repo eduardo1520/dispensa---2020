@@ -45,7 +45,7 @@
                                 <td align="center">{{ $prod->name }}</td>
                                 <td align="center">{{ $prod->medidas  }}</td>
                                 <td align="center">
-                                    <a href="{{ route('product.edit',$prod->id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
+                                    <a href="{{ route('productMeasurements.edit',$prod->id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
                                         <i class="fas fa-info-circle"></i>
                                     </a>
                                 </td>
@@ -69,19 +69,9 @@
 @endsection
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="{{ asset('vendor/harvesthq/chosen/chosen.jquery.min.js') }}"></script>
-<script>
 
-</script>
 <script src="{{ asset('js/jquery.js') }}"></script>
 <script src="{{ asset('js/sweetalert2@10.js') }}"></script>
 
 
-<script>
 
-    $(document).ready(function(){
-
-    });
-
-</script>
