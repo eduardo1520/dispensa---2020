@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Measure;
 use App\ProductMeasurements;
 use Illuminate\Http\Request;
 
@@ -74,8 +75,9 @@ class ProductMeasurementsController extends Controller
     public function edit($id)
     {
         $product_measurements = $this->getProductMeasurementForProductID($id);
+        $measures = Measure::all()->toArray();
         $titulo = "Edição de Produtos por Medidas";
-        return view('productMeasurements.product_measurements', compact('product_measurements','titulo'));
+        return view('productMeasurements.product_measurements', compact('product_measurements','titulo', 'measures'));
     }
 
     /**
@@ -122,7 +124,10 @@ class ProductMeasurementsController extends Controller
     public function getProductMeasurementForProductID($id)
     {
         if($id) {
-            $resultado = ProductMeasurements::where('product_id',$id)->get();
+            $resultado = ProductMeasurements::where('product_id',$id)
+                ->join('measures', 'product_measurements.measure_id', '=', 'measures.id')
+                ->select('product_measurements.*', 'measures.nome', 'measures.sigla')
+                ->get()->toarray();
         }
 
         return $resultado;
