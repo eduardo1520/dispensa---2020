@@ -23,8 +23,8 @@ function getImageProduct(id, name) {
                 let element = document.querySelector("div#produto_imagem");
 
                 imagem.forEach(function(value){
-                    // log(value);
                     element.insertAdjacentHTML('beforeend', `<img src="../../${value['image']}" width="150" height="150" alt=""/>`);
+                    element.insertAdjacentHTML('beforeend', `<div style="padding-top: 10px; padding-left: 45px;"><small class="text-muted">${value['name']}</small></div>`);
                 });
             }
         }).catch(error => {
@@ -32,3 +32,16 @@ function getImageProduct(id, name) {
         });
 }
 
+function allowDrop(event) {
+    // event.preventDefault();
+}
+
+function drag(event) {
+    event.dataTransfer.setData("text", event.target.id);
+}
+
+function drop(event) {
+    event.preventDefault();
+    var data = event.dataTransfer.getData("text");
+    event.target.appendChild(document.getElementById(data));
+}

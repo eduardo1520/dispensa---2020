@@ -28,6 +28,7 @@ class ProductMeasurementsController extends Controller
                 ,\DB::raw("(GROUP_CONCAT(CONCAT(measures.nome, ' - (', measures.sigla, ')') SEPARATOR ', ')) as `medidas`"))
             ->join("measures","measures.id","=","product_measurements.measure_id")
             ->join('pantry.products', 'products.id', '=', 'product_measurements.product_id')
+            ->whereNull('product_measurements.deleted_at')
             ->groupBy('products.id','products.name','products.image')
             ->orderby('products.name','asc')
             ->paginate(10);
@@ -39,9 +40,13 @@ class ProductMeasurementsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $resposta = $request->create($request->all());
+
+        if($resposta)
+            return redirect()->route('productMeasurements.index')->with('success','Medida do Produto cadastrada com sucesso!');
+        return back()->with('error','Erro ao cadastrar o produto!');
     }
 
     /**
@@ -77,7 +82,8 @@ class ProductMeasurementsController extends Controller
         $product_measurements = $this->getProductMeasurementForProductID($id);
         $measures = Measure::all()->toArray();
         $titulo = "Edição de Produtos por Medidas";
-        return view('productMeasurements.product_measurements', compact('product_measurements','titulo', 'measures'));
+
+        return view('productMeasurements.product_measurements', compact('product_measurements','titulo', 'measures','id'));
     }
 
     /**
@@ -92,6 +98,87 @@ class ProductMeasurementsController extends Controller
         // Atenção a tabela de listagem está utilizando o pantry.products.id devido a regra de negócio de agrupamento de medidas,
         // utilizar um filtro para efetuar as trocas de ids nas atualizações da tabela pantry.product_measurements
         // ( pantry.products.id --> pantry.product_measurements.id )
+
+        $produts_measurements = ProductMeasurements::where('product_id',$id)->get()->toarray();
+
+        $qtde = $produts_measurements[0]['qtde'];
+
+        $arr = [];
+
+        $lista = $request->duallistbox_demo1;
+
+        if(!empty($lista)) {
+            foreach ($produts_measurements as $key => $p) {
+                $idx = array_search($p['measure_id'] , $lista);
+
+                if(isset($lista[$idx]) && count($lista) > 0) {
+                    unset($lista[$idx]);
+                }
+                else  {
+                    $arr[$key] = $p['measure_id'];
+                }
+
+            }
+
+        }
+
+        $resposta = '';
+
+        if(count($arr) == 1) {
+            $measure = current($arr);
+            // Preparando os dados para serem inseridos na tabela de ProductsMeasurements.
+            $data = [
+                'product_id' => $id,
+                'measure_id' => $measure,
+                'qtde' => $qtde,
+                '_token' => $request->_token
+            ];
+
+            $resposta = ProductMeasurements::create($data);
+
+        } elseif(count($arr) > 0) {
+            foreach ($arr as $measure) {
+                $data = [
+                    'product_id' => $id,
+                    'measure_id' => $measure,
+                    'qtde' => $qtde,
+                    '_token' => $request->_token
+                ];
+                $resposta = ProductMeasurements::create($data);
+            }
+
+        } else {
+            if(empty($lista)) {
+                foreach ($produts_measurements as $key => $p) {
+                    $resposta = ProductMeasurements::find($p['id'])->delete();
+                }
+            } else {
+                foreach ($lista as $measure) {
+                    $data = [
+                        'product_id' => $id,
+                        'measure_id' => $measure,
+                        'qtde' => $qtde,
+                        '_token' => $request->_token
+                    ];
+                    $resposta = ProductMeasurements::create($data);
+                }
+            }
+        }
+
+//        dd($produts_measurements);
+//
+//        $ajuste_produto = ProductMeasurements::find(95);
+//
+//        $dados = [
+//            'product_id' => $request->product_id,
+//            'measure_id' => $request->duallistbox_demo1[0]
+//        ];
+//
+//        $resposta = $ajuste_produto->update($dados);
+//
+        if($resposta)
+            return redirect()->route('productMeasurements.index')->with('success','Medida do Produto atualizado com sucesso!');
+        return back()->with('error','Erro ao atualizar o produto!');
     }
 
     /**
@@ -127,6 +214,7 @@ class ProductMeasurementsController extends Controller
             $resultado = ProductMeasurements::where('product_id',$id)
                 ->join('measures', 'product_measurements.measure_id', '=', 'measures.id')
                 ->select('product_measurements.*', 'measures.nome', 'measures.sigla')
+                ->whereNull('product_measurements.deleted_at')
                 ->get()->toarray();
         }
 
