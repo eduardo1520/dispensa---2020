@@ -65,6 +65,9 @@
                                                                     alert($('[name="duallistbox_demo1[]"]').val());
                                                                     return false;
                                                                 });
+
+                                                                log($('select[name="duallistbox_demo1[]"]').bootstrapDualListbox('getContainer'));
+
                                                             </script>
                                                         </div>
                                                     </div>
@@ -90,10 +93,15 @@
     </div>
 @endsection
 
+<script src="{{ asset('js/jquery.js') }}"></script>
+<script src="{{ asset('js/sweetalert2@10.js') }}"></script>
+
 <script src="{{ asset('js/product_measurements.js') }}"></script>
 <script>
+    let btn;
     document.addEventListener("DOMContentLoaded", function(event) {
         document.querySelector('.moveall').setAttribute('class', 'btn btn-outline-success');
+        document.querySelector('.removeall').setAttribute('id', 'apagarTodos');
         document.querySelector('.removeall').setAttribute('class', 'btn btn-outline-danger');
         document.querySelector('div.row > div#produto_imagem').setAttribute('style', 'margin-top: 90px;');
         document.querySelector('div.box1 > select').setAttribute('style', 'height: 257px;padding-top: 10px;padding-left: 5px;border-color:#1cc88a');
@@ -101,13 +109,14 @@
         let id = document.querySelector('div#produto_imagem').getAttribute('data-product_id');
         let name =  document.querySelector('div#produto_imagem').getAttribute('data-product_name');
         getImageProduct(id,name);
-
+        // btn = document.querySelector('button');
+        document.getElementById('apagarTodos').addEventListener("click", confirmar, false);
     });
 
-    // document.addEventListener("click", function() {
-    //     log(document.querySelector('div.box2 > select'));
-    //     document.getElementById("frm-product_measurements").submit();
-    // });
+
+
+    // document.getElementById('test').addEventListener('click', Person.sayName.bind(Person));
+    // btn.addEventListener("click", confirmar, false);
 
 </script>
 

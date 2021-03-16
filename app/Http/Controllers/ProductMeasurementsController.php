@@ -99,86 +99,37 @@ class ProductMeasurementsController extends Controller
         // utilizar um filtro para efetuar as trocas de ids nas atualizações da tabela pantry.product_measurements
         // ( pantry.products.id --> pantry.product_measurements.id )
 
-        $produts_measurements = ProductMeasurements::where('product_id',$id)->get()->toarray();
+        try {
+            $produts_measurements = ProductMeasurements::where('product_id',$id)->get()->toarray();
+            if(!empty($produts_measurements)) {
+                $qtde = $produts_measurements[0]['qtde'];
+                $lista = $request->duallistbox_demo1;
+                //Apaga o produto e cadastra novamente com as suas novas medidas.
+                if(!empty($lista)) {
+                    foreach ($produts_measurements as $key => $p) {
+                        $prod = ProductMeasurements::find($p['id']);
+                        $this->forceDelete($prod);
+                    }
+                    //Insere nos novos produtos com as suas medidas.
+                    foreach ($lista as $measure) {
+                        $data = [
+                            'product_id' => $id,
+                            'measure_id' => $measure,
+                            'qtde' => $qtde,
+                            '_token' => $request->_token
+                        ];
+                        $resposta = ProductMeasurements::create($data);
+                    }
 
-        $qtde = $produts_measurements[0]['qtde'];
-
-        $arr = [];
-
-        $lista = $request->duallistbox_demo1;
-
-        if(!empty($lista)) {
-            foreach ($produts_measurements as $key => $p) {
-                $idx = array_search($p['measure_id'] , $lista);
-
-                if(isset($lista[$idx]) && count($lista) > 0) {
-                    unset($lista[$idx]);
+                    if($resposta)
+                        return redirect()->route('productMeasurements.index')->with('success','Medida do Produto atualizado com sucesso!');
+                    return back()->with('error','Erro ao atualizar o produto!');
                 }
-                else  {
-                    $arr[$key] = $p['measure_id'];
-                }
-
             }
 
+        } catch(\Exception $error) {
+            dd($error);
         }
-
-        $resposta = '';
-
-        if(count($arr) == 1) {
-            $measure = current($arr);
-            // Preparando os dados para serem inseridos na tabela de ProductsMeasurements.
-            $data = [
-                'product_id' => $id,
-                'measure_id' => $measure,
-                'qtde' => $qtde,
-                '_token' => $request->_token
-            ];
-
-            $resposta = ProductMeasurements::create($data);
-
-        } elseif(count($arr) > 0) {
-            foreach ($arr as $measure) {
-                $data = [
-                    'product_id' => $id,
-                    'measure_id' => $measure,
-                    'qtde' => $qtde,
-                    '_token' => $request->_token
-                ];
-                $resposta = ProductMeasurements::create($data);
-            }
-
-        } else {
-            if(empty($lista)) {
-                foreach ($produts_measurements as $key => $p) {
-                    $resposta = ProductMeasurements::find($p['id'])->delete();
-                }
-            } else {
-                foreach ($lista as $measure) {
-                    $data = [
-                        'product_id' => $id,
-                        'measure_id' => $measure,
-                        'qtde' => $qtde,
-                        '_token' => $request->_token
-                    ];
-                    $resposta = ProductMeasurements::create($data);
-                }
-            }
-        }
-
-//        dd($produts_measurements);
-//
-//        $ajuste_produto = ProductMeasurements::find(95);
-//
-//        $dados = [
-//            'product_id' => $request->product_id,
-//            'measure_id' => $request->duallistbox_demo1[0]
-//        ];
-//
-//        $resposta = $ajuste_produto->update($dados);
-//
-        if($resposta)
-            return redirect()->route('productMeasurements.index')->with('success','Medida do Produto atualizado com sucesso!');
-        return back()->with('error','Erro ao atualizar o produto!');
     }
 
     /**
@@ -220,4 +171,24 @@ class ProductMeasurementsController extends Controller
 
         return $resultado;
     }
+
+    // Metodo de delete permanente
+    public function forceDelete($product)
+    {
+        $prod = null;
+
+        // Encontre entre os excluidos o $product de id = ao passado
+        try {
+            if(!empty($product)) {
+                $prod = ProductMeasurements::withTrashed()->where('product_id',$product['product_id']);
+                $prod->forceDelete();
+            }
+
+        } catch(\Exception $error) {
+            dd($error);
+        }
+
+        return $prod;
+    }
+
 }

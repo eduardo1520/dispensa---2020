@@ -32,16 +32,27 @@ function getImageProduct(id, name) {
         });
 }
 
-function allowDrop(event) {
-    // event.preventDefault();
-}
+function confirmar() {
 
-function drag(event) {
-    event.dataTransfer.setData("text", event.target.id);
-}
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire(
+                'Deleted!',
+                'Your file has been deleted.',
+                'success'
+            )
+        } else {
+            // demo1.bootstrapDualListbox('refresh');
+            // log($('select[name="duallistbox_demo1[]"]').bootstrapDualListbox('getContainer'));
+        }
+    });
 
-function drop(event) {
-    event.preventDefault();
-    var data = event.dataTransfer.getData("text");
-    event.target.appendChild(document.getElementById(data));
 }
