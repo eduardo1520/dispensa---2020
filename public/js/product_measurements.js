@@ -34,25 +34,43 @@ function getImageProduct(id, name) {
 
 function confirmar() {
 
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire(
-                'Deleted!',
-                'Your file has been deleted.',
-                'success'
-            )
-        } else {
-            // demo1.bootstrapDualListbox('refresh');
-            // log($('select[name="duallistbox_demo1[]"]').bootstrapDualListbox('getContainer'));
-        }
-    });
+    if(document.querySelector('div.box2 > select')) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-primary ml-1',
+                cancelButton: 'btn btn-danger',
+
+            },
+            buttonsStyling: true
+        });
+
+        swalWithBootstrapButtons.fire({
+            title: 'Você realmente que remover todas as medidas desse produto?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Remover',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                let sel = document.querySelector('select');
+                let opt;
+                try{
+                    for ( var i = 0, len = sel.options.length; i < len; i++ ) {
+                        opt = sel.options[i];
+                        if (opt.getAttribute('selected') == 'selected') {
+                            document.querySelector('div.box2 > select').append(opt);
+                        }
+                    }
+
+                } catch(error) {
+                    //
+                }
+            } else {
+                document.querySelector('#apagarTodos').setAttribute('disabled','disabled');
+            }
+        })
+
+    }
 
 }

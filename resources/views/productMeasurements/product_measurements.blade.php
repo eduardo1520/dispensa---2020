@@ -46,7 +46,7 @@
                                                                             $busca = array_filter(array_map(function($product_measurements)use($flag){
                                                                                 return $product_measurements['measure_id'] == $flag;
                                                                             }, $product_measurements));
-                                                                            $selected = in_array($measure['id'], $busca) ? "selected" : '';
+                                                                            $selected = in_array($measure['id'], $busca) ? "selected=selected" : '';
                                                                     @endphp
                                                                     <option {{ $selected ?? '' }} data-id="{{ $measure['id'] }}" value="{{$measure['id']}}">{{ $measure['nome'] . " - (" . strtoupper($measure['sigla']) . ")" }}</option>
                                                                 @empty
@@ -65,8 +65,6 @@
                                                                     alert($('[name="duallistbox_demo1[]"]').val());
                                                                     return false;
                                                                 });
-
-                                                                log($('select[name="duallistbox_demo1[]"]').bootstrapDualListbox('getContainer'));
 
                                                             </script>
                                                         </div>
@@ -102,21 +100,25 @@
     document.addEventListener("DOMContentLoaded", function(event) {
         document.querySelector('.moveall').setAttribute('class', 'btn btn-outline-success');
         document.querySelector('.removeall').setAttribute('id', 'apagarTodos');
+        document.querySelector('div.box1 > div.buttons > button').setAttribute('id', 'moverTodos');
         document.querySelector('.removeall').setAttribute('class', 'btn btn-outline-danger');
         document.querySelector('div.row > div#produto_imagem').setAttribute('style', 'margin-top: 90px;');
         document.querySelector('div.box1 > select').setAttribute('style', 'height: 257px;padding-top: 10px;padding-left: 5px;border-color:#1cc88a');
         document.querySelector('div.box2 > select').setAttribute('style', 'height: 257px;padding-top: 10px;padding-left: 5px;border-color:#e74a3b');
+
         let id = document.querySelector('div#produto_imagem').getAttribute('data-product_id');
         let name =  document.querySelector('div#produto_imagem').getAttribute('data-product_name');
         getImageProduct(id,name);
-        // btn = document.querySelector('button');
+
         document.getElementById('apagarTodos').addEventListener("click", confirmar, false);
+        document.getElementById('moverTodos').addEventListener("click", function(){
+            document.querySelector('#apagarTodos').removeAttribute('disabled');
+        }, false);
+
+        document.querySelector('div.box1 > select').addEventListener("mousedown", function(){
+            document.querySelector('#apagarTodos').removeAttribute('disabled');
+        }, false);
     });
-
-
-
-    // document.getElementById('test').addEventListener('click', Person.sayName.bind(Person));
-    // btn.addEventListener("click", confirmar, false);
 
 </script>
 
