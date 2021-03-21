@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Category;
 use App\Product;
 use App\Brand;
+use App\ProductMeasurements;
 use App\ProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +13,15 @@ use function PHPUnit\Framework\isNull;
 
 class ProductController extends Controller
 {
+
+    public $data_atual;
+
+    public function __construct()
+    {
+        date_default_timezone_set('America/Sao_Paulo');
+        $this->data_atual = date('Y-m-d H:i:s', time());
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -66,9 +76,6 @@ class ProductController extends Controller
             'name' => 'required|string|max:50'
         ]);
 
-        if(!empty($data->category_id)) {
-            $data->category_id = Product::OUTROS;
-        }
         if($validacao->fails()){
             return redirect()->back()->withErrors($validacao)->withInput();
         }
@@ -81,22 +88,26 @@ class ProductController extends Controller
                     $filename = "files/{$img}";
                     $info = pathinfo($filename);
                     if(file_exists($filename)) {
-                        $resposta = rename($filename, 'files/products/'.strtolower($info['basename']));
-                    }
-                    if($resposta) {
+                        rename($filename, 'files/products/'.strtolower($info['basename']));
                         $data['image'] = 'files/products/'. strtolower($info['basename']);
-                    } else {
-                        $data['image'] = '';
                     }
-                } else {
-                    $data['image'] = '';
                 }
             }
-        } else {
-            $data['image'] = '';
         }
 
         $resposta = Product::create($data);
+
+        // Faz o vínculo com a tabela product_measurements
+        if($resposta) {
+            $product_measurements = [
+              'product_id' => $resposta['id'],
+              'measure_id' => 6,
+              'qtde' => 1,
+              'created_at' => $this->data_atual
+            ];
+
+            ProductMeasurements::create($product_measurements);
+        }
 
         if($resposta)
             return redirect()->route('product.index')->with('success','Produto criado com sucesso!');

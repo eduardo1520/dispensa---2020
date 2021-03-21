@@ -33,7 +33,7 @@ function removeProdutoLista(id) {
 function getComboMedidas(produto) {
     let combo = [];
     let selected = '';
-    promise(`measure/measureAjax`, 'post',{product_id:produto})
+    promise(`measure/measureProductAjax`, 'post',{product_id:produto})
         .then(response => {
             return response.json();
         })
@@ -41,8 +41,6 @@ function getComboMedidas(produto) {
             medidas.forEach(function(m){
                 selected = m.id == 6 ? 'selected' : '';
                 combo.push(`<option value="${m.id}" ${selected}>${m.nome} - ${m.sigla}</option>`);
-        }).catch(error => {
-           //
         });
     });
 

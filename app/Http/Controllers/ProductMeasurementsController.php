@@ -126,11 +126,18 @@ class ProductMeasurementsController extends Controller
                         return redirect()->route('productMeasurements.index')->with('success','Medida do Produto atualizado com sucesso!');
                     return back()->with('error','Erro ao atualizar o produto!');
                 }
+                else {
+                    $resposta = $this->forceDelete($request->all());
+                    if($resposta)
+                        return redirect()->route('productMeasurements.index')->with('success','Medida do Produto atualizado com sucesso!');
+                    return back()->with('error','Erro ao atualizar o produto!');
+                }
             }
 
         } catch(\Exception $error) {
             dd($error);
         }
+
     }
 
     /**
@@ -149,8 +156,14 @@ class ProductMeasurementsController extends Controller
         $dados = $request->all();
         $produtos = ProductMeasurements::select('qtde','measure_id')->where('product_id',$request['product_id'])->get()->toArray();
 
-        if($dados['measure_id'] == 6 || $dados['measure_id'] == 3 || $dados['measure_id'] == 10) {
+        // Unidade, Caixa, Outros, Pacote
+
+        $padrao = [1,2,3,4,6,9,10];
+
+        if(in_array($dados['measure_id'], $padrao)) {
             return response($dados['qtde'] * 1);
+        } elseif($dados['measure_id'] == 11) { // Dúzia
+            return response($dados['qtde'] * 12);
         } else {
             foreach ($produtos as $key => $produto) {
                 if(in_array($dados['product_id'], $produto) && $produto['measure_id'] == $dados['measure_id']) {
@@ -182,7 +195,7 @@ class ProductMeasurementsController extends Controller
         // Encontre entre os excluidos o $product de id = ao passado
         try {
             if(!empty($product)) {
-                $prod = ProductMeasurements::withTrashed()->where('product_id',$product['product_id']);
+                $prod = ProductMeasurements::withTrashed()->where('product_id',$product['product_id'])->where('measure_id', '<>','6');
                 $prod->forceDelete();
             }
 
@@ -202,7 +215,7 @@ class ProductMeasurementsController extends Controller
             ->leftJoin('products', function ($join) {
                 $join->on('product_measurements.product_id', '=', 'products.id');
        })->groupBy('products.id')
-         ->havingRaw('count(product_measurements.measure_id) = ?', [1])
+         ->havingRaw('count(product_measurements.measure_id) <= ?', [1])
          ->get();
 
         return response($product,200);

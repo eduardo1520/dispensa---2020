@@ -137,7 +137,13 @@ class MeasureController extends Controller
         }
     }
 
-    public function measureAjax(Request $request)
+    public function measureAjax()
+    {
+        $comboMeasureSql = Measure::select('id','nome','sigla')->orderby('nome')->get();
+        return response($comboMeasureSql,200);
+    }
+
+    public function measureProductAjax(Request $request)
     {
         \DB::statement("SET SQL_MODE=''");
 

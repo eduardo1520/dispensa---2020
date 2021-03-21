@@ -660,10 +660,9 @@
                         <div id="my-product-measurements-select" class="col-lg-12"></div>
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="gravarProductMeasurements('select#product_measurements_combo', 'div#my-product-measurements-select-box-scroll > div > div.selected > img')">Cadastrar</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="validarCampos()">Cadastrar</button>
             </div>
         </div>
     </div>

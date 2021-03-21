@@ -478,7 +478,9 @@ function removeRows(classe, pai) {
     let produto = '';
     document.querySelectorAll(`.${classe}`).forEach(function(div){
         if(div.getAttribute('data-codigo') == pai) {
-            produto = div.querySelector(`div > span.produto-nome`).innerHTML;
+            if(div.querySelector(`div > span.produto-nome`)) {
+                produto = div.querySelector(`div > span.produto-nome`).innerHTML;
+            }
         }
     });
 

@@ -40,6 +40,7 @@ Route::resource('/feedback', 'FeedbackController');
 
 Route::resource('/measure', 'MeasureController');
 Route::post('/measure/measureAjax', 'MeasureController@measureAjax')->name('measureAjax');
+Route::post('/measure/measureProductAjax', 'MeasureController@measureProductAjax')->name('measureproductAjax');
 
 Route::resource('/product', 'ProductController');
 Route::post('/product/productAjax', 'ProductController@productAjax')->name('productAjax');

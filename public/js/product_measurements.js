@@ -123,9 +123,44 @@ function gravarProductMeasurements(medida, combo) {
             })
         })
 }
+
+function validarCampos()
+{
+    let select = document.querySelector('select#product_measurements_combo');
+    let option = select.children[select.selectedIndex];
+
+    let medida_selecionado = option.value;
+    let produto_selecionado = document.querySelector('div#my-product-measurements-select-box-scroll > div > div.selected > img').getAttribute('icon-value');
+
+    if(medida_selecionado != '' && produto_selecionado > 0) {
+        gravarProductMeasurements('select#product_measurements_combo', 'div#my-product-measurements-select-box-scroll > div > div.selected > img');
+    } else {
+        let timerInterval;
+        Swal.fire({
+            icon: 'error',
+            title: 'Dados Inválidos!',
+            html: 'Informe a medida e o produto para serem gravados no sistema.',
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: () => {
+                Swal.showLoading()
+                timerInterval = setInterval(() => {
+
+                }, 100)
+            },
+            willClose: () => {
+                clearInterval(timerInterval)
+            },
+            footer: 'Tente novamente...'
+        })
+    }
+
+
+}
 var iconSelect;
 
 window.onload = function(){
+
     promise(`../../productMeasurements/productImageAjax`,'post')
         .then(response => {
             return response.json();
@@ -172,5 +207,6 @@ window.onload = function(){
     } catch(error) {
         //
     }
+
 
 };

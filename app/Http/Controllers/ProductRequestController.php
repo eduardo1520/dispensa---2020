@@ -18,10 +18,13 @@ class ProductRequestController extends Controller
      */
     public function index()
     {
-
         $this->atualizaProductRequest();
 
-        $solicitacao = ProductRequest::withTrashed()->get();
+        $solicitacao = ProductRequest::withTrashed()->select('product_requests.*','products.name','products.image','products.description')
+            ->join('products', function($join){
+            $join->on('product_requests.product_id', '=', 'products.id');
+        })->get();
+
         $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
         $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
         $comboCategorySql = Category::orderby('tipo','asc')->pluck('tipo', 'id');
@@ -187,15 +190,19 @@ class ProductRequestController extends Controller
 
     public function atualizaProductRequest()
     {
-        $prod_req = ProductRequest::all();
+        $prod_req = ProductRequest::select('id','product_id')->get();
         foreach ($prod_req as $p) {
             $produto = Product::select('id', 'brand_id', 'category_id')->where('id', $p['product_id'])->first();
-
-//            if( $p->find($produto['id'])) {
-//                print_r(['id' => $produto['id'], 'brand_id' => $produto['brand_id'], 'category_id' => $produto['category_id']]);
-//            }
-//            dd(['brand_id' => $produto['brand_id'], 'category_id' => $produto['category_id']]);
-            $p->find($p['id'])->update(['brand_id' => $produto['brand_id'], 'category_id' => $produto['category_id']]);
+            try {
+                if($p['id']) {
+                    $obj = $p->find($p['id']);
+                    if($obj) {
+                        $obj->find($p['id'])->update(['brand_id' => $produto['brand_id'], 'category_id' => $produto['category_id']]);
+                    }
+                }
+            } catch(\Exception $ex) {
+                continue;
+            }
         }
     }
 }

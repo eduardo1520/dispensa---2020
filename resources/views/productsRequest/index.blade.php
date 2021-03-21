@@ -47,7 +47,7 @@
                                         {{ $sol->user->name }}
                                     </div>
                                     <div class="col-2 col-sm-2 col-md-1 col-lg-1 border cabecalho qtde">{{ $sol->qtde ? $sol->qtde : 0}}</div>
-                                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem"><img src="{{ $sol->product->image }}" alt="{{ $sol->product->description }}" data-id="{{ $sol->product->id }}" width="100px;" height="75px;"></div>
+                                    <div class="col-1 col-sm-2 col-md-1 col-lg-1 border cabecalho detalhe imagem"><img src="{{ $sol->image }}" alt="{{ $sol->description }}" data-id="{{ $sol->product_id }}" width="100px;" height="75px;"></div>
                                     @php
                                         $i = 0;
                                         $campo = '';
@@ -102,7 +102,7 @@
                                                     ?>
                                                 @break
                                                 @endswitch
-                                                <span class="{{ $pointer }} {{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}" data-filho="{{$campo}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : '' }}</span>
+                                                <span class="{{ $pointer }} {{ array_keys($arr)[$i] }}-nome" data-{{ array_keys($arr)[$i] }}_id data-codigo="{{$sol->id}}" data-filho="{{$campo}}">{{ isset($arr[array_keys($arr)[$i]][$campo]) ? $arr[array_keys($arr)[$i]][$campo] : $sol->name }}</span>
                                                 <select class="form-control combo-{{ array_keys($arr)[$i] }} d-none" tabindex="3" name="{{ array_keys($arr)[$i] }}_id"
                                                         onchange="transformaComboSpan('pedido',$(this).closest('[data-codigo]').data('codigo'), $(this).val(), $('.combo-{{ array_keys($arr)[$i] }} option:selected').text(), '{{ array_keys($arr)[$i] }}-nome','combo-{{ array_keys($arr)[$i] }}');
                                                         {{ array_keys($arr)[$i] == 'produto' ? "getProductImage({$sol->id},$(this).val(),$('.combo-". array_keys($arr)[$i] ." option:selected').text());

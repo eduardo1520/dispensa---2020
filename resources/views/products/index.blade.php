@@ -62,7 +62,7 @@
                                                 <option value="{{$value}}" {{ !empty($pesquisa['brand_id']) && in_array($value,$pesquisa['brand_id'])  ? 'selected' : '' }}>{{ $marca }}</option>
                                             @endforeach
                                         @endif
-                                        <option value="999">Outros</option>
+                                        <option value="30">Outros</option>
                                     </select>
                                 </div>
                             </div>
