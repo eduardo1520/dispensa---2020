@@ -1,3 +1,4 @@
+
 function promise(url, method, params) {
     // const params = { username: 'example' };
     return fetch(url, {
@@ -74,3 +75,102 @@ function confirmar() {
     }
 
 }
+
+function gravarProductMeasurements(medida, combo) {
+
+    let select = document.querySelector(medida);
+    let option = select.children[select.selectedIndex];
+    // var texto = option.textContent;
+
+    let codigo = document.querySelector(combo).getAttribute('icon-value');
+
+    let dado = {
+        measure_id: option.value,
+        id: codigo
+    };
+
+    // log(dado);
+
+    promise(`/productMeasurements/productMeasurementsAjax`,'post', dado)
+        .then(response => {
+            return response.json();
+        })
+        .then(resultado => {
+            log(resultado);
+            let timerInterval
+            Swal.fire({
+                title: 'Medidas por Produtos',
+                icon: 'success',
+                html: 'Produto Cadastrado com sucesso!',
+                timer: 1000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading()
+                    timerInterval = setInterval(() => {
+                        window.location.reload();
+                        // const content = Swal.getContent()
+                        // if (content) {
+                        //     const b = content.querySelector('b')
+                        //     if (b) {
+                        //         b.textContent = Swal.getTimerLeft()
+                        //     }
+                        // }
+                    }, 100)
+                },
+                willClose: () => {
+                    clearInterval(timerInterval)
+                }
+            })
+        })
+}
+var iconSelect;
+
+window.onload = function(){
+    promise(`../../productMeasurements/productImageAjax`,'post')
+        .then(response => {
+            return response.json();
+        })
+        .then(produtos => {
+            var icons = [];
+            let horizontal = Math.ceil(produtos.length / 10);
+            try {
+                iconSelect = new IconSelect("my-product-measurements-select",
+                    {'selectedIconWidth':96,
+                        'selectedIconHeight':96,
+                        'selectedBoxPadding':5,
+                        'iconsWidth':96,
+                        'iconsHeight':96,
+                        'boxIconSpace':6,
+                        'vectoralIconNumber':10,
+                        'horizontalIconNumber':horizontal});
+
+                icons.push({'iconFilePath': '../img/compras-shopping.png', 'iconValue':0});
+
+                produtos.forEach(function(p){
+                    icons.push({'iconFilePath': p.image, 'iconValue':p.id});
+                });
+
+                iconSelect.refresh(icons);
+
+            } catch(error) {
+                //
+            }
+    });
+    try{
+        $promessa = promise(`../../measure/measureAjax`, 'post')
+            .then(response => {
+                return response.json();
+            }).then(combo => {
+                let element = document.querySelector("#product_measurements_combo");
+                combo.forEach(function(value){
+                    element.insertAdjacentHTML('beforeend', `<option value="${value['id']}">${value['nome']} - (${value['sigla'].toUpperCase()})</option>`);
+                });
+            }).catch(error => {
+                console.log('Deu erro,', error);
+            });
+
+    } catch(error) {
+        //
+    }
+
+};

@@ -30,10 +30,10 @@ function removeProdutoLista(id) {
     }
 }
 
-function getComboMedidas() {
+function getComboMedidas(produto) {
     let combo = [];
     let selected = '';
-    promise(`measure/measureAjax`, 'post')
+    promise(`measure/measureAjax`, 'post',{product_id:produto})
         .then(response => {
             return response.json();
         })
@@ -41,6 +41,8 @@ function getComboMedidas() {
             medidas.forEach(function(m){
                 selected = m.id == 6 ? 'selected' : '';
                 combo.push(`<option value="${m.id}" ${selected}>${m.nome} - ${m.sigla}</option>`);
+        }).catch(error => {
+           //
         });
     });
 
@@ -153,7 +155,9 @@ function  atualizaQtdeProduto(id) {
 
 
 function getProductOne(codigo) {
+
     let encontrou = false;
+
     document.querySelectorAll(`.pedido > tbody > tr`).forEach(function (p) {
 
         if(p.getAttribute('id') == codigo) {
@@ -173,7 +177,7 @@ function getProductOne(codigo) {
     });
 
     if (encontrou === false) {
-        let combo = getComboMedidas();
+        let combo = getComboMedidas(codigo);
 
         promise(`product/getProductOneAjax`, 'post', {'id': codigo})
             .then(response => {
@@ -243,10 +247,5 @@ window.onload = function(){
 
 };
 
-// $(function(){
-//     $(document).ready(function(){
-//
-//     });
-// });
 
 

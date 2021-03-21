@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Measure;
+use App\Product;
 use App\ProductMeasurements;
 use Illuminate\Http\Request;
 
@@ -146,15 +147,16 @@ class ProductMeasurementsController extends Controller
     public function getProductMeasuresAjax(Request $request)
     {
         $dados = $request->all();
-        $produto = ProductMeasurements::select('qtde','measure_id')->where('product_id',$request['product_id'])->first();
+        $produtos = ProductMeasurements::select('qtde','measure_id')->where('product_id',$request['product_id'])->get()->toArray();
 
-        if($dados['measure_id'] == 6) {
+        if($dados['measure_id'] == 6 || $dados['measure_id'] == 3 || $dados['measure_id'] == 10) {
             return response($dados['qtde'] * 1);
-        }
-        elseif($produto['measure_id'] == $dados['measure_id']) {
-            return response($produto['qtde'] * $dados['qtde']);
-        }
-        else {
+        } else {
+            foreach ($produtos as $key => $produto) {
+                if(in_array($dados['product_id'], $produto) && $produto['measure_id'] == $dados['measure_id']) {
+                    return response($produto['qtde'] * $dados['qtde']);
+                }
+            }
             return false;
         }
     }
@@ -189,6 +191,39 @@ class ProductMeasurementsController extends Controller
         }
 
         return $prod;
+    }
+
+    public function getProductImages()
+    {
+
+        \DB::statement("SET SQL_MODE=''");
+
+        $product = ProductMeasurements::select('product_measurements.id', 'product_measurements.qtde', 'product_measurements.product_id', 'product_measurements.measure_id', 'products.image')
+            ->leftJoin('products', function ($join) {
+                $join->on('product_measurements.product_id', '=', 'products.id');
+       })->groupBy('products.id')
+         ->havingRaw('count(product_measurements.measure_id) = ?', [1])
+         ->get();
+
+        return response($product,200);
+
+    }
+
+    public function createProductMeasurements(Request $request)
+    {
+        date_default_timezone_set('America/Sao_Paulo');
+
+        $prod = ProductMeasurements::find($request->id);
+
+        $dados['product_id'] = $prod->product_id;
+        $dados['qtde'] = $prod->qtde;
+        $dados['measure_id'] = $request->measure_id;
+        $dados['created_at'] = date('Y-m-d H:i:s', time());
+
+        $resultado = ProductMeasurements::create($dados);
+
+        return response($resultado,200);
+
     }
 
 }

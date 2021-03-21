@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\ProductMeasurements;
 use Illuminate\Http\Request;
 use App\Measure;
 
@@ -136,9 +137,17 @@ class MeasureController extends Controller
         }
     }
 
-    public function measureAjax()
+    public function measureAjax(Request $request)
     {
-        $comboMeasureSql = Measure::select('id','nome','sigla' )->orderby('nome','asc')->get();
+        \DB::statement("SET SQL_MODE=''");
+
+        $comboMeasureSql = Measure::select('measures.id','measures.nome','measures.sigla')
+            ->leftJoin('product_measurements', function($join){
+                $join->on('product_measurements.measure_id', '=', 'measures.id');
+            })->groupBy('product_measurements.product_id','product_measurements.measure_id')
+            ->where('product_id','=',$request->product_id)
+            ->orderby('measures.nome','asc')->get();
+
         return response($comboMeasureSql,200);
     }
 }

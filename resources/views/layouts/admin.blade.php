@@ -519,6 +519,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade modalMarca" tabindex="-1" aria-labelledby="modalMarca" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -543,6 +544,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade modalRequestProduct" tabindex="-1" aria-labelledby="modalRequestProduct" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -631,6 +633,37 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="btnData" onclick="setData()" data-dismiss="modal">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modalProductMeasurements" id="modalProductMeasurements" tabindex="-1" aria-labelledby="modalProductMeasurements" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="medidas-produto">Medidas do Produto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div id="product_measurements_pai" class="col-lg-10 mt-2 pl-0">
+                            <select name="product_measurements_combo" id="product_measurements_combo" class="form-control">
+                                <option value="">Selecione uma Medida para o Produto!</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div id="my-product-measurements-select" class="col-lg-12"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="gravarProductMeasurements('select#product_measurements_combo', 'div#my-product-measurements-select-box-scroll > div > div.selected > img')">Cadastrar</button>
             </div>
         </div>
     </div>

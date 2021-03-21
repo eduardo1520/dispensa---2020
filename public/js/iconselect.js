@@ -114,12 +114,16 @@ function IconSelect($$elementID, $$parameters) {
             _View.selectedIconImgElement.setAttribute('src', icon.iconFilePath);
             if(_selectedIndex != -1) {
                 _icons[_selectedIndex].element.setAttribute('class','icon selected');
-
-                let codigo_produto = document.querySelector('#my-icon-select-box-scroll > div > .selected > img').getAttribute('icon-value');
-
-                if(codigo_produto && $index > 0) {
-                    getProductOne(codigo_produto);
+                try{
+                    let codigo_produto = document.querySelector('#my-icon-select-box-scroll > div > .selected > img').getAttribute('icon-value');
+                    if(codigo_produto && $index > 0) {
+                        getProductOne(codigo_produto);
+                    }
                 }
+                catch(error) {
+                    //
+                }
+
             }
         }
 
