@@ -153,6 +153,7 @@
             <div id="settings" class="collapse {{ Nav::isRoute('profile.index') }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Informações:</h6>
+                    <a class="collapse-item" href="{{ route('confProductMeasurementsQuantities.index') }}">Produtos/Medidas e Qtde</a>
                     <a class="collapse-item" href="{{ route('profile.index') }}">Perfil</a>
                     <a class="collapse-item" href="{{ route('about') }}">Sobre</a>
                 </div>
