@@ -24,7 +24,6 @@
                         <tr align="center">
                             <th>#</th>
                             <th>Imagem</th>
-                            <th>Qtde</th>
                             <th>Medida</th>
                             <th>Ação</th>
                         </tr>
@@ -36,52 +35,19 @@
 
                         @endphp
                         @forelse($confProductMeasurementsQuantities as $prod)
-                            @switch($prod->measure_id)
-                                @case(3)
-                                @php
-                                    $cor = 'table-primary';
-                                @endphp
-                                @break
-                                @case(in_array($prod->measure_id, [5,9]))
-                                @php
-                                    $cor = 'table-danger';
-                                @endphp
-                                @break
-                                @case(in_array($prod->measure_id, [6,4]))
-                                @php
-                                    $cor = 'table-success';
-                                @endphp
-                                @break
-                                @case(1)
-                                @php
-                                    $cor = 'table-info';
-                                @endphp
-                                @break
-                                @case(in_array($prod->measure_id, [10,2,11]))
-                                @php
-                                    $cor = 'table-warning';
-                                @endphp
-                                @break
-                                @default
-                                @php
-                                    $cor = '';
-                                @endphp
-
-                            @endswitch
-
                             <tr align="center" class="{{$cor}}">
-                                <th scope="row">{{$prod->id}}</th>
+                                <th scope="row">{{$prod->product_id}}</th>
                                 <td>
                                     @if($contador != $prod->product_id && (!empty($prod->image)))
-                                        <img src="{{asset($prod->image)}}" width="50" height="50" alt=""/>
+                                        <img src="{{asset($prod->image)}}" width="50" height="50" alt="{{ $prod->name }}"/>
+                                        <div style="padding-top: 10px; padding-left: 0px;"><small class="text-muted">{{ $prod->name }}</small></div>
                                         @else
                                             -
                                     @endif
                                 </td>
-                                <td align="center">{{ $prod->qtde }}</td>
-                                <td align="center">{{ $prod->nome  }}</td>
+                                <td align="center">{{ $prod->medidas  }}</td>
                                 <td align="center">
-                                    <a href="{{ route('confProductMeasurementsQuantities.edit',$prod->id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
+                                    <a href="{{ route('confProductMeasurementsQuantities.edit',$prod->product_id) }}" class="btn btn-info btn-circle btn-sm produto" title="Atualizar Produto">
                                         <i class="fas fa-info-circle"></i>
                                     </a>
                                 </td>

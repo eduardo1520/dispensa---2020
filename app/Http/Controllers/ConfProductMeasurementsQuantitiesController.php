@@ -14,17 +14,15 @@ class ConfProductMeasurementsQuantitiesController extends Controller
      */
     public function index()
     {
-        $confProductMeasurementsQuantities = ConfProductMeasurementsQuantities::select('conf_product_measurements_quantities.*','products.name','products.image','measures.nome')
-        ->join('products', function ($join){
-            $join->on('conf_product_measurements_quantities.product_id' ,'products.id');
-        })
-        ->join('measures', function ($join){
-                $join->on('conf_product_measurements_quantities.measure_id' ,'measures.id');
-        })
-            ->orderby('products.id','asc')
-            ->orderby('conf_product_measurements_quantities.qtde','asc')
-//            ->orderby('measures.nome','asc')
-            ->paginate('10');
+
+        $confProductMeasurementsQuantities = \DB::table('pantry.conf_product_measurements_quantities')
+            ->select('conf_product_measurements_quantities.product_id','products.name','products.image',
+            \DB::raw("GROUP_CONCAT(CONCAT_WS('] ', CONCAT(' [',conf_product_measurements_quantities.qtde), measures.nome) order by 1 desc) as `medidas`"))
+            ->join("measures","measures.id","=","conf_product_measurements_quantities.measure_id")
+            ->join("products","products.id","=","conf_product_measurements_quantities.product_id")
+            ->groupby('conf_product_measurements_quantities.product_id','products.name','products.image')
+            ->orderby('products.name','asc')
+            ->paginate('5');
         return view('confProductMeasurementsQuantities.index', compact('confProductMeasurementsQuantities'));
 
     }
