@@ -64,12 +64,17 @@ class ProductController extends Controller
 
         if(!empty($data['pesquisar'])) {
             $filtros = $this->getFiltros($data);
-            $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, p.category_id, b.name as marca, c.tipo from products p
-                                    left join brands b on b.id = p.brand_id left join categories c on c.id = p.category_id {$filtros}" . " order by p.name asc");
-            $pesquisa = $request->all();
-            $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
-            $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
-            return view('products.index',compact('produtos','pesquisa','comboBrandSql','comboProductSql'));
+            if(!empty($filtros)) {
+                $produtos = \DB::select("select p.id, p.name, p.description, p.image, p.brand_id, p.category_id, b.name as marca, c.tipo from products p
+                                        left join brands b on b.id = p.brand_id left join categories c on c.id = p.category_id {$filtros}" . " order by p.name asc");
+                $pesquisa = $request->all();
+                $comboBrandSql = Brand::orderby('name','asc')->pluck('name', 'id');
+                $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
+                return view('products.index',compact('produtos','pesquisa','comboBrandSql','comboProductSql'));
+
+            } else {
+                return $this->index();
+            }
         }
 
         $validacao = \Validator::make($data,[
@@ -341,8 +346,12 @@ class ProductController extends Controller
                     }
                 }
             }
+
+            if(count($sql) == 1) {
+                $sql = null;
+            }
         }
-        return implode(' ', $sql);
+        return !empty($sql) && count($sql) > 0 ? implode(' ', $sql) : null;
     }
 
     public function productAjax()
