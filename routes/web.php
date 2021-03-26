@@ -55,6 +55,7 @@ Route::post('/productMeasurements/productImageAjax', 'ProductMeasurementsControl
 Route::post('/productMeasurements/productMeasurementsAjax', 'ProductMeasurementsController@createProductMeasurements');
 
 Route::resource('/confProductMeasurementsQuantities', 'ConfProductMeasurementsQuantitiesController');
+Route::post('/confProductMeasurementsQuantities/upConfProductMeasurementsQuantitiesAjax', 'ConfProductMeasurementsQuantitiesController@upConfProductMeasurementsQuantitiesAjax');
 
 Route::resource('/product-request', 'ProductRequestController');
 Route::post('/productRequest/productRequestAjax', 'ProductRequestController@store')->name('productRequestAjax');
