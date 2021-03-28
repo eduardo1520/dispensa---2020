@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ConfProductMeasurementsQuantities;
+use App\Product;
 use Illuminate\Http\Request;
 
 class ConfProductMeasurementsQuantitiesController extends Controller
@@ -23,7 +24,10 @@ class ConfProductMeasurementsQuantitiesController extends Controller
             ->groupby('conf_product_measurements_quantities.product_id','products.name','products.image')
             ->orderby('products.name','asc')
             ->paginate('5');
-        return view('confProductMeasurementsQuantities.index', compact('confProductMeasurementsQuantities'));
+
+        $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
+
+        return view('confProductMeasurementsQuantities.index', compact('confProductMeasurementsQuantities','comboProductSql'));
 
     }
 
@@ -45,7 +49,33 @@ class ConfProductMeasurementsQuantitiesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dados = $request->all();
+        $ids = null;
+        if($dados['pesquisar']) {
+            if(!empty($dados['id'])) {
+                if(is_array($dados['id'])) {
+                    foreach ($dados['id'] as $key => $prod) {
+                        $ids[$key] = $prod;
+                    }
+                }
+
+                $confProductMeasurementsQuantities = \DB::table('pantry.conf_product_measurements_quantities')
+                    ->select('conf_product_measurements_quantities.product_id','products.name','products.image',
+                        \DB::raw("GROUP_CONCAT(CONCAT_WS('] ', CONCAT(' [',conf_product_measurements_quantities.qtde), measures.nome) order by 1 desc) as `medidas`"))
+                    ->join("measures","measures.id","conf_product_measurements_quantities.measure_id")
+                    ->join("products","products.id","conf_product_measurements_quantities.product_id")
+                    ->whereIn('products.id',$ids)
+                    ->groupby('conf_product_measurements_quantities.product_id','products.name','products.image')
+                    ->orderby('products.name','asc')
+                    ->paginate('5');
+
+                $comboProductSql = Product::orderby('name','asc')->pluck('name', 'id');
+                return view('confProductMeasurementsQuantities.index', compact('confProductMeasurementsQuantities','comboProductSql'));
+            } else {
+                return $this->index();
+            }
+        }
+
     }
 
     /**
