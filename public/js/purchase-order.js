@@ -142,6 +142,7 @@ function getProductMeasurements(produto, qtde = 1) {
 }
 
 function  atualizaQtdeProduto(id) {
+    document.querySelector('tr < th < select.medida').removeAttribute('selected');
     document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
         if(prod.getAttribute('id') == id) {
             var texto  = getTextCombo(prod, 'select.qtde');
@@ -183,7 +184,7 @@ function getProductOne(codigo) {
             })
             .then(produto => {
                 produto = produto[0];
-                let pedido = `<tr align="center" id='${produto.id}'>
+                let pedido = `<tr align="center" id='${produto.id}' style="background-color: #fff">
                                 <th scope="row" >
                                     <select name="medida" class="medida form-control" onchange="getProductMeasurements(${produto.id})">
                                         ${combo}
@@ -198,8 +199,8 @@ function getProductOne(codigo) {
                                     <div><img src="${produto.image}" alt="${produto.description}" data-id="${produto.id}" width="100px;" height="75px;"></div>
                                     <div class="mt-1"><small class="text-muted produto">${produto.name}</small></div>
                                 </td>
-                                <td align="center">${produto.description}</td>
-                                <td align="center">${produto.tipo}</td>
+                                <td align="center" data-description="${produto.description}">${produto.description}</td>
+                                <td align="center" data-tipo="${produto.category}">${produto.tipo}</td>
                                 <td>
                                     <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Produto" data-id="{{ $produto->id }}" onclick="removeProdutoLista(${produto.id})"><i class="fas fa-trash"></i></a>
                                 </td>
@@ -212,7 +213,122 @@ function getProductOne(codigo) {
     }
 }
 
+function sendPurchase(user) {
 
+    let lista = document.querySelectorAll('tbody > tr');
+
+    let lista_produtos = [];
+
+    lista.forEach((value, key) => {
+        try {
+
+                let items = {
+                    product_id: '',
+                    measure_id: '',
+                    description: '',
+                    qtde: '',
+                    category_id: '',
+                    brand_id: '30',
+                    user_id: user
+                };
+
+                items.product_id = value.querySelector('div > img').getAttribute('data-id');
+
+                let select = document.querySelectorAll('tr');
+                select.forEach(product => {
+                    if(product.getAttribute('id') == items.product_id) {
+                        let medida = product.querySelector('th > select.medida');
+                        let option = medida.children[medida.selectedIndex];
+                        items.measure_id = option.value;
+                    }
+                });
+
+                let select2 = document.querySelectorAll('tr');
+                select2.forEach(quantitie => {
+                    if(quantitie.getAttribute('id') == items.product_id) {
+                        let qtde = quantitie.querySelector('th > select.qtde');
+                        let option2 = qtde.children[qtde.selectedIndex];
+                        let texto = option2.textContent;
+                        items.qtde = texto;
+                    }
+                });
+
+                value.querySelectorAll('td').forEach((v ) => {
+                    if(v.getAttribute('data-description')) {
+                        items.description = v.getAttribute('data-description');
+                    }
+
+                    if(v.getAttribute('data-tipo')) {
+                        items.category_id = v.getAttribute('data-tipo');
+                    }
+                });
+
+            lista_produtos.push(items);
+
+        } catch(error) {
+            //
+        }
+    });
+
+    // log(lista_produtos);
+
+    promise(`/puchase-order/savePurchaseOrderAjax`,'post', {lista_produtos})
+        .then(response => {
+            return response.json();
+        })
+        .then(result => {
+            if(result) {
+                let timerInterval
+                Swal.fire({
+                    title: 'Lista de Produtos',
+                    icon: 'success',
+                    html: 'Cadastrado com sucesso!',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading()
+                        timerInterval = setInterval(() => {
+                            // window.location.reload();
+                        }, 100)
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval)
+                    }
+                })
+            } else {
+                let timerInterval;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lista de Produtos',
+                    html: 'Erro ao cadastrar!',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading()
+                        timerInterval = setInterval(() => {
+
+                        }, 100)
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval)
+                    },
+                    footer: 'Tente novamente...'
+                })
+            }
+        })
+}
+
+function removePedidoLista(id) {
+
+    let card = document.querySelectorAll('div.demo1');
+
+    card.forEach(function (v) {
+        if(v.getAttribute('id') == id ) {
+            v.remove();
+        }
+    });
+
+}
 
 var iconSelect;
 

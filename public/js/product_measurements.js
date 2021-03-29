@@ -89,14 +89,11 @@ function gravarProductMeasurements(medida, combo) {
         id: codigo
     };
 
-    // log(dado);
-
     promise(`/productMeasurements/productMeasurementsAjax`,'post', dado)
         .then(response => {
             return response.json();
         })
         .then(resultado => {
-            log(resultado);
             let timerInterval
             Swal.fire({
                 title: 'Medidas por Produtos',
@@ -108,13 +105,6 @@ function gravarProductMeasurements(medida, combo) {
                     Swal.showLoading()
                     timerInterval = setInterval(() => {
                         window.location.reload();
-                        // const content = Swal.getContent()
-                        // if (content) {
-                        //     const b = content.querySelector('b')
-                        //     if (b) {
-                        //         b.textContent = Swal.getTimerLeft()
-                        //     }
-                        // }
                     }, 100)
                 },
                 willClose: () => {

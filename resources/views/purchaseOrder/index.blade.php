@@ -3,32 +3,117 @@
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{ asset('css/iconselect.css') }}">
+<style>
+    body{
+        /*background-color:#004C70 !important;*/
+    }
+    .table tr {
+        cursor: pointer;
+    }
+    .table{
+        /*background-color: #fff !important;*/
+    }
+    .hedding h1{
+        /*color:#fff;*/
+        font-size:25px;
+    }
+    .main-section{
+        margin-top: 120px;
+    }
+    .hiddenRow {
+        padding: 0 4px !important;
+        /*background-color: #eeeeee;*/
+        font-size: 13px;
+    }
+    .accordian-body span{
+        color:#a2a2a2 !important;
+    }
+</style>
 <script src="{{ asset('js/iconselect.js') }}" type="text/javascript"></script>
 <script src="{{ asset('js/iscroll.js') }}" type="text/javascript"></script>
 
-    <div class="col-lg-10 order-lg-1">
+    <div class="col-lg-12 order-lg-1">
         <div class="card shadow mb-4">
             <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Pedido de Compras</h6></div>
             <div class="card-body">
                 <button class="btn btn-success" id="pedido" data-toggle="modal" data-target="#pedidoModal">Produtos</button>
-                <button class="btn btn-primary float-right" id="enviar_pedido" style="display: none">Enviar Pedidos</button>
+                <button class="btn btn-primary float-right" id="enviar_pedido" style="display: none" onclick="sendPurchase({{ Auth::user()->id }})">Enviar Pedidos</button>
             </div>
             <div class="card-body" style="margin-top: auto;">
                 <div class="row " align="center" id="tabela">
                     <div class="col-8 col-lg-12 my-3 border " id="filho">
                         @php $produtos = []; @endphp
-                        <table class="mt-lg-3 table table-striped table-bordered  table-responsive-lg pedido">
+                        <table class="mt-lg-3 table table-striped table-bordered  table-responsive-lg pedido" style="border-collapse:collapse;">
                             <thead>
                             <tr align="center">
-                                <th>Medida</th>
-                                <th>Qtde</th>
-                                <th>Produto</th>
-                                <th>Descrição</th>
-                                <th>Categoria</th>
-                                <th>Ação</th>
+                                <th>Listagem de Pedidos</th>
                             </tr>
                             </thead>
-                            <tbody><!-- Dinâmico --></tbody>
+                            <tbody>
+                                @forelse($datas as $d)
+                                    <style>
+                                        .pedido tbody tr:nth-of-type(odd){
+                                            background-color: {{ $d->status == 'Aguardando aprovação' ? '#f6c23e' : ''}};
+                                        }
+
+                                    </style>
+                                    <tr colspan="6" data-toggle="collapse" data-target=".demo1" class="accordion-toggle">
+                                        <td>Lista de Pedidos - Data: {{ date('d/m/Y H:s:i',strtotime($d->created_at)) }} - ({{ $d->status }})</td>
+                                    </tr>
+                                    <tr class="p">
+                                        <td colspan="6" class="hiddenRow">
+                                            <div class="">
+                                            <div class="row">
+                                                @forelse($purchase_orders as $k => $p)
+                                                    <div class="accordian-body collapse p-3 demo1" id="{{ $p->id }}">
+                                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{{ $p->product_name }}</div>
+                                                        <div class="card border-left-success shadow h-100 py-2">
+                                                            <div class="col-sm">
+                                                                <div class="card mb-3" style="max-width: 400px;">
+                                                                    <div class="row g-0">
+                                                                        <div class="col-md-4">
+                                                                            @if(!empty($p->image))<img src="{{ asset($p->image) }}" width="150" height="150" alt="" style="margin-top:10px ;margin-left:0px;"/> @else - @endif
+                                                                        </div>
+                                                                        <div class="col-md-8">
+                                                                            <div class="card-body">
+                                                                                <h5 class="card-title">{{ $p->product_name }}</h5>
+                                                                                <p class="card-text">Código: <span>{{ $p->id }}</span></p>
+                                                                                <p class="card-text">Qtde: <span> {{ $p->qtde / $p->qtde_default }}</span></p>
+                                                                                <p class="card-text">Medida: <span> {{ $p->measure_nome }} - {{ $p->sigla }}</span></p>
+                                                                                <p class="card-text"><small class="text-muted">[{{ $p->qtde }}] {{ $p->product_name }}</small></p>
+                                                                                <p class="card-text"><small class="text-muted">Categoria : <span>{{ $p->categories_nome }}</span></small></p>
+                                                                                <p class="card-text"><small class="text-muted">Data : <span>{{ date('d/m/Y H:s:i',strtotime($d->created_at)) }}</span></small></p>
+                                                                                <p class="card-text">{{ $p->description }}</p>
+                                                                            </div>
+                                                                            <div style="float: right; margin-right: 5px; margin-bottom: 5px;">
+                                                                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Produto" data-id="{{ $p->id }}" onclick="removePedidoLista({{ $p->id }})"><i class="fas fa-trash"></i></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                </div>
+                                                        </div>
+                                                    </div>
+
+                                                @empty
+
+                                                @endforelse
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                @endforelse
+{{--                                <style>--}}
+{{--                                    .table-striped tbody tr:nth-of-type(odd){--}}
+{{--                                        background-color: #fff;--}}
+{{--                                    }--}}
+
+{{--                                </style>--}}
+
+                                <!-- Dinâmico -->
+                            </tbody>
+
                         </table>
                     </div>
                 </div>

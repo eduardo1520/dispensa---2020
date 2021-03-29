@@ -77,3 +77,4 @@ Route::post('/brand/brandAjax', 'BrandController@brandAjax')->name('brandAjax');
 
 Route::resource('/puchase-order', 'PurchaseOrderController');
 Route::post('/puchase-order/productImageAjax', 'PurchaseOrderController@getProductImages');
+Route::post('/puchase-order/savePurchaseOrderAjax', 'PurchaseOrderController@savePurchaseOrder')->name('savePurchaseOrderAjax');

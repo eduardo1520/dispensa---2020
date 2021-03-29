@@ -363,7 +363,7 @@ class ProductController extends Controller
     public function getProductOneAjax(Request $request)
     {
         if($request->id) {
-            $product = Product::select('products.*','categories.tipo')->join('categories', function ($join) {
+            $product = Product::select('products.*','categories.id as category','categories.tipo')->join('categories', function ($join) {
                 $join->on('products.category_id', '=', 'categories.id');
             })->where('products.id', '=',$request->id)->get();
             return response($product,200);

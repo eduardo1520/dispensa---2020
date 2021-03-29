@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ConfProductMeasurementsQuantities;
 use App\Measure;
 use App\Product;
 use App\ProductMeasurements;
@@ -154,24 +155,10 @@ class ProductMeasurementsController extends Controller
     public function getProductMeasuresAjax(Request $request)
     {
         $dados = $request->all();
-        $produtos = ProductMeasurements::select('qtde','measure_id')->where('product_id',$request['product_id'])->get()->toArray();
+        $confPrd = ConfProductMeasurementsQuantities::where('product_id',$request['product_id'])->where('measure_id',$request['measure_id'])->get()->toarray();
 
-        // Unidade, Caixa, Outros, Pacote
+        return $confPrd[0]['qtde'] * $dados['qtde'];
 
-        $padrao = [1,2,3,4,6,9,10];
-
-        if(in_array($dados['measure_id'], $padrao)) {
-            return response($dados['qtde'] * 1);
-        } elseif($dados['measure_id'] == 11) { // Dúzia
-            return response($dados['qtde'] * 12);
-        } else {
-            foreach ($produtos as $key => $produto) {
-                if(in_array($dados['product_id'], $produto) && $produto['measure_id'] == $dados['measure_id']) {
-                    return response($produto['qtde'] * $dados['qtde']);
-                }
-            }
-            return false;
-        }
     }
 
     public function getProductMeasurementForProductID($id)

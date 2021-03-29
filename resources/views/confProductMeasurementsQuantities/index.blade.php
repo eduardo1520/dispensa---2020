@@ -62,13 +62,6 @@
                     <h6 class="m-0 font-weight-bold text-primary">Listagens de Medidas por Produtos e Quantidades</h6>
                 </div>
                 <div class="card-body">
-                    <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal" data-target=".confProductMeasurementsQuantities"  onclick=''>
-                        <span class="icon text-white-50">
-                          <i class="fa fa-cubes" aria-hidden="true"></i>
-                        </span>
-                        <span class="text">Novo</span>
-                    </a>
-
                     <table class="mt-lg-3 table table-striped table-bordered table-hover table-responsive-lg">
                         <thead>
                         <tr align="center">
