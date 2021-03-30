@@ -270,8 +270,6 @@ function sendPurchase(user) {
         }
     });
 
-    // log(lista_produtos);
-
     promise(`/puchase-order/savePurchaseOrderAjax`,'post', {lista_produtos})
         .then(response => {
             return response.json();
@@ -288,7 +286,7 @@ function sendPurchase(user) {
                     didOpen: () => {
                         Swal.showLoading()
                         timerInterval = setInterval(() => {
-                            // window.location.reload();
+                            window.location.reload();
                         }, 100)
                     },
                     willClose: () => {
@@ -318,15 +316,93 @@ function sendPurchase(user) {
         })
 }
 
-function removePedidoLista(id) {
+function removePedidoLista(data, id, produto) {
 
-    let card = document.querySelectorAll('div.demo1');
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: 'btn btn-success ml-1',
+            cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+    })
 
-    card.forEach(function (v) {
-        if(v.getAttribute('id') == id ) {
-            v.remove();
+    let texto = '';
+
+    if(produto) {
+        produto.toLowerCase();
+        texto = `O produto ${produto} será removido da lista de pedidos de compras!`;
+    } else {
+        texto = `A lista de pedidos será removida!`;
+    }
+    swalWithBootstrapButtons.fire({
+        title: 'Você tem certeza?',
+        text: texto,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Apagar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let card = document.querySelectorAll('div.demo_' + data);
+            card.forEach(function (v) {
+                if(v.getAttribute('id') == id ) {
+                    v.remove();
+
+                    promise(`/puchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(result => {
+                        if(result) {
+                            swalWithBootstrapButtons.fire(
+                                'Lista de pedidos de compras',
+                                'O produto foi removido.',
+                                'success'
+                            )
+                        } else {
+                            log('ocorreu um erro!');
+                        }
+                    });
+                }
+            });
+
+            if(id) {
+                promise(`/puchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(result => {
+                        if(result) {
+                            let card = document.querySelectorAll('tr.accordion-toggle');
+                            card.forEach(function (v) {
+                                if(v.getAttribute('data-target') == `.demo_${data}`) {
+                                    v.remove();
+                                }
+                            });
+
+                            let div_p = document.querySelectorAll('tr.p');
+                            div_p.forEach(function (p) {
+                                if(p.getAttribute('id') == `${data}`) {
+                                    p.remove();
+                                }
+                            });
+
+                            swalWithBootstrapButtons.fire(
+                                'Lista de pedidos de compras',
+                                'O produto foi removido.',
+                                'success'
+                            )
+                        } else {
+                            log('ocorreu um erro!');
+                        }
+                    });
+            }
+
         }
-    });
+    })
+
+
 
 }
 
