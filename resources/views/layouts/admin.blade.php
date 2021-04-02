@@ -347,6 +347,7 @@
             <div class="container-fluid">
                 @include('flash-message')
                 @yield('main-content')
+                @yield('modal')
             </div>
             <!-- /.container-fluid -->
         </div>
@@ -810,6 +811,31 @@
         </div>
     </div>
 </div>
+
+{{--<div class="modal fade" id="pedidoModal2" tabindex="-1" aria-labelledby="pedidoModal2" aria-hidden="true" data-backdrop="static" data-keyboard="false">--}}
+{{--    <div class="modal-dialog">--}}
+{{--        <div class="modal-content">--}}
+{{--            <div class="modal-header">--}}
+{{--                <h5 class="modal-title" id="tituloCodListModal">{{ $title ?? '' }}</h5>--}}
+{{--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
+{{--                    <span aria-hidden="true">&times;</span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--            <div class="modal-body">--}}
+{{--                <form id="form-codListModal">--}}
+{{--                    <div class="form-group">--}}
+{{--                        <label for="message-text" class="col-form-label">Query</label>--}}
+{{--                        <textarea class="form-control" name="descricao" id="descricao"></textarea>--}}
+{{--                    </div>--}}
+{{--                </form>--}}
+{{--            </div>--}}
+{{--            <div class="modal-footer">--}}
+{{--                <button type="button" class="btn btn-info" data-dismiss="modal"  onclick="cancelar()">Ok</button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
+
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

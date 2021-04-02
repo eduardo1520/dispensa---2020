@@ -19,13 +19,13 @@ function getProductIcon(produto) {
 }
 
 function removeProdutoLista(id) {
-    document.querySelectorAll(`.pedido > tbody > tr`).forEach(function(v){
+    document.querySelectorAll(`tbody > tr`).forEach(function(v){
         if(v.getAttribute('id') == id) {
             v.remove();
         }
     });
 
-    if(document.querySelectorAll(`.pedido > tbody > tr`).length == 0) {
+    if(document.querySelectorAll(`tbody > tr`).length == 0) {
         document.querySelector('#enviar_pedido').setAttribute('style','display:none');
     }
 }
@@ -206,7 +206,7 @@ function getProductOne(codigo) {
                                 </td>
                              </tr>`;
 
-            document.querySelector('.pedido > tbody').insertAdjacentHTML('beforeend', pedido);
+            document.querySelector('tbody'). insertAdjacentHTML('beforeend', pedido);
             document.querySelector('#enviar_pedido').setAttribute('style','display:block');
 
         });
@@ -270,7 +270,7 @@ function sendPurchase(user) {
         }
     });
 
-    promise(`/puchase-order/savePurchaseOrderAjax`,'post', {lista_produtos})
+    promise(`/purchase-order/savePurchaseOrderAjax`,'post', {lista_produtos})
         .then(response => {
             return response.json();
         })
@@ -349,7 +349,7 @@ function removePedidoLista(data, id, produto) {
                 if(v.getAttribute('id') == id ) {
                     v.remove();
 
-                    promise(`/puchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
+                    promise(`/purchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
                     .then(response => {
                         return response.json();
                     })
@@ -359,7 +359,8 @@ function removePedidoLista(data, id, produto) {
                                 'Lista de pedidos de compras',
                                 'O produto foi removido.',
                                 'success'
-                            )
+                            );
+                            window.location.reload();
                         } else {
                             log('ocorreu um erro!');
                         }
@@ -368,7 +369,7 @@ function removePedidoLista(data, id, produto) {
             });
 
             if(id) {
-                promise(`/puchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
+                promise(`/purchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
                     .then(response => {
                         return response.json();
                     })
@@ -392,7 +393,8 @@ function removePedidoLista(data, id, produto) {
                                 'Lista de pedidos de compras',
                                 'O produto foi removido.',
                                 'success'
-                            )
+                            );
+                            window.location.reload();
                         } else {
                             log('ocorreu um erro!');
                         }
@@ -409,7 +411,7 @@ function removePedidoLista(data, id, produto) {
 var iconSelect;
 
 window.onload = function(){
-    promise(`puchase-order/productImageAjax`,'post')
+    promise(`purchase-order/productImageAjax`,'post')
         .then(response => {
             return response.json();
         })

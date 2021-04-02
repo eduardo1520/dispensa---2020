@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Category;
+use App\ConfProductMeasurementsQuantities;
 use App\Product;
 use App\Brand;
 use App\ProductMeasurements;
@@ -112,6 +113,21 @@ class ProductController extends Controller
             ];
 
             ProductMeasurements::create($product_measurements);
+
+            // Faz o vinculo com a tabela ConfProductMeasurementsQuantities
+            $conf_product_measurements_quantities = [
+                'qtde' => 1,
+                'description' => $data['description'],
+                'user_id' => \Auth::user()->id,
+                'product_id' => $resposta['id'],
+                'brand_id' => $data['brand_id'],
+                'category_id' => $data['category_id'],
+                'measure_id' => 6,
+                'status' => 'P',
+                'created_at' => $this->data_atual,
+            ];
+
+            ConfProductMeasurementsQuantities::create($conf_product_measurements_quantities);
         }
 
         if($resposta)
