@@ -15,13 +15,14 @@
         }
         .chosen-container-multi .chosen-choices {
             border: 1px solid #cbd5e0;
-            height: 40px !important;
+            height: auto !important;
             cursor: text;
             padding-left: 15px;
             border-bottom: 1px solid #ddd;
             text-indent: 0;
             border-radius: .35rem;
             padding-top: 6px;
+
         }
 
         [class*="col-"] .chosen-container {
@@ -50,15 +51,8 @@
                                     <label class="form-control-label" for="name">Período</label>
                                     <select data-placeholder="Selecione um período" class="chosen-select-period" multiple tabindex="3" name="id[]" id="id" value="">
                                         @if(!empty($comboPeriodSql))
-                                            @php
-                                                if(!empty($_POST['id'])) {
-                                                    foreach ($_POST['id'] as $item) {
-                                                        $datas[] = date('d/m/Y', strtotime($item));
-                                                    }
-                                                }
-                                            @endphp
                                             @foreach($comboPeriodSql as $value => $p)
-                                                <option value="{{$p->dt}}" {{ !empty($_POST['id']) && in_array($value,$datas)  ? 'selected' : '' }}>{{ date("d/m/Y", strtotime($p->dt)) }}</option>
+                                                <option value="{{$p->dt}}" {{ !empty($_POST['id']) && in_array($p['dt'],$_POST['id'])  ? 'selected' : '' }}>{{ date("d/m/Y", strtotime($p->dt)) }}</option>
                                             @endforeach
                                         @endif
                                     </select>
@@ -68,9 +62,9 @@
                                 <div class="form-group">
                                     <label class="form-control-label" for="name">Status do Pedido</label>
                                     <select data-placeholder="Selecione um status" class="chosen-select-status" multiple tabindex="3" name="status[]" id="status" value="">
-                                            @foreach([['status' => 'P', 'nome' => 'Aguardando aprovação'],['status' => 'A', 'nome' => 'Aprovado'], ['status' => 'C', 'nome' => 'Cancelado']] as $value => $t)
-                                                <option value="{{$t['status']}}" {{ !empty($_POST['status']) && in_array($value,$_POST['status'])  ? 'selected' : '' }}>{{ $t['nome'] }}</option>
-                                            @endforeach
+                                        @foreach([['status' => 'P', 'nome' => 'Aguardando aprovação'],['status' => 'A', 'nome' => 'Aprovado'], ['status' => 'C', 'nome' => 'Cancelado']] as $value => $t)
+                                            <option value="{{$t['status']}}" {{ !empty($_POST['status']) && in_array($t['status'],$_POST['status'])  ? 'selected' : '' }}>{{ $t['nome'] }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -92,12 +86,14 @@
                 @section('modal')
                     @include('modal',['title'=> 'Listagem de Pedido de Compras', 'action' => '/purchase-order/getQueryListAjax'])
                 @endsection
-                <a href="" id="pedido2" data-toggle="modal" data-target="#pedidoModal2"><img src="{{ asset('img/sql.png') }}" class="rounded-circle" alt="user-image" style="width: 60px;margin-left: 30px;margin-top: 40px;"></a>
+{{--                <a href="" id="pedido2" data-toggle="modal" data-target="#pedidoModal2"><img src="{{ asset('img/sql.png') }}" class="rounded-circle" alt="user-image" style="width: 60px;margin-left: 30px;margin-top: 40px;"></a>--}}
             </div>
             <div class="card-body" style="margin-top: auto;padding-top: 0px;">
                 <div class="row " align="center" id="tabela">
                     <div class="col-8 col-lg-12 my-3 border " id="filho">
-{{--                        {{ dd($purchase_orders) }}--}}
+                        @php
+                            $num = 0;
+                        @endphp
                         @forelse($purchase_orders as $data => $listas)
                             @php
                                 $arr = null;
@@ -120,6 +116,7 @@
                                 <tr colspan="6" data-toggle="collapse" data-target=".demo_{{$arr[0]}}" class="accordion-toggle">
                                     @php
                                         $card = '';
+                                        $classe = '';
                                         if($arr[1] == 'Cancelado') {
                                             $card = 'fa-cart-arrow-down';
                                         } elseif($arr[1] == 'Aprovado') {
@@ -133,9 +130,24 @@
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <i class="fas {{ $card }}" style="font-size: 48px;"></i>
+                                                @switch($arr[1])
+                                                    @case('Aguardando aprovação')
+                                                        @php $classe = "warning"; @endphp
+                                                    @break
+                                                    @case('Aprovado')
+                                                        @php $classe = "success"; @endphp
+                                                    @break
+                                                    @case('Cancelado')
+                                                        @php $classe = "danger"; @endphp
+                                                    @break
+                                                @endswitch
+
+                                                <span class="btn btn-{{ $classe }} btn-circle btn-sm" style="margin-left: -40;padding-left: 0px;padding-top: 0px;padding-right: 0px;border-right-width: 0px;margin-right: 0px;margin-top: -45;padding-bottom: 0px;border-bottom-width: 4px;height: 25px;width: 28px;">
+                                                    {{$qtdes[$num++] ?? ''}}
+                                                </span>
                                             </div>
                                             <div class="col-md-5 mt-2">
-                                                Lista de Pedidos - Data: {{ date('d/m/Y',$arr[0]) }} - ({{ $arr[1] }})
+                                                Lista de Pedidos - Data: {{ $arr[1] == 'Cancelado' || $arr[1] == 'Aprovado' ? date('d/m/Y H:i:s',$arr[0]) : date('d/m/Y',$arr[0]) }} - ({{ $arr[1] }})
                                             </div>
                                         </div>
                                     </td>
@@ -152,52 +164,47 @@
                                             <div class="row">
                                                 @forelse($listas as $tipos)
                                                     @forelse($tipos as $p)
-{{--                                                        @if(isset($p['id']) && $p['status'] == 'A')--}}
-    {{--                                                    @forelse($items as $p)--}}
-                                                                <div class="accordian-body collapse p-3 demo_{{$arr[0]}}" id="{{ $p['id'] }}">
-                                                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{{ $p['product_name'] }}</div>
-                                                                    <div class="card border-left-success shadow h-100 py-2">
-                                                                        <div class="col-sm">
-                                                                            <div class="card mb-3" style="max-width: 400px;">
-                                                                                <div class="row g-0">
-                                                                                    <div class="col-md-4">
-                                                                                        @if(!empty($p['image']))<img src="{{ asset($p['image']) }}" width="150" height="150" alt="" style="margin-top:10px ;margin-left:0px;"/> @else - @endif
-                                                                                    </div>
-                                                                                    <div class="col-md-8">
-                                                                                        <div class="card-body">
-                                                                                            <h5 class="card-title">{{ $p['product_name'] }}</h5>
-                                                                                            <p class="card-text">Código: <span>{{ $p['id'] }}</span></p>
-                                                                                            <p class="card-text">Qtde: <span> {{ $p['qtde'] / $p['qtde_default'] }}</span></p>
-                                                                                            <p class="card-text">Medida: <span> {{ $p['measure_nome'] }} - {{ $p['sigla'] }}</span></p>
-                                                                                            <p class="card-text"><small class="text-muted">[{{ $p['qtde'] }}] {{ $p['product_name'] }}</small></p>
-                                                                                            <p class="card-text"><small class="text-muted">Categoria : <span>{{ $p['categories_nome'] }}</span></small></p>
-                                                                                            <p class="card-text"><small class="text-muted">Data : <span>{{ date('d/m/Y H:s:i',strtotime($p['created_at'])). ' hs' }}</span></small></p>
-                                                                                            <p class="card-text">{{ $p['description'] }}</p>
-                                                                                        </div>
-                                                                                            <!-- Lista de Compras tem durabilidade de 5 dias após esse período os produtos não poderam ser removidos -->
-                                                                                        @php
-                                                                                        if($p['status'] == 'P' && strtotime(date('Y-m-d', strtotime('-5 day'))) <= $arr[0]):
-                                                                                            $disabled = "";
-                                                                                        elseif($p['status'] == 'A' || $p['status'] == 'C'):
-                                                                                            $disabled = "display:none";
-                                                                                        endif;
-                                                                                        @endphp
-                                                                                        <div style="float: right; margin-right: 5px; margin-bottom: 5px;{{$disabled}}" >
-                                                                                            <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Produto" data-id="{{ $p['id'] }}" onclick="removePedidoLista({{ $arr[0] }},{{ $p['id'] }}, '{{ $p['product_name'] }}')"><i class="fas fa-trash"></i></a>
-                                                                                        </div>
-                                                                                    </div>
+                                                        <div class="accordian-body collapse p-3 demo_{{$arr[0]}}" id="{{ $p['id'] }}">
+                                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{{ $p['product_name'] }}</div>
+                                                            <div class="card border-left-success shadow h-100 py-2">
+                                                                <div class="col-sm">
+                                                                    <div class="card mb-3" style="max-width: 400px;">
+                                                                        <div class="row g-0">
+                                                                            <div class="col-md-4">
+                                                                                @if(!empty($p['image']))<img src="{{ asset($p['image']) }}" width="150" height="150" alt="" style="margin-top:10px ;margin-left:0px;"/> @else - @endif
+                                                                            </div>
+                                                                            <div class="col-md-8">
+                                                                                <div class="card-body">
+                                                                                    <h5 class="card-title">{{ $p['product_name'] }}</h5>
+                                                                                    <p class="card-text">Código: <span>{{ $p['id'] }}</span></p>
+                                                                                    <p class="card-text">Qtde: <span> {{ $p['qtde'] / $p['qtde_default'] }}</span></p>
+                                                                                    <p class="card-text">Medida: <span> {{ $p['measure_nome'] }} - {{ $p['sigla'] }}</span></p>
+                                                                                    <p class="card-text"><small class="text-muted">[{{ $p['qtde'] }}] {{ $p['product_name'] }}</small></p>
+                                                                                    <p class="card-text"><small class="text-muted">Categoria : <span>{{ $p['categories_nome'] }}</span></small></p>
+                                                                                    <p class="card-text"><small class="text-muted">Data : <span>{{ date('d/m/Y H:s:i',strtotime($p['created_at'])). ' hs' }}</span></small></p>
+                                                                                    <p class="card-text">{{ $p['description'] }}</p>
+                                                                                </div>
+                                                                                <!-- Lista de Compras tem durabilidade de 5 dias após esse período os produtos não poderam ser removidos -->
+                                                                                @php
+                                                                                    if($p['status'] == 'P' && $arr[0] >= strtotime(date('Y-m-d', strtotime('-5 day')))):
+                                                                                        $disabled = "";
+                                                                                    elseif($p['status'] == 'A' || $p['status'] == 'C' || $arr[0] <= strtotime(date('Y-m-d', strtotime('-5 day')))):
+                                                                                        $disabled = "display:none";
+                                                                                    endif;
+                                                                                @endphp
+                                                                                <div style="float: right; margin-right: 5px; margin-bottom: 5px;{{$disabled ?? ''}}" >
+                                                                                    <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Excluír Produto" data-id="{{ $p['id'] }}" onclick="removePedidoLista({{ $arr[0] }},{{ $p['id'] }}, '{{ $p['product_name'] }}')"><i class="fas fa-trash"></i></a>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-{{--                                                        @endif--}}
-{{--                                                            @endif--}}
-{{--                                                    @empty--}}
-{{--                                                    @endforelse--}}
+                                                            </div>
+                                                        </div>
                                                     @empty
                                                     @endforelse
                                                 @empty
+
                                                 @endforelse
                                             </div>
                                         </div>
@@ -207,6 +214,9 @@
                                 <!-- Dinâmico -->
                             </table>
                         @empty
+                            <div class="alert alert-danger" role="alert">
+                                Não foi encontrado lista de produtos!
+                            </div>
                         @endforelse
                     </div>
                 </div>

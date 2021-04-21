@@ -4,6 +4,7 @@
 /storage/*.key
 /storage/logs/laravel.log
 /vendor
+database/dumps/
 .env
 .phpunit.result.cache
 Homestead.json

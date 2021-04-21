@@ -30,41 +30,17 @@ class PurchaseOrderController extends Controller
         \DB::statement("SET SQL_MODE=''");
 
         $comboPeriodSql = PurchaseOrder::select(\DB::raw('id, cast( created_at as date) as dt'))->withTrashed()->groupBy('dt')->get();
-
         $produtos = Product::orderBy('name', 'ASC')->get();
-        $datas = PurchaseOrder::select(\DB::raw("case purchase_orders.status
-                                                    when 'P' then 'Aguardando aprovação'
-                                                    when 'C' then 'Cancelado'
-                                                    when 'A' then 'Aprovado'
-                                                    end as status, cast( purchase_orders.created_at as date) as dt"))
-                                ->where('purchase_orders.status','P')->distinct()->get();
+        $status = ['status' => 'P'];
+        $datas = $this->getPurchaseDate($status);
+        $qtdes = [];
 
         foreach ($datas as $k => $d) {
-            $order = PurchaseOrder::select('purchase_orders.*','measures.nome as measure_nome', 'products.name as product_name',
-                                           'products.image','categories.tipo as categories_nome',
-                                           'measures.sigla','conf_product_measurements_quantities.qtde as qtde_default')
-                ->join('measures','measures.id','purchase_orders.measure_id')
-                ->join('products','products.id','purchase_orders.product_id')
-                ->join('categories','categories.id','purchase_orders.category_id')
-                ->join('conf_product_measurements_quantities', function($join){
-                    $join->on('conf_product_measurements_quantities.measure_id','=','purchase_orders.measure_id');
-                    $join->on('conf_product_measurements_quantities.product_id','=','purchase_orders.product_id');
-                })->whereRaw("cast(purchase_orders.created_at as date) ='{$d['dt']}'")->where('purchase_orders.status','P')
-                ->union(PurchaseOrder::select('purchase_orders.*','measures.nome as measure_nome', 'products.name as product_name',
-                    'products.image','categories.tipo as categories_nome',
-                    'measures.sigla','conf_product_measurements_quantities.qtde as qtde_default')
-                    ->join('measures','measures.id','purchase_orders.measure_id')
-                    ->join('products','products.id','purchase_orders.product_id')
-                    ->join('categories','categories.id','purchase_orders.category_id')
-                    ->join('conf_product_measurements_quantities', function($join){
-                        $join->on('conf_product_measurements_quantities.measure_id','=','purchase_orders.measure_id');
-                        $join->on('conf_product_measurements_quantities.product_id','=','purchase_orders.product_id');
-                    })->whereRaw("cast(purchase_orders.created_at as date) ='{$d['dt']}'")->where('purchase_orders.status','A'))
-                ->distinct()->get()->toArray();
+            $order = $this->getListPurchase([$d['dt']],["P"]);
             $purchase_orders[strtotime($d['dt']). "_{$d['status']}"][strtotime($d['dt'])] = $order;
+            $qtdes[$k] = count($order);
         }
-
-        return view('PurchaseOrder.index', compact('produtos','purchase_orders','datas','comboPeriodSql'));
+        return view('PurchaseOrder.index', compact('produtos','purchase_orders','datas','comboPeriodSql','qtdes'));
     }
 
     /**
@@ -93,76 +69,81 @@ class PurchaseOrderController extends Controller
         $comboPeriodSql = PurchaseOrder::select(\DB::raw('id, cast( created_at as date) as dt'))->withTrashed()->groupBy('dt')->get();
 
         if($dados['pesquisar']) {
-
-            if(isset($dados['id']) && count($dados['id']) >= 1 || isset($dados['status']) && count($dados['status']) >= 1) {
-
-                if(isset($dados['id']) && count($dados['id']) >= 1) {
-                    $dt = " and cast(po.created_at as date)  IN ('" . implode("','", $dados['id']). "')";
-                } else {
-                    $dt = null;
-                }
-
-                if(isset($dados['status']) && count($dados['status']) >= 1) {
-                    $status = " and po.status IN ('" . implode("','", $dados['status']). "')";
-                } else {
-                    $status = " and po.status IN ('P','A')";
-                }
-
-                if(isset($dados['status']) && count($dados['status']) >= 1) {
-                    $status2 = " and po.status IN ('" . implode("','", $dados['status']). "')";
-                } else {
-                    $status2 = " and po.status IN ('C')";
-                }
-
-                $purchase =  \DB::select(\DB::raw("
-                    (select
-                        case po.status when 'P' then 'Aguardando aprovação' when 'C' then 'Cancelado' when 'A' then 'Aprovado' end as status_name,
-                        po.status, cast(po.created_at as date) as dt, po.created_at, po.deleted_at, po.id, po.qtde, po.description, m.nome as measure_nome,
-                        m.sigla, p.name as product_name, p.image, c.tipo as categories_nome, cpm.qtde as qtde_default
-                    from pantry.purchase_orders po
-                    inner join measures m on po.measure_id = m.id
-                    inner join products p on po.product_id = p.id
-                    inner join categories c on po.category_id = c.id
-                    inner join conf_product_measurements_quantities cpm on cpm.measure_id = m.id and cpm.product_id = p.id
-                    where 1 = 1
-                    $dt
-                    $status
-                    )union(
-                        select
-                            case po.status when 'P' then 'Aguardando aprovação' when 'C' then 'Cancelado' when 'A' then 'Aprovado' end as status_name,
-                            po.status, cast(po.created_at as date) as dt, po.created_at, po.deleted_at, po.id, po.qtde, po.description, m.nome as measure_nome,
-                            m.sigla, p.name as product_name, p.image, c.tipo as categories_nome, cpm.qtde as qtde_default
-                        from pantry.purchase_orders po
-                        inner join measures m on po.measure_id = m.id
-                        inner join products p on po.product_id = p.id
-                        inner join categories c on po.category_id = c.id
-                        inner join conf_product_measurements_quantities cpm on cpm.measure_id = m.id and cpm.product_id = p.id
-                        where 1 = 1
-                        $dt
-                        $status2
-                        group by po.product_id
-                    )
-                "));
-
-                foreach ($purchase as $idx => $p) {
-                    if($p->status == 'A') {
-                        $date = Carbon::parse($p->deleted_at)->setTimezone('America/Sao_Paulo');
-                        $p->deleted_at_br = $date->format('d/m/Y H:i:s');
-                        $purchase_orders[strtotime($date->format('Y-m-d H:i:s')) . "_". $p->status_name][strtotime($p->dt)][] = (array) $p;
-                    } else {
-                        $date = Carbon::parse($p->created_at)->setTimezone('America/Sao_Paulo');
-                        $p->created_at_br = $date->format('d/m/Y H:i:s');
-                        $purchase_orders[strtotime($date->format('Y-m-d')) . "_". $p->status_name][strtotime($p->dt)][] = (array) $p;
+            $qtdes = null;
+            if (isset($dados['id']) && count($dados['id']) >= 1 && empty($dados['status'])) {
+                foreach ($dados['id'] as $k => $d) {
+                    $order = $this->getListPurchase([$d], ['P']);
+                    if(count($order) > 0) {
+                        $purchase_orders[strtotime($d) . "_{$this->getTextSigle('P')}"][strtotime($d)] = $order;
+                        $qtdes[$k] = count($order);
                     }
-
+                }
+            } elseif (isset($dados['status']) && count($dados['status']) >= 1 && empty($dados['id'])) {
+                foreach ($dados['status'] as $k => $s) {
+                    $datas = $this->getPurchaseDate([$s]);
+                    foreach ($datas as $idx => $d) {
+                        $order = $this->getListPurchase([$d['dt']], [$s]);
+                        if (count($order) > 0) {
+                            if ($s == 'A' || $s == 'C') {
+                                $purchase_orders[strtotime($order[0]['deleted_at']) . "_{$this->getTextSigle($s)}"][strtotime($order[0]['deleted_at'])] = $order;
+                            } else {
+                                $purchase_orders[strtotime($d['dt']) . "_{$this->getTextSigle($s)}"][strtotime($d['dt'])] = $order;
+                            }
+                            $qtdes[$k][$idx] = count($order);
+                        }
+                    }
                 }
 
+                $n = 0;
+                $arr = '';
+
+                while ($n < count($qtdes)) {
+                    $arr .= implode(',', array_values($qtdes[$n])) . ",";
+                    $n++;
+                }
+                $qtdes = explode(',',trim($arr,','));
+
+            } elseif (isset($dados['id']) && count($dados['id']) >= 1 && isset($dados['status']) && count($dados['status']) >= 1) {
+                $dts = '';
+                foreach ($dados['id'] as $dt) {
+                    $dts .= $dt . ",";
+                }
+
+                $dts = array_filter(explode(',', $dts));
+
+                $status = '';
+                foreach ($dados['status'] as $t) {
+                    $status .= $t . ",";
+                }
+
+                $status = array_filter(explode(',', $status));
+
+                $order = $this->getListPurchase($dts, $status);
+
+                if (count($order) > 0) {
+                    foreach ($dts as $dt) {
+                        foreach ($order as $p) {
+                            $data_ini = Carbon::parse($p['created_at'])->format('Y-m-d');
+                            $data_fim = Carbon::parse($p['deleted_at'])->format('Y-m-d H:i:s');
+                            if ($dt == $data_ini) {
+                                if ($p['status'] == 'A' || $p['status'] == 'C') {
+                                    $purchase_orders[strtotime($data_fim) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_fim)][] = $p;
+                                    $qtdes[strtotime($data_fim)] = count($purchase_orders[strtotime($data_fim) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_fim)]);
+                                } else {
+                                    $purchase_orders[strtotime($data_ini) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_ini)][] = $p;
+                                    $qtdes[strtotime($data_ini)] = count($purchase_orders[strtotime($data_ini) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_ini)]);
+                                }
+                            }
+                        }
+                    }
+                    $qtdes = array_values($qtdes);
+                }
             } else {
                 return $this->index();
             }
         }
 
-        return view('purchaseOrder.index', compact('purchase_orders', 'comboPeriodSql'));
+        return view('purchaseOrder.index', compact('purchase_orders', 'comboPeriodSql','qtdes'));
     }
 
     /**
@@ -297,6 +278,87 @@ class PurchaseOrderController extends Controller
                 ->distinct()->toSql();
 
         return response($dados, 200);
+
+    }
+
+    // A data tem que vim no formato americano
+    // Aceita várias datas separadas por virgulas
+
+    protected function getCountForDate($data)
+    {
+        $sql = "
+            select
+                count(po.created_at) as qtde, po.created_at, po.deleted_at
+            from pantry.purchase_orders po
+            inner join pantry.products p on po.product_id = p.id
+            inner join pantry.measures m on po.measure_id = m.id
+            inner join pantry.categories c on po.category_id = c.id
+            inner join conf_product_measurements_quantities cp on cp.measure_id = po.measure_id and cp.product_id = po.product_id
+            where 1 = 1
+            and cast(po.created_at as date) IN ($data)
+            group by po.created_at
+            order by po.status desc
+        ";
+
+        $dados = \DB::select(\DB::raw($sql));
+
+        foreach ($dados as $d) {
+            $qtdes[isset($d->deleted_at) ? strtotime($d->deleted_at) : strtotime($d->created_at)][] = (array) $d;
+        }
+
+        return $qtdes;
+
+    }
+
+    protected function getTextSigle($sigle)
+    {
+
+        if($sigle == 'A') {
+            $sigle_text = 'Aprovado';
+        } elseif($sigle == 'P') {
+            $sigle_text = 'Aguardando aprovação';
+        } else {
+            $sigle_text = 'Cancelado';
+        }
+
+        return $sigle_text;
+
+    }
+
+    protected function getPurchaseDate($tipo)
+    {
+
+        $datas = PurchaseOrder::withTrashed()->select(\DB::raw("case purchase_orders.status
+                                                    when 'P' then 'Aguardando aprovação'
+                                                    when 'C' then 'Cancelado'
+                                                    when 'A' then 'Aprovado'
+                                                    end as status, cast( purchase_orders.created_at as date) as dt"))
+                ->whereIn('purchase_orders.status',$tipo)
+                ->distinct()->get()->toArray();
+
+        return $datas;
+
+    }
+
+    protected  function getListPurchase($data,$status)
+    {
+        $order = PurchaseOrder::withTrashed()->select('purchase_orders.id','purchase_orders.description','purchase_orders.qtde','purchase_orders.created_at','purchase_orders.deleted_at',
+            'purchase_orders.status','measures.nome as measure_nome', 'products.name as product_name',
+            'products.image','categories.tipo as categories_nome',
+            'measures.sigla','conf_product_measurements_quantities.qtde as qtde_default')
+            ->join('measures','measures.id','purchase_orders.measure_id')
+            ->join('products','products.id','purchase_orders.product_id')
+            ->join('categories','categories.id','purchase_orders.category_id')
+            ->join('conf_product_measurements_quantities', function($join){
+                $join->on('conf_product_measurements_quantities.measure_id','=','purchase_orders.measure_id');
+                $join->on('conf_product_measurements_quantities.product_id','=','purchase_orders.product_id');
+            })
+
+            ->whereIn(\DB::raw("DATE(purchase_orders.created_at)"),$data)
+            ->whereIn('purchase_orders.status',$status)
+            ->groupBy('purchase_orders.product_id')->get()->toArray();
+
+        return $order;
 
     }
 
