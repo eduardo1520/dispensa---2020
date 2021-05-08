@@ -34,6 +34,7 @@ class PurchaseOrderController extends Controller
         $status = ['status' => 'P'];
         $datas = $this->getPurchaseDate($status);
         $qtdes = [];
+        $purchase_orders = null;
 
         foreach ($datas as $k => $d) {
             $order = $this->getListPurchase([$d['dt']],["P"]);
@@ -188,6 +189,7 @@ class PurchaseOrderController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+
         $dados = $request->all();
         $result = '';
 

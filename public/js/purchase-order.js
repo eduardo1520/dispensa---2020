@@ -75,7 +75,6 @@ function getProductMeasurements(produto, qtde = 1) {
         }
     });
 
-
     let combo = getComboMedidas();
 
     promise(`productMeasurements/getProductMeasuresAjax`, 'post', {product_id: produto, measure_id: medida, qtde: qtd})
@@ -142,7 +141,7 @@ function getProductMeasurements(produto, qtde = 1) {
 }
 
 function  atualizaQtdeProduto(id) {
-    document.querySelector('tr < th < select.medida').removeAttribute('selected');
+    document.querySelector('tr > th > select.medida').removeAttribute('selected');
     document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
         if(prod.getAttribute('id') == id) {
             var texto  = getTextCombo(prod, 'select.qtde');
@@ -206,7 +205,34 @@ function getProductOne(codigo) {
                                 </td>
                              </tr>`;
 
-            document.querySelector('tbody'). insertAdjacentHTML('beforeend', pedido);
+            let ultimo = document.querySelectorAll('tbody').length;
+
+            document.querySelectorAll('table').forEach(function(comp, index){
+
+                if((index+1) == ultimo) {
+
+                    let estilo = document.createElement('style');
+                    let  d = new Date();
+                    let data = d.getTime();
+                    estilo.innerHTML = `
+                        .pedido_${data} tbody tr:nth-of-type(odd) {
+                            background-color: #f6c23e;
+                            cursor:pointer;
+                        }
+                    `;
+
+                    let tabela = document.createElement('table');
+                    let corpo = document.createElement('tbody');
+                    tabela.setAttribute('class',`mt-lg-3 table table-striped table-bordered  table-responsive-lg pedido_${data}`);
+                    tabela.setAttribute('style','border-collapse:collapse;');
+                    corpo.innerHTML = pedido;
+                    tabela.appendChild(corpo);
+                    comp.after(estilo);
+                    estilo.after(tabela);
+                }
+
+            });
+
             document.querySelector('#enviar_pedido').setAttribute('style','display:block');
 
         });
@@ -349,7 +375,7 @@ function removePedidoLista(data, id, produto) {
                 if(v.getAttribute('id') == id ) {
                     v.remove();
 
-                    promise(`/purchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
+                    promise(`/purchase-order/${id}`,'DELETE', {'product_id': id, 'created_at' : data})
                     .then(response => {
                         return response.json();
                     })
@@ -369,7 +395,7 @@ function removePedidoLista(data, id, produto) {
             });
 
             if(id) {
-                promise(`/purchase-order/${id}`,'delete', {'product_id': id, 'created_at' : data})
+                promise(`/purchase-order/${id}`,'DELETE', {'product_id': id, 'created_at' : data})
                     .then(response => {
                         return response.json();
                     })
