@@ -452,7 +452,7 @@
                 <div id="my-icon-select"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal"  onclick="">OK</button>
+                <button type="button" class="btn btn-primary" id="btnProductListOK" data-dismiss="modal"  onclick="">OK</button>
 {{--                <button type="button" class="btn btn-primary" onclick="" id="btnPedido" disabled>Selecionar Produto</button>--}}
             </div>
         </div>

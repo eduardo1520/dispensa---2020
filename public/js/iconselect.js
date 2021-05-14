@@ -121,7 +121,7 @@ function IconSelect($$elementID, $$parameters) {
                     }
                 }
                 catch(error) {
-                    //
+                    console.log('Erro:', error);
                 }
 
             }

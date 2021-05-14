@@ -156,8 +156,13 @@ function getProductOne(codigo) {
 
     let encontrou = false;
 
-    document.querySelectorAll(`.pedido > tbody > tr`).forEach(function (p) {
+    // log(codigo);
 
+    // log(document.querySelectorAll('table > tbody > tr'));
+
+    document.querySelectorAll('table > tbody').forEach(function (p) {
+        // log(p);
+        // log(codigo + " = " + p.getAttribute('id'));
         if(p.getAttribute('id') == codigo) {
             encontrou = true;
 
@@ -223,7 +228,7 @@ function getProductOne(codigo) {
 
                     let tabela = document.createElement('table');
                     let corpo = document.createElement('tbody');
-                    tabela.setAttribute('class',`mt-lg-3 table table-striped table-bordered  table-responsive-lg pedido_${data}`);
+                    tabela.setAttribute('class',`mt-lg-3 table table-striped table-bordered  table-responsive-lg dinamico pedido_${data}`);
                     tabela.setAttribute('style','border-collapse:collapse;');
                     corpo.innerHTML = pedido;
                     tabela.appendChild(corpo);
@@ -247,7 +252,6 @@ function sendPurchase(user) {
 
     lista.forEach((value, key) => {
         try {
-
                 let items = {
                     product_id: '',
                     measure_id: '',
@@ -462,6 +466,28 @@ window.onload = function(){
 
             iconSelect.refresh(icons);
         });
+
+    document.getElementById("btnProductListOK").addEventListener("click", function (){
+        let produtos = [];
+        document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (p) {
+            produtos.push(p.getAttribute('id'));
+        });
+
+        // Busca valores duplicados dentro do array
+        let duplicates = produtos.reduce(function(acc, el, i, arr) {
+            if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el); return acc;
+        }, []);
+
+        document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (p,idx) {
+            if(p.getAttribute('id') == duplicates[idx]) {
+                p.remove();
+            }
+        });
+
+
+
+
+    });
 
 };
 
