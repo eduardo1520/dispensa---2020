@@ -93,6 +93,9 @@
                     <div class="col-8 col-lg-12 my-3 border " id="filho">
                         @php
                             $num = 0;
+                            if(empty($purchase_orders)) {
+                                $purchase_orders = [];
+                            }
                         @endphp
                         @forelse($purchase_orders as $data => $listas)
                             @php

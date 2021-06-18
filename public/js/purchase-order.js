@@ -212,19 +212,17 @@ function getProductOne(codigo) {
 
             let ultimo = document.querySelectorAll('tbody').length;
 
-            document.querySelectorAll('table').forEach(function(comp, index){
-
-                if((index+1) == ultimo) {
-
-                    let estilo = document.createElement('style');
+            if(document.querySelectorAll('table').length === 0) {
+                document.querySelectorAll('body > div .container-fluid').forEach(function(tb, index){
                     let  d = new Date();
                     let data = d.getTime();
+                    let estilo = document.createElement('style');
                     estilo.innerHTML = `
-                        .pedido_${data} tbody tr:nth-of-type(odd) {
-                            background-color: #f6c23e;
-                            cursor:pointer;
-                        }
-                    `;
+                            .pedido_${data} tbody tr:nth-of-type(odd) {
+                                background-color: #f6c23e;
+                                cursor:pointer;
+                            }
+                        `;
 
                     let tabela = document.createElement('table');
                     let corpo = document.createElement('tbody');
@@ -232,11 +230,35 @@ function getProductOne(codigo) {
                     tabela.setAttribute('style','border-collapse:collapse;');
                     corpo.innerHTML = pedido;
                     tabela.appendChild(corpo);
-                    comp.after(estilo);
+                    tb.after(estilo);
                     estilo.after(tabela);
-                }
+                });
+            }
+            else {
+                document.querySelectorAll('table').forEach(function(comp, index){
+                    if((index+1) == ultimo || ultimo === 0) {
+                        let estilo = document.createElement('style');
+                        let  d = new Date();
+                        let data = d.getTime();
+                        estilo.innerHTML = `
+                            .pedido_${data} tbody tr:nth-of-type(odd) {
+                                background-color: #f6c23e;
+                                cursor:pointer;
+                            }
+                        `;
 
-            });
+                        let tabela = document.createElement('table');
+                        let corpo = document.createElement('tbody');
+                        tabela.setAttribute('class',`mt-lg-3 table table-striped table-bordered  table-responsive-lg dinamico pedido_${data}`);
+                        tabela.setAttribute('style','border-collapse:collapse;');
+                        corpo.innerHTML = pedido;
+                        tabela.appendChild(corpo);
+                        comp.after(estilo);
+                        estilo.after(tabela);
+                    }
+
+                });
+            }
 
             document.querySelector('#enviar_pedido').setAttribute('style','display:block');
 
@@ -434,8 +456,6 @@ function removePedidoLista(data, id, produto) {
         }
     })
 
-
-
 }
 
 var iconSelect;
@@ -483,9 +503,6 @@ window.onload = function(){
                 p.remove();
             }
         });
-
-
-
 
     });
 

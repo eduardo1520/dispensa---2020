@@ -26,7 +26,6 @@ class PurchaseOrderController extends Controller
      */
     public function index()
     {
-
         \DB::statement("SET SQL_MODE=''");
 
         $comboPeriodSql = PurchaseOrder::select(\DB::raw('id, cast( created_at as date) as dt'))->withTrashed()->groupBy('dt')->get();
@@ -36,11 +35,20 @@ class PurchaseOrderController extends Controller
         $qtdes = [];
         $purchase_orders = null;
 
+        $now = Carbon::now();
+
         foreach ($datas as $k => $d) {
-            $order = $this->getListPurchase([$d['dt']],["P"]);
-            $purchase_orders[strtotime($d['dt']). "_{$d['status']}"][strtotime($d['dt'])] = $order;
-            $qtdes[$k] = count($order);
+            $dt_create = Carbon::parse($d['created_at']);
+            $diff = $now->diffInDays($dt_create);
+            if($diff >= 0 && $diff <= 10) {
+                $order = $this->getListPurchase([$d['dt']],["P"]);
+                $purchase_orders[strtotime($d['dt']). "_{$d['status']}"][strtotime($d['dt'])] = $order;
+                $qtdes[$k] = count($order);
+            }
         }
+
+        $this->removeListaPurchaseOld($now, $datas);
+
         return view('PurchaseOrder.index', compact('produtos','purchase_orders','datas','comboPeriodSql','qtdes'));
     }
 
@@ -189,30 +197,28 @@ class PurchaseOrderController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-
         $dados = $request->all();
-        $result = '';
-
+        $remove = '';
         if($id == '999999') {
             $data = date('Y-m-d', $dados['created_at']);
-            $product = PurchaseOrder::whereRaw("cast(created_at as date) = '{$data}'");
+            $lists = PurchaseOrder::select('id')->whereRaw("cast(purchase_orders.created_at as date) ='{$data}'")->get();
+            foreach ($lists as $l) {
+                $product = PurchaseOrder::where('id',$l->id)->whereRaw("cast(created_at as date) = '{$data}'");
+                if($product) {
+                    $product->update(['status' => 'C']);
+                    $remove= $product->delete();
+                }
+            }
+            return response($remove, 200);
+        } else {
+            $data = date('Y-m-d', $dados['created_at']);
+            $product = PurchaseOrder::where('id',$id)->whereRaw("cast(created_at as date) = '{$data}'");
             if($product) {
                 $product->update(['status' => 'C']);
-                $result = $product->delete();
+                $result= $product->delete();
             }
             return response($result, 200);
         }
-
-        $dados['created_at'] = date('Y-m-d', $dados['created_at']);
-
-        $product = PurchaseOrder::where('id',$id)->whereRaw("cast(created_at as date) = '{$dados['created_at']}'");
-
-        if($product) {
-            $product->update(['status' => 'C']);
-            $result= $product->delete();
-        }
-
-        return response($result, 200);
     }
 
     public function getProductImages()
@@ -223,6 +229,7 @@ class PurchaseOrderController extends Controller
     public function savePurchaseOrder(Request $request)
     {
         $dados = $request->all();
+        $result = null;
 
         if(!empty($dados['lista_produtos'])) {
             foreach ($dados['lista_produtos'] as $key => $dado) {
@@ -329,17 +336,14 @@ class PurchaseOrderController extends Controller
 
     protected function getPurchaseDate($tipo)
     {
-
         $datas = PurchaseOrder::withTrashed()->select(\DB::raw("case purchase_orders.status
                                                     when 'P' then 'Aguardando aprovação'
                                                     when 'C' then 'Cancelado'
                                                     when 'A' then 'Aprovado'
-                                                    end as status, cast( purchase_orders.created_at as date) as dt"))
+                                                    end as status, cast( purchase_orders.created_at as date) as dt, purchase_orders.created_at"))
                 ->whereIn('purchase_orders.status',$tipo)
                 ->distinct()->get()->toArray();
-
         return $datas;
-
     }
 
     protected  function getListPurchase($data,$status)
@@ -355,13 +359,26 @@ class PurchaseOrderController extends Controller
                 $join->on('conf_product_measurements_quantities.measure_id','=','purchase_orders.measure_id');
                 $join->on('conf_product_measurements_quantities.product_id','=','purchase_orders.product_id');
             })
-
             ->whereIn(\DB::raw("DATE(purchase_orders.created_at)"),$data)
             ->whereIn('purchase_orders.status',$status)
             ->groupBy('purchase_orders.product_id')->get()->toArray();
-
         return $order;
 
     }
 
+    private function removeListaPurchaseOld($now, $datas)
+    {
+        \DB::statement("SET SQL_MODE=''");
+        foreach ($datas as $d) {
+            $dt_create = Carbon::parse($d['created_at']);
+            $diff = $now->diffInDays($dt_create);
+            if($diff < 0 || $diff > 10) {
+                $remove = "
+                    UPDATE pantry.purchase_orders SET deleted_at = now(), status = 'C'
+                    WHERE cast(purchase_orders.created_at as date) = '{$d['dt']}' and id <> '0'
+                ";
+                \DB::select(\DB::raw($remove));
+            }
+        }
+    }
 }
