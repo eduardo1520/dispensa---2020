@@ -63,13 +63,15 @@ function getValueCombo(objeto, componente) {
 function getProductMeasurements(produto, qtde = 1) {
     let medida = '';
     let qtd = '';
-    document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
+
+    document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (prod) {
         if(prod.getAttribute('id') == produto) {
+
             medida = getValueCombo(prod, 'select.medida');
         }
     });
 
-    document.querySelectorAll('.pedido > tbody > tr').forEach(function (qt) {
+    document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (qt) {
         if(qt.getAttribute('id') == produto) {
             qtd = getTextCombo(qt, 'select.qtde') > 1 ? getTextCombo(qt, 'select.qtde') : qtde;
         }
@@ -82,7 +84,7 @@ function getProductMeasurements(produto, qtde = 1) {
             return response.json();
         })
         .then(valor => {
-            document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
+            document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (prod) {
                 if(prod.getAttribute('id') == produto) {
                     let produto_nome = prod.querySelector('div >.produto').innerHTML;
                     let arr = produto_nome.split('- ');
@@ -141,31 +143,23 @@ function getProductMeasurements(produto, qtde = 1) {
 }
 
 function  atualizaQtdeProduto(id) {
+
     document.querySelector('tr > th > select.medida').removeAttribute('selected');
-    document.querySelectorAll('.pedido > tbody > tr').forEach(function (prod) {
+    document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (prod) {
         if(prod.getAttribute('id') == id) {
             var texto  = getTextCombo(prod, 'select.qtde');
             getProductMeasurements(id, parseInt(texto));
-
         }
     });
 }
-
 
 function getProductOne(codigo) {
 
     let encontrou = false;
 
-    // log(codigo);
-
-    // log(document.querySelectorAll('table > tbody > tr'));
-
     document.querySelectorAll('table > tbody').forEach(function (p) {
-        // log(p);
-        // log(codigo + " = " + p.getAttribute('id'));
         if(p.getAttribute('id') == codigo) {
             encontrou = true;
-
             Swal.fire({
                 title: 'Atenção!',
                 text: `O produto ${p.querySelector('td > div > small.produto').innerHTML.toLowerCase()} já foi adicionado na lista!`,
