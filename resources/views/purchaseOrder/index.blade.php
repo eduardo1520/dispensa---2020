@@ -96,6 +96,7 @@
                             if(empty($purchase_orders)) {
                                 $purchase_orders = [];
                             }
+                            #dd($purchase_orders);
                         @endphp
                         @forelse($purchase_orders as $data => $listas)
                             @php
@@ -146,11 +147,13 @@
                                                 @endswitch
 
                                                 <span class="btn btn-{{ $classe }} btn-circle btn-sm" style="margin-left: -40;padding-left: 0px;padding-top: 0px;padding-right: 0px;border-right-width: 0px;margin-right: 0px;margin-top: -45;padding-bottom: 0px;border-bottom-width: 4px;height: 25px;width: 28px;">
-                                                    {{$qtdes[$num++] ?? ''}}
+                                                    {{$qtdes[$num++] ?? '1'}}
                                                 </span>
                                             </div>
                                             <div class="col-md-5 mt-2">
-                                                Lista de Pedidos - Data: {{ $arr[1] == 'Cancelado' || $arr[1] == 'Aprovado' ? date('d/m/Y H:i:s',$arr[0]) : date('d/m/Y',$arr[0]) }} - ({{ $arr[1] }})
+                                                @if(!empty($arr[0]))
+                                                    Lista de Pedidos - Data: {{ $arr[1] == 'Cancelado' || $arr[1] == 'Aprovado' ? date('d/m/Y H:i:s',$arr[0]) : date('d/m/Y',$arr[0]) }} - ({{ $arr[1] }})
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
@@ -163,11 +166,10 @@
                                 </tr>
                                 <tr class="p" id = "{{ $arr[0] }}">
                                     <td colspan="6" class="hiddenRow">
-                                        <div class="">
                                             <div class="row">
                                                 @forelse($listas as $tipos)
                                                     @forelse($tipos as $p)
-                                                        <div class="accordian-body collapse p-3 demo_{{$arr[0]}}" id="{{ $p['id'] }}">
+                                                        <div class="accordian-body collapse p-3 demo_{{$arr[0]}}" id="{{ $p['id'] }}" aria-expanded="false">
                                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{{ $p['product_name'] }}</div>
                                                             <div class="card border-left-success shadow h-100 py-2">
                                                                 <div class="col-sm">
@@ -210,7 +212,6 @@
 
                                                 @endforelse
                                             </div>
-                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>

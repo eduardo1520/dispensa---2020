@@ -99,7 +99,7 @@
             </a>
         </li>
         <li class="nav-item {{ Nav::isRoute('profile.index') }}">
-            <a class="nav-link" href="{{ route('profile.index') }}">
+            <a class="nav-link" href="{{ route('product-write-off.index') }}">
                 <i class="fas fa-file-download"></i>
                 <span>{{ __('Baixa de Produtos') }}</span>
             </a>

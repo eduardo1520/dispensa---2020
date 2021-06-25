@@ -81,10 +81,31 @@ class PurchaseOrderController extends Controller
             $qtdes = null;
             if (isset($dados['id']) && count($dados['id']) >= 1 && empty($dados['status'])) {
                 foreach ($dados['id'] as $k => $d) {
-                    $order = $this->getListPurchase([$d], ['P']);
+                    $order = $this->getListPurchase([$d], ['A','C','P']);
                     if(count($order) > 0) {
-                        $purchase_orders[strtotime($d) . "_{$this->getTextSigle('P')}"][strtotime($d)] = $order;
-                        $qtdes[$k] = count($order);
+                        foreach ($order as $o) {
+                            if($o['status'] == 'A' || $o['status'] == 'P') {
+                                $arr = [];
+                                foreach ($order as $i) {
+                                    if($i['status'] != 'C') {
+                                        $arr[] = $i;
+                                    }
+                                }
+
+                                $purchase_orders[strtotime($d) . "_{$this->getTextSigle($o['status'])}"][strtotime($d)] = $arr;
+                                $qtdes[$k] = count($arr);
+
+                            } else {
+                                  $arr = [];
+                                    foreach ($order as $i) {
+                                        if($i['status'] == 'C') {
+                                            $arr[] = $i;
+                                        }
+                                    }
+                                $purchase_orders[strtotime($arr[0]['deleted_at']) . "_{$this->getTextSigle($o['status'])}"][strtotime($arr[0]['deleted_at'])] = $arr;
+                                $qtdes[$k] = count($arr);
+                            }
+                        }
                     }
                 }
             } elseif (isset($dados['status']) && count($dados['status']) >= 1 && empty($dados['id'])) {
@@ -93,7 +114,10 @@ class PurchaseOrderController extends Controller
                     foreach ($datas as $idx => $d) {
                         $order = $this->getListPurchase([$d['dt']], [$s]);
                         if (count($order) > 0) {
-                            if ($s == 'A' || $s == 'C') {
+                            if ($s == 'A') {
+                                $data_ini = Carbon::parse($order[0]['created_at'])->format('Y-m-d');
+                                $purchase_orders[strtotime($data_ini) . "_{$this->getTextSigle($s)}"][strtotime($data_ini)] = $order;
+                            }elseif($s == 'C'){
                                 $purchase_orders[strtotime($order[0]['deleted_at']) . "_{$this->getTextSigle($s)}"][strtotime($order[0]['deleted_at'])] = $order;
                             } else {
                                 $purchase_orders[strtotime($d['dt']) . "_{$this->getTextSigle($s)}"][strtotime($d['dt'])] = $order;
@@ -133,7 +157,7 @@ class PurchaseOrderController extends Controller
                     foreach ($dts as $dt) {
                         foreach ($order as $p) {
                             $data_ini = Carbon::parse($p['created_at'])->format('Y-m-d');
-                            $data_fim = Carbon::parse($p['deleted_at'])->format('Y-m-d H:i:s');
+                            $data_fim = Carbon::parse($p['created_at'])->format('Y-m-d H:i:s');
                             if ($dt == $data_ini) {
                                 if ($p['status'] == 'A' || $p['status'] == 'C') {
                                     $purchase_orders[strtotime($data_fim) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_fim)][] = $p;
@@ -151,7 +175,6 @@ class PurchaseOrderController extends Controller
                 return $this->index();
             }
         }
-
         return view('purchaseOrder.index', compact('purchase_orders', 'comboPeriodSql','qtdes'));
     }
 

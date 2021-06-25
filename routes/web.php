@@ -80,3 +80,5 @@ Route::resource('/purchase-order', 'PurchaseOrderController');
 Route::post('/purchase-order/productImageAjax', 'PurchaseOrderController@getProductImages');
 Route::post('/purchase-order/savePurchaseOrderAjax', 'PurchaseOrderController@savePurchaseOrder')->name('savePurchaseOrderAjax');
 Route::post('/purchase-order/getQueryListAjax', 'PurchaseOrderController@getQueryListAjax')->name('getQueryListAjax');
+
+Route::resource('/product-write-off', 'ProductWriteOffController');
