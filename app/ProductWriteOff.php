@@ -12,14 +12,10 @@ class ProductWriteOff extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id','product_id','measure_id','qtde', 'category_id','brand_id','user_id','created_at','deleted_at'
-    ];
-
-    protected $hidden = [
-        'updated_at'
+        'id','product_id','measure_id','qtde', 'category_id','brand_id','user_id','created_at','deleted_at','updated_at'
     ];
 
     protected $dates = [
-        'created_at','deleted_at',
+        'created_at','deleted_at'
     ];
 }

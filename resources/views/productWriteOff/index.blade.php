@@ -41,7 +41,8 @@
 <div class="col-lg-12 order-lg-1">
     <div class="card shadow mb-4">
         <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Baixa de Produtos</h6></div>
-        <div class="card-body">
+        <div class="card-body" id="prod-card">
+            <input type='hidden' name='produto_baixa' id='produto_baixa' value=''>
             <div class="pl-lg-4 mt-lg-5">
                 <form action="{{ route('product-write-off.store') }}" name="frm-productWriteOff-pesquisar" method="post" id="frm-productWriteOff-pesquisar">
                     <input type="hidden" name="pesquisar" value="true">
@@ -68,8 +69,6 @@
                     </div>
                 </form>
             </div>
-            {{--            <button class="btn btn-success" id="pedido" data-toggle="modal" data-target="#pedidoModal" style="margin-left: 20px;">Novo Produto</button>--}}
-            {{--            <button class="btn btn-primary float-right" id="enviar_pedido" style="display: none" onclick="sendPurchase({{ Auth::user()->id }})">Enviar Pedidos</button>--}}
         </div>
         <div class="card-body" style="margin-top: auto;padding-top: 0px;">
             <div class="row " align="center" id="tabela">
@@ -99,7 +98,6 @@
                                 cursor:pointer;
                             }
                         </style>
-
                         @switch($c['tipo'])
                             @case('Limpeza')
                                 @php $color = '#90EE90'; @endphp
@@ -116,7 +114,6 @@
                             @default
                             @php $color = '#e6edf4'; @endphp
                         @endswitch
-
                         <table class="mt-lg-3 table table-striped table-bordered  table-responsive-lg pedido_{{$c['id']}}" style="border-collapse:collapse;">
                             <tbody>
                                 <tr colspan="6" data-toggle="collapse" data-target=".demo_{{$c['id']}}" class="accordion-toggle" aria-expanded="false" onclick="validaStatusCategoria({{$c['id']}})">
@@ -137,7 +134,7 @@
                                     @endphp
                                     @switch($c['tipo'])
                                         @case('Higiene Pessoal')
-                                            @php $stilo = "margin-left: -67;
+                                            @php $estilo = "margin-left: -67;
                                                            padding-left: 0px;
                                                            padding-top: 0px;
                                                            padding-right: 0px;
@@ -152,7 +149,7 @@
                                             @endphp
                                             @break
                                         @case('Limpeza')
-                                            @php $stilo = "margin-left: -67;
+                                            @php $estilo = "margin-left: -67;
                                                                padding-left: 0px;
                                                                padding-top: 0px;
                                                                padding-right: 0px;
@@ -167,7 +164,7 @@
                                             @endphp
                                             @break
                                         @case('Mercearia')
-                                            @php $stilo = "margin-left: -47;
+                                            @php $estilo = "margin-left: -47;
                                                            padding-left: 0px;
                                                            padding-top: 0px;
                                                            padding-right: 0px;
@@ -182,7 +179,7 @@
                                             @endphp
                                             @break
                                         @case('Outros')
-                                            @php $stilo = "margin-left: -47;
+                                            @php $estilo = "margin-left: -47;
                                                                padding-left: 0px;
                                                                padding-top: 0px;
                                                                padding-right: 0px;
@@ -197,7 +194,7 @@
                                             @endphp
                                         @break
                                         @case('Perecíveis')
-                                            @php $stilo = "margin-left: -25;
+                                            @php $estilo = "margin-left: -25;
                                                                    padding-left: 0px;
                                                                    padding-top: 0px;
                                                                    padding-right: 0px;
@@ -217,7 +214,7 @@
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <i class="fas {{ $card ?? '' }}" style="font-size: 48px;"></i>
-                                                <span class="btn  btn-info btn-circle btn-sm" style="{{$stilo}}background-color: {{$color}}">
+                                                <span class="btn  btn-info btn-circle btn-sm" style="{{$estilo}}background-color: {{$color}}">
                                                     {{isset($qtdes[$c['tipo']]) && count($qtdes[$c['tipo']]) > 0 ? count($qtdes[$c['tipo']]) : ":("}}
                                                 </span>
                                             </div>
@@ -228,7 +225,7 @@
                                     </td>
                                     <td>
                                         <div class="remover d-none" id="id_{{$c['id']}}" style="float: right; margin-right: 5px; margin-bottom: 5px; {{ $c['tipo'] == 'Cancelado' ||  $c['tipo'] == 'Aprovado' ? 'display:none' : 'cursor:wait;'}}">
-                                            <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Dar baixa em todos os Produtos dessa Categoria" onclick="removePedidoLista({{ $c['id'] }},'999999','')"><i class="fas fa-trash"></i></a>
+                                            <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Dar baixa em todos os Produtos dessa Categoria" onclick="baixaPedidosAll({{ $c['id'] }},'999999','')"><i class="fas fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -246,8 +243,21 @@
                                                     ];
                                                 @endphp
                                                 @if($ap->cod_categoria == $c['id'])
+                                                    @php
+                                                        $contador = 0;
+                                                        $liberar = true;
+                                                        foreach ($status_product[$c['id']] as $status) {
+                                                            if($ap->cod_categoria == $status['category_id'] && $status['qtde'] == 0) {
+                                                                $contador++;
+                                                            }
+                                                        }
+
+                                                        if(count($status_product[$c['id']]) == $contador) {
+                                                            $liberar = false;
+                                                        }
+                                                    @endphp
                                                     <script>
-                                                        if({{$ap->cod_categoria == $c['id']}}) {
+                                                        if({{$liberar}}) {
                                                             document.querySelector("#id_{{$c['id']}}").classList.remove('d-none');
                                                         }
                                                     </script>
@@ -264,16 +274,18 @@
                                                                             <div class="card-body">
                                                                                 <h5 class="card-title">{{$ap->name}}</h5>
                                                                                 <p class="card-text">Código: <span>{{$ap->id}}</span></p>
-                                                                                <p class="card-text">Qtde: <span> {{$ap->qtde}}</span></p>
+                                                                                <p class="card-text qtde">Qtde: <span> {{$ap->qtde}}</span></p>
                                                                                 <p class="card-text">Medida: <span> {{$ap->nome}} - ({{strtoupper($ap->sigla)}})</span></p>
-                                                                                <p class="card-text"><small class="text-muted">[{{$ap->qtde}}] {{$ap->name}}</small></p>
+                                                                                <p class="card-text up_dinamico"><small class="text-muted">[{{$ap->qtde}}] {{$ap->name}}</small></p>
                                                                                 <p class="card-text"><small class="text-muted">Categoria : <span>{{$ap->tipo}}</span></small></p>
-                                                                                <p class="card-text"><small class="text-muted">Data : <span>{{$ap->dt}} hs</span></small></p>
+                                                                                <p class="card-text up_data"><small class="text-muted">Data : <span>{{$ap->dt}} hs</span></small></p>
                                                                                 <p class="card-text">{{$ap->description}}</p>
                                                                             </div>
-                                                                            <div style="float: right; margin-right: 5px; margin-bottom: 5px;{{$disabled ?? ''}}" >
-                                                                                <a href="#" class="btn btn-danger btn-circle btn-sm excluir" title="Baixa de Produtos" data-id="{{ $ap->id }}" onclick=""><i class="fa fa-cart-arrow-down"></i></a>
-                                                                            </div>
+                                                                            @if($ap->qtde > 0)
+                                                                                <div style="float: right; margin-right: 5px; margin-bottom: 5px;{{$disabled ?? ''}}" class="baixar">
+                                                                                    <a href="#" class="btn btn-danger btn-circle btn-sm" title="Baixa de Produtos" data-id="{{ $ap->id }}" onclick="baixaProduto({{ $ap->id }},{{$c['id']}})"><i class="fa fa-cart-arrow-down"></i></a>
+                                                                                </div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -320,9 +332,6 @@
         jQuery('.chosen-select-deselect').chosen({ allow_single_deselect: true });
     });
 </script>
-
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
 <script src="{{ asset('js/productWriteOff.js') }}" type="text/javascript"></script>
