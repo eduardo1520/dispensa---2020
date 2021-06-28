@@ -214,47 +214,17 @@
                         <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-bell fa-fw"></i>
                             <!-- Counter - Alerts -->
-                            <span class="badge badge-danger badge-counter">3+</span>
+                            <span class="badge badge-danger badge-counter" id="notifications"></span>
                         </a>
                         <!-- Dropdown - Alerts -->
+                        @section('modal')
+                            @include('modal.notification',['title'=> 'Dispensa','subTitle'=>'Baixa do Produto', 'action' => '#'])
+                        @endsection
                         <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-                            <h6 class="dropdown-header">
-                                Alerts Center
+                            <h6 class="dropdown-header" id="info-notifications">
+                                Alertas de Notificações
                             </h6>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <div class="mr-3">
-                                    <div class="icon-circle bg-primary">
-                                        <i class="fas fa-file-alt text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="small text-gray-500">December 12, 2019</div>
-                                    <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                </div>
-                            </a>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <div class="mr-3">
-                                    <div class="icon-circle bg-success">
-                                        <i class="fas fa-donate text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="small text-gray-500">December 7, 2019</div>
-                                    $290.29 has been deposited into your account!
-                                </div>
-                            </a>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <div class="mr-3">
-                                    <div class="icon-circle bg-warning">
-                                        <i class="fas fa-exclamation-triangle text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="small text-gray-500">December 2, 2019</div>
-                                    Spending Alert: We've noticed unusually high spending for your account.
-                                </div>
-                            </a>
-                            <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                            <a class="dropdown-item text-center small text-gray-500" href="#">Mostrar todas as notificações</a>
                         </div>
                     </li>
                     <!-- Nav Item - Messages -->
@@ -1014,6 +984,18 @@
 
         }
 
+    function promise(url, method, params) {
+        // const params = { username: 'example' };
+        return fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN':  document.head.querySelector("meta[name=csrf-token]").content
+            },
+            body: (params != undefined) ? JSON.stringify(params) : '',
+        });
+    }
+
     $(document).ready(function(){
         $("#feedback .btn").on('click', function(){
             $("#feedback .btn").each(function(){
@@ -1033,6 +1015,55 @@
             }
             $("#form-feedback").append('<input type="hidden" name="tipo" id="tipo" value="'+ $(this).val() +'">');
         });
+
+        promise(`notification/getNotificationsAjax`, 'POST')
+            .then(response => {
+                return response.json();
+            })
+            .then(notifications => {
+                if(notifications != null) {
+                    document.querySelectorAll('ul > li.nav-item > a > span#notifications').forEach(function(n){
+                        n.innerHTML = notifications.length + "+";
+                    });
+
+                    let color = '';
+                    notifications.forEach(function(note) {
+                        switch (note.tipo) {
+                            case 'Limpeza':
+                                color = '#90EE90';
+                                break
+                            case 'Higiene Pessoal':
+                                color = '#36b9cc';
+                                break
+                            case 'Mercearia':
+                                color = '#f6c23e';
+                                break
+                            case 'Perecíveis':
+                                color = '#FF6347';
+                                break
+                            default:
+                                color = '#e6edf4';
+                        }
+
+                        let dados = btoa(JSON.stringify(note));
+                        let HTML = `
+                            <a class="info_notificacoes dropdown-item d-flex align-items-center" href="#" data-toggle="modal" data-target="#notificationModal" onclick="mountNotification('${dados}')">
+                                <div class="mr-3">
+                                    <div class="icon-circle" style="background-color:${color}">
+                                        <i class="fa fa-cart-arrow-down"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-gray-500">${note.created_at}</div>
+                                    <span class="font-weight-bold">Baixa de produto: ${note.produto}</span>
+                                </div>
+                            </a>
+                        `;
+                        document.querySelector('#info-notifications').insertAdjacentHTML('afterend',HTML);
+                    });
+                }
+        });
+
     });
 
 </script>
@@ -1042,5 +1073,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+<script src="{{ asset('js/notification.js') }}"></script>
 </body>
 </html>

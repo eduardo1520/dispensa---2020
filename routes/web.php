@@ -82,3 +82,6 @@ Route::post('/purchase-order/savePurchaseOrderAjax', 'PurchaseOrderController@sa
 Route::post('/purchase-order/getQueryListAjax', 'PurchaseOrderController@getQueryListAjax')->name('getQueryListAjax');
 
 Route::resource('/product-write-off', 'ProductWriteOffController');
+
+Route::resource('/notification', 'NotificationController');
+Route::post('/notification/getNotificationsAjax', 'NotificationController@getNotificationsAjax')->name('getNotificationsAjax');

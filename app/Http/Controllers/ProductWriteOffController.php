@@ -92,11 +92,17 @@ class ProductWriteOffController extends Controller
                 WHERE category_id = $categoria
                 AND id > 0
             ";
-            $result = \DB::select(\DB::raw($sql));
+            //$result = \DB::select(\DB::raw($sql));
+            ### Insere a notificação
+            (new NotificationController())->createNotifications($dados);
+            $result = true;
         } else {
             $product = ProductWriteOff::where('product_id',$id);
             if(!empty($product)) {
-                $result = $product->update($dados);
+              //$result = $product->update($dados);
+              ### Insere a notificação
+              (new NotificationController())->createNotifications($dados);
+                $result = true;
             }
         }
 
