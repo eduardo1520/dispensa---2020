@@ -8,10 +8,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="form-codListModal2">
+                <form id="form-codListModal">
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">Query</label>
-                        <textarea class="form-control" name="descricao2" id="descricao2" style="height: 570px; margin-top: 0px; margin-bottom: 0px;"></textarea>
+                        <textarea class="form-control" name="descricao" id="descricao" style="height: 570px; margin-top: 0px; margin-bottom: 0px;"></textarea>
                     </div>
                 </form>
             </div>
@@ -21,7 +21,6 @@
         </div>
     </div>
 </div>
-
 
 <script>
     function promise(url, method, params) {
@@ -43,11 +42,11 @@
                 .then(response => {
                     return response.json();
                 }).then(queries => {
-                    let element = document.querySelector("#descricao");
-                    queries.forEach(function(value){
-                        element.insertAdjacentHTML('beforeend', `${value}\n\n`);
-                    });
-                }).catch(error => {
+                let element = document.querySelector("#descricao");
+                queries.forEach(function(value){
+                    element.insertAdjacentHTML('beforeend', `${value}\n\n`);
+                });
+            }).catch(error => {
                     console.log('erro:', error);
                 }
             );

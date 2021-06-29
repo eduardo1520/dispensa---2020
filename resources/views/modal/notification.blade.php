@@ -11,12 +11,12 @@
                 <form id="form-codListModal">
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">{{$subTitle ?? ''}}</label>
-                        <div class="card border-left-danger shadow h-100 py-2">
+                        <div class="card border-left-danger shadow h-100 py-2" id="cardModal">
                             <div class="col-sm">
                                 <div class="card mb-3" style="max-width: 400px;">
                                     <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img src="imagem" width="150" height="150" alt="" style="margin-top:10px ;padding:10px;">
+                                            <img src="#" width="150" height="150" alt="" style="margin-top:10px ;padding:10px;">
                                         </div>
                                         <div class="col-md-8">
                                             <div class="card-body m">
@@ -43,7 +43,6 @@
         </div>
     </div>
 </div>
-
 
 <script>
     function promise(url, method, params) {

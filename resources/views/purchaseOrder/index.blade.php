@@ -82,12 +82,6 @@
                 <button class="btn btn-success" id="pedido" data-toggle="modal" data-target="#pedidoModal" style="margin-left: 20px;">Novo Produto</button>
                 <button class="btn btn-primary float-right" id="enviar_pedido" style="display: none" onclick="sendPurchase({{ Auth::user()->id }})">Enviar Pedidos</button>
             </div>
-            <div>
-                @section('modal')
-                    @include('modal',['title'=> 'Listagem de Pedido de Compras', 'action' => '/purchase-order/getQueryListAjax'])
-                @endsection
-{{--                <a href="" id="pedido2" data-toggle="modal" data-target="#pedidoModal2"><img src="{{ asset('img/sql.png') }}" class="rounded-circle" alt="user-image" style="width: 60px;margin-left: 30px;margin-top: 40px;"></a>--}}
-            </div>
             <div class="card-body" style="margin-top: auto;padding-top: 0px;">
                 <div class="row " align="center" id="tabela">
                     <div class="col-8 col-lg-12 my-3 border " id="filho">

@@ -1,23 +1,30 @@
 function mountNotification(dado) {
+    /* Extrai da Base64 e converte para JSON.*/
     let note = JSON.parse(atob(dado));
-    console.log(note);
 
-    document.querySelectorAll('div > form#form-codListModal > div > div > div > div.card > div.row').forEach(function(card){
-        card.querySelectorAll('div.col-md-4 > img').forEach(function (img){
-           img.innerHTML = '';
-           img.setAttribute('src',note.image);
-        });
-
-        card.querySelectorAll('div.col-md-8 > div.m').forEach(function (prod){
-           prod.querySelector('h5').innerHTML = note.produto;
-           prod.querySelector('p.codigo').innerHTML = "Código: " + note.produto_codigo;
-           prod.querySelector('p.qtde').innerHTML = "Qtde: " + note.qtde_old + "/" + note.qtde;
-           prod.querySelector('p.up_dinamico').innerHTML = "[" + note.qtde + "] " + prod.querySelector('h5').innerHTML;
-           prod.querySelector('p.categoria').innerHTML = "Categoria: " + note.tipo;
-           prod.querySelector('p.up_data').innerHTML = "Data: " + note.created_at;
-           prod.querySelector('textarea.obs').innerHTML = "Obs: O usuário(a) " + note.name + " efetuou a baixa do produto!";
-        });
-
+    document.querySelectorAll('form#form-codListModal > *').forEach(function(card){
+        card.querySelector('img').setAttribute('src',note.image);
+        card.querySelector('h5').innerHTML = note.produto;
+        card.querySelector('p.codigo').innerHTML = "Código: " + note.produto_codigo;
+        card.querySelector('p.qtde').innerHTML = "Qtde: " + note.qtde_old + "/" + note.qtde;
+        card.querySelector('p.up_dinamico').innerHTML = "[" + note.qtde + "] " + card.querySelector('h5').innerHTML;
+        card.querySelector('p.categoria').innerHTML = "Categoria: " + note.tipo;
+        card.querySelector('p.up_data').innerHTML = "Data: " + note.created_at;
+        card.querySelector('textarea.obs').innerHTML = "Obs: O usuário(a) " + note.name + " efetuou a baixa do produto!";
     });
 
 }
+
+function promise(url, method, params) {
+    // const params = { username: 'example' };
+    return fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN':  document.head.querySelector("meta[name=csrf-token]").content
+        },
+        body: (params != undefined) ? JSON.stringify(params) : '',
+    });
+}
+
+

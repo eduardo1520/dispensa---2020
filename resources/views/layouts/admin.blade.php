@@ -397,7 +397,7 @@
                     </div>
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">Descrição:<span class="small text-danger">*</span></label>
-                        <textarea class="form-control" name="descricao" id="descricao" required></textarea>
+                        <textarea class="form-control" name="descricao" id="descricao_modal" required></textarea>
                     </div>
                 </form>
             </div>
@@ -424,94 +424,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="btnProductListOK" data-dismiss="modal"  onclick="">OK</button>
 {{--                <button type="button" class="btn btn-primary" onclick="" id="btnPedido" disabled>Selecionar Produto</button>--}}
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="medidaModal" tabindex="-1" aria-labelledby="medidaModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="titulo-medida">Cadastro de Unidade de Medidas</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="form-medida" onchange="validaCampos('form-medida','btnMedida',['input']);">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div>
-                                <label class="form-control-label" for="nome">Nome:<span class="small text-danger">*</span></label>
-                                <input type="text" class="form-control" name="nome" id="nome" required>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div>
-                                <label class="form-control-label" for="sigla">Sigla:<span class="small text-danger">*</span></label>
-                                <input type="text" class="form-control" name="sigla" id="sigla" required>
-                            </div>
-                        </div>
-
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"  onclick="cancelar()">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="salvarMedida()" id="btnMedida" disabled>Cadastrar Medida</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade modalCategoria" tabindex="-1" aria-labelledby="modalCategoria" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="titulo-categoria">Atualizar Categoria</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="form-categoria" onchange="validaCampos('form-categoria','btnCategoria',['input']);">
-                    <input type="hidden" id="id">
-                    <div class="form-group">
-                        <label for="tipo" class="col-form-label">Tipo:<span class="small text-danger">*</span></label>
-                        <input type="text" class="form-control" id="tipo" name="tipo" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnCategoria" onclick="salvarCategoria()">Cadastrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade modalMarca" tabindex="-1" aria-labelledby="modalMarca" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="titulo-marca">Cadastrar Marca</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="form-marca" onchange="validaCampos('form-marca','btnMarca',['input']);">
-                    <div class="form-group">
-                        <label for="name" class="col-form-label">Nome:<span class="small text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelar();">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnMarca" onclick="salvarMarca()">Cadastrar</button>
             </div>
         </div>
     </div>
@@ -782,32 +694,6 @@
     </div>
 </div>
 
-{{--<div class="modal fade" id="pedidoModal2" tabindex="-1" aria-labelledby="pedidoModal2" aria-hidden="true" data-backdrop="static" data-keyboard="false">--}}
-{{--    <div class="modal-dialog">--}}
-{{--        <div class="modal-content">--}}
-{{--            <div class="modal-header">--}}
-{{--                <h5 class="modal-title" id="tituloCodListModal">{{ $title ?? '' }}</h5>--}}
-{{--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
-{{--                    <span aria-hidden="true">&times;</span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--            <div class="modal-body">--}}
-{{--                <form id="form-codListModal">--}}
-{{--                    <div class="form-group">--}}
-{{--                        <label for="message-text" class="col-form-label">Query</label>--}}
-{{--                        <textarea class="form-control" name="descricao" id="descricao"></textarea>--}}
-{{--                    </div>--}}
-{{--                </form>--}}
-{{--            </div>--}}
-{{--            <div class="modal-footer">--}}
-{{--                <button type="button" class="btn btn-info" data-dismiss="modal"  onclick="cancelar()">Ok</button>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
-{{--</div>--}}
-
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
 <script src="{{ asset('js/gijgo.min.js') }}" type="text/javascript"></script>
@@ -1045,6 +931,7 @@
                                 color = '#e6edf4';
                         }
 
+                        /*Converte para JSON na Base64 para ser enviado para a próxima funcionalidade*/
                         let dados = btoa(JSON.stringify(note));
                         let HTML = `
                             <a class="info_notificacoes dropdown-item d-flex align-items-center" href="#" data-toggle="modal" data-target="#notificationModal" onclick="mountNotification('${dados}')">

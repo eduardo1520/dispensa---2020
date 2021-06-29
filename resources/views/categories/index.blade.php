@@ -9,6 +9,9 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Listagens de Categorias</h6></div>
                 <div class="card-body">
+                    @section('modal')
+                        @include('modal.category')
+                    @endsection
                     <a href="#" class="btn  btn-success btn-icon-split btn-sm" data-toggle="modal" data-target=".modalCategoria"  onclick='abreModalCategoria("");'>
                         <span class="icon text-white-50"><i class="fa fa-cubes" aria-hidden="true"></i></span>
                         <span class="text">Novo</span>

@@ -121,12 +121,13 @@ class NotificationController extends Controller
 
         $user = \Auth::user()->id;
 
-        $notifications = Notification::select('notifications.id','notifications.qtde','product_write_offs.qtde as qtde_old','products.id as produto_codigo',
+        $notifications = Notification::select('notifications.id','notifications.qtde','purchase_orders.qtde as qtde_old','products.id as produto_codigo',
             'products.name as produto','products.image','categories.id as categoria_codigo','categories.tipo','notifications.created_at','users.name')
             ->join('products','products.id','notifications.product_id')
             ->join('categories','categories.id','notifications.category_id')
             ->join('users','users.id','notifications.user_id')
-            ->join('product_write_offs','product_write_offs.product_id','notifications.product_id')
+            ->join('purchase_orders','purchase_orders.product_id','products.id')
+            ->where('purchase_orders.status','A')
             ->get()->toArray();
 
 

@@ -195,17 +195,17 @@
                                         @break
                                         @case('Perecíveis')
                                             @php $estilo = "margin-left: -25;
-                                                                   padding-left: 0px;
-                                                                   padding-top: 0px;
-                                                                   padding-right: 0px;
-                                                                   border-right-width: 0px;
-                                                                   margin-right: 0px;
-                                                                   margin-top: -65;
-                                                                   padding-bottom: -;
-                                                                   border-bottom-width: 1px;
-                                                                   height: 25px;
-                                                                   width: 28px;
-                                                               ";
+                                                               padding-left: 0px;
+                                                               padding-top: 0px;
+                                                               padding-right: 0px;
+                                                               border-right-width: 0px;
+                                                               margin-right: 0px;
+                                                               margin-top: -65;
+                                                               padding-bottom: -;
+                                                               border-bottom-width: 1px;
+                                                               height: 25px;
+                                                               width: 28px;
+                                                           ";
                                             @endphp
                                             @break
                                     @default
@@ -257,9 +257,9 @@
                                                         }
                                                     @endphp
                                                     <script>
-                                                        if({{$liberar}}) {
+                                                        @if($liberar)
                                                             document.querySelector("#id_{{$c['id']}}").classList.remove('d-none');
-                                                        }
+                                                        @endif
                                                     </script>
                                                     <div class="accordian-body p-3 demo_{{$c['id']}} collapse " id="{{$ap->id}}" aria-expanded="false" >
                                                         <div class="text-xs font-weight-bold text-{{$tipo[$c['id']]}} text-uppercase mb-1">{{$c['tipo']}}</div>

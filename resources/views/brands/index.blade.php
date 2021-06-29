@@ -49,6 +49,9 @@
                 <h6 class="m-0 font-weight-bold text-primary">Listagens de Marcas</h6>
             </div>
             <div class="card-body">
+                @section('modal')
+                    @include('modal.brand')
+                @endsection
                 <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal" data-target=".modalMarca"  onclick='abreModalMarca("");'>
                     <span class="icon text-white-50">
                       <i class="fa fa-cubes" aria-hidden="true"></i>
