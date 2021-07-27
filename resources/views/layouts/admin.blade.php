@@ -69,7 +69,7 @@
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>{{ __('Dashboard') }}</span></a>
         </li>
-        @if(Auth::user()->admin == 'S')
+        @if(!empty(\Auth::user()->admin) &&  \Auth::user()->admin == 'S')
             <hr class="sidebar-divider my-0">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
@@ -110,7 +110,7 @@
                 <span>{{ __('Solicitação de Produtos') }}</span>
             </a>
         </li>
-        @if(Auth::user()->admin == 'S')
+        @if(!empty(\Auth::user()->admin) &&  \Auth::user()->admin == 'S')
             <hr class="sidebar-divider">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#relatorio" aria-expanded="true" aria-controls="relatorio">
@@ -286,8 +286,8 @@
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                            <figure class="img-profile rounded-circle avatar font-weight-bold" data-initial="{{ Auth::user()->name[0] }}"></figure>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name ?? ''}}</span>
+                            <figure class="img-profile rounded-circle avatar font-weight-bold" data-initial="{{ Auth::user()->name ?? '' }}"></figure>
                         </a>
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -371,7 +371,7 @@
             </div>
             <div class="modal-body">
                 <form id="form-feedback" onchange="validaCampos('form-feedback','btnFeedback',['select','textarea']);">
-                    <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
+                    <input type="hidden" name="user_id" id="user_id" value="{{ \Auth::user()->id ?? ''}}">
 
                     <div class="row">
                         <div class="col-lg-6">

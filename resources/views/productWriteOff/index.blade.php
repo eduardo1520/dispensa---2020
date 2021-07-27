@@ -75,7 +75,7 @@
                 <div class="col-md-12 my-3 border " id="filho">
                     @php
                         $num = 0;
-                        if(isset($_POST['pesquisar']) && $_POST['pesquisar'] == true) {
+                        if(isset($_POST['pesquisar']) && $_POST['pesquisar'] == true && isset($_POST['category']) && count($_POST['category']) > 0) {
                             if(!empty($dados)){
                                 $comboCategorySql = $dados;
                             } else {

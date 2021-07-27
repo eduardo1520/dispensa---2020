@@ -16,6 +16,7 @@ class ProductWriteOffController extends Controller
      */
     public function index()
     {
+
         $comboCategorySql = Category::select('id','tipo')->orderby('tipo')->get();
 
         $arr = ProductWriteOff::select(\DB::raw("product_id,category_id, qtde, IFNULL(updated_at,'0') as dt"))->orderby('category_id')->distinct()->get()->toArray();
@@ -42,6 +43,7 @@ class ProductWriteOffController extends Controller
     public function store(Request $request)
     {
         $dados = $request->all();
+
         if($dados['pesquisar']){
             if(!empty($dados['category'])) {
                 $categories = $dados['category'];
@@ -66,9 +68,14 @@ class ProductWriteOffController extends Controller
 
         $dados = Category::select('id','tipo')->whereIn('id',$ids)->orderby('tipo','asc')->get()->toArray();
 
+        $status_product = null;
+
         $arr = ProductWriteOff::select(\DB::raw("product_id,category_id, qtde, IFNULL(updated_at,'0') as dt"))->whereIn('category_id',$ids)->orderby('category_id')->distinct()->get()->toArray();
-        foreach ($arr as $p) {
-            $status_product[$p['category_id']][] = $p;
+
+        if(!empty($arr)) {
+            foreach ($arr as $p) {
+                $status_product[$p['category_id']][] = $p;
+            }
         }
 
         return view('productWriteOff.index', compact('comboCategorySql','productAprovate','qtdes','dados','status_product'));

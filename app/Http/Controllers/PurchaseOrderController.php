@@ -37,16 +37,18 @@ class PurchaseOrderController extends Controller
 
         $now = Carbon::now();
 
-        foreach ($datas as $k => $d) {
+        foreach ($datas as $d) {
             $dt_create = Carbon::parse($d['created_at']);
             $diff = $now->diffInDays($dt_create);
             if($diff >= 0 && $diff <= 10) {
                 $order = $this->getListPurchase([$d['dt']],["P"]);
-                $purchase_orders[strtotime($d['dt']). "_{$d['status']}"][strtotime($d['dt'])] = $order;
-                $qtdes[$k] = count($order);
+                foreach ($order as $o) {
+                    $purchase_orders[$o['user_id'] . "_" .strtotime($d['dt']). "_{$d['status']}"][strtotime($d['dt'])][$o['id']]= $o;
+//                    $qtdes[$o['user_id']][$o['id']] = $o;
+                    $qtdes[$o['user_id']][$o['created_at']][$o['id']] = $o;
+                }
             }
         }
-
         $this->removeListaPurchaseOld($now, $datas);
 
         return view('PurchaseOrder.index', compact('produtos','purchase_orders','datas','comboPeriodSql','qtdes'));
@@ -80,30 +82,33 @@ class PurchaseOrderController extends Controller
         if($dados['pesquisar']) {
             $qtdes = null;
             if (isset($dados['id']) && count($dados['id']) >= 1 && empty($dados['status'])) {
-                foreach ($dados['id'] as $k => $d) {
+                #dd($dados['id']);
+                foreach ($dados['id'] as $d) {
                     $order = $this->getListPurchase([$d], ['A','C','P']);
+                    #dd($order);
                     if(count($order) > 0) {
                         foreach ($order as $o) {
                             if($o['status'] == 'A' || $o['status'] == 'P') {
-                                $arr = [];
-                                foreach ($order as $i) {
-                                    if($i['status'] != 'C') {
-                                        $arr[] = $i;
-                                    }
-                                }
-
-                                $purchase_orders[strtotime($d) . "_{$this->getTextSigle($o['status'])}"][strtotime($d)] = $arr;
-                                $qtdes[$k] = count($arr);
-
+//                                $arr = [];
+//                                foreach ($order as $i) {
+//                                    if($i['status'] != 'C') {
+//                                        $arr[] = $i;
+//                                    }
+//                                }
+//                                $purchase_orders[$o['user_id'] . "_" . strtotime($d) . "_{$this->getTextSigle($o['status'])}"][strtotime($d)] = $o;
+////                                $qtdes[$o['user_id']][$o['id']] = $o;
+//                                $qtdes[$o['user_id']][strtotime($o['created_at'])][$o['id']] = $o;
                             } else {
-                                  $arr = [];
-                                    foreach ($order as $i) {
-                                        if($i['status'] == 'C') {
-                                            $arr[] = $i;
-                                        }
-                                    }
-                                $purchase_orders[strtotime($arr[0]['deleted_at']) . "_{$this->getTextSigle($o['status'])}"][strtotime($arr[0]['deleted_at'])] = $arr;
-                                $qtdes[$k] = count($arr);
+//                              $arr = [];
+//                              foreach ($order as $i) {
+//                                if($i['status'] == 'C') {
+//                                    $arr[] = $i;
+//                                }
+//                              }
+//
+//                              $purchase_orders[$o['user_id'] . "_" . strtotime($arr[0]['deleted_at']) . "_{$this->getTextSigle($o['status'])}"][strtotime($arr[0]['deleted_at'])] = $o;
+////                              $qtdes[$o['user_id']][$o['id']] = $o;
+//                              $qtdes[$o['user_id']][strtotime($o['deleted_at'])][$o['id']] = $o;
                             }
                         }
                     }
@@ -114,29 +119,27 @@ class PurchaseOrderController extends Controller
                     foreach ($datas as $idx => $d) {
                         $order = $this->getListPurchase([$d['dt']], [$s]);
                         if (count($order) > 0) {
-                            if ($s == 'A') {
-                                $data_ini = Carbon::parse($order[0]['created_at'])->format('Y-m-d');
-                                $purchase_orders[strtotime($data_ini) . "_{$this->getTextSigle($s)}"][strtotime($data_ini)] = $order;
-                            }elseif($s == 'C'){
-                                $purchase_orders[strtotime($order[0]['deleted_at']) . "_{$this->getTextSigle($s)}"][strtotime($order[0]['deleted_at'])] = $order;
-                            } else {
-                                $purchase_orders[strtotime($d['dt']) . "_{$this->getTextSigle($s)}"][strtotime($d['dt'])] = $order;
+                            foreach ($order as $o) {
+                                if ($s == 'A') {
+                                    $data_ini = Carbon::parse($order[0]['created_at'])->format('Y-m-d');
+                                    $purchase_orders[$o['user_id'] . "_" . strtotime($data_ini) . "_{$this->getTextSigle($s)}"][strtotime($data_ini)][$o['id']] = $o;
+//                                    $qtdes[$o['user_id']][$o['id']] = $o;
+                                    $qtdes[$o['user_id']][strtotime($data_ini)][$o['id']] = $o;
+                                }elseif($s == 'C'){
+                                    $purchase_orders[$o['user_id'] . "_" . strtotime($order[0]['deleted_at']) . "_{$this->getTextSigle($s)}"][strtotime($order[0]['deleted_at'])][$o['id']] = $o;
+                                    $qtdes[$o['user_id']][strtotime($o['deleted_at'])][$o['id']] = $o;
+                                } else {
+                                    $purchase_orders[$o['user_id'] . "_" . strtotime($d['dt']) . "_{$this->getTextSigle($s)}"][strtotime($d['dt'])][$o['id']] = $o;
+//                                    $qtdes[$o['user_id']][$o['id']] = $o;
+                                    $qtdes[$o['user_id']][strtotime($o['created_at'])][$o['id']] = $o;
+                                }
                             }
-                            $qtdes[$k][$idx] = count($order);
                         }
                     }
                 }
-
-                $n = 0;
-                $arr = '';
-
-                while ($n < count($qtdes)) {
-                    $arr .= implode(',', array_values($qtdes[$n])) . ",";
-                    $n++;
-                }
-                $qtdes = explode(',',trim($arr,','));
-
+//                dd($purchase_orders);
             } elseif (isset($dados['id']) && count($dados['id']) >= 1 && isset($dados['status']) && count($dados['status']) >= 1) {
+                // Validar este cenário....
                 $dts = '';
                 foreach ($dados['id'] as $dt) {
                     $dts .= $dt . ",";
@@ -162,9 +165,11 @@ class PurchaseOrderController extends Controller
                                 if ($p['status'] == 'A' || $p['status'] == 'C') {
                                     $purchase_orders[strtotime($data_fim) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_fim)][] = $p;
                                     $qtdes[strtotime($data_fim)] = count($purchase_orders[strtotime($data_fim) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_fim)]);
+//                                    $qtdes[$p['user_id']][$p['created_at']][$p['id']] = $p;
                                 } else {
                                     $purchase_orders[strtotime($data_ini) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_ini)][] = $p;
                                     $qtdes[strtotime($data_ini)] = count($purchase_orders[strtotime($data_ini) . "_{$this->getTextSigle($p['status'])}"][strtotime($data_ini)]);
+//                                    $qtdes[$p['user_id']][$p['created_at']][$p['id']] = $p;
                                 }
                             }
                         }
@@ -371,20 +376,44 @@ class PurchaseOrderController extends Controller
 
     protected  function getListPurchase($data,$status)
     {
-        $order = PurchaseOrder::withTrashed()->select('purchase_orders.id','purchase_orders.description','purchase_orders.qtde','purchase_orders.created_at','purchase_orders.deleted_at',
-            'purchase_orders.status','measures.nome as measure_nome', 'products.name as product_name',
-            'products.image','categories.tipo as categories_nome',
-            'measures.sigla','conf_product_measurements_quantities.qtde as qtde_default')
-            ->join('measures','measures.id','purchase_orders.measure_id')
-            ->join('products','products.id','purchase_orders.product_id')
-            ->join('categories','categories.id','purchase_orders.category_id')
-            ->join('conf_product_measurements_quantities', function($join){
-                $join->on('conf_product_measurements_quantities.measure_id','=','purchase_orders.measure_id');
-                $join->on('conf_product_measurements_quantities.product_id','=','purchase_orders.product_id');
-            })
-            ->whereIn(\DB::raw("DATE(purchase_orders.created_at)"),$data)
-            ->whereIn('purchase_orders.status',$status)
-            ->groupBy('purchase_orders.product_id')->get()->toArray();
+
+        $data = "'" . implode("','", $data) . "'";
+        $status = "'" . implode("','", $status) . "'";
+
+        $usuario = \Auth::user();
+//        dd(\Auth::check());
+        if($usuario['admin'] == 'N') {
+            $id = " AND `users`.`id` = {$usuario['id']}";
+        } else {
+            $id = '';
+        }
+
+        $sql = "
+            SELECT
+              purchase_orders.id,purchase_orders.description,purchase_orders.qtde,purchase_orders.created_at,purchase_orders.deleted_at,
+              purchase_orders.status,measures.nome as measure_nome,products.name as product_name,concat(users.name,' ', users.last_name) as nome_completo, users.id as user_id,users.sexo,
+              products.image,categories.tipo as categories_nome,
+              measures.sigla,conf_product_measurements_quantities.qtde as qtde_default
+            FROM `purchase_orders`
+            INNER JOIN `measures` ON `measures`.`id` = `purchase_orders`.`measure_id`
+            INNER JOIN `products` ON `products`.`id` = `purchase_orders`.`product_id`
+            INNER JOIN `categories` ON `categories`.`id` = `purchase_orders`.`category_id`
+            INNER JOIN `users` ON `users`.`id` = `purchase_orders`.`user_id`
+            INNER JOIN `conf_product_measurements_quantities`
+            ON `conf_product_measurements_quantities`.`measure_id` = `purchase_orders`.`measure_id`
+            AND `conf_product_measurements_quantities`.`product_id` = `purchase_orders`.`product_id`
+            WHERE DATE(purchase_orders.created_at) IN ($data)
+            AND `purchase_orders`.`status` IN ($status)
+            $id
+            GROUP BY `purchase_orders`.`product_id`
+        ";
+
+        $order =   \DB::select(\DB::raw($sql));
+
+        $order = array_map(function($obj) {
+            return $obj = (array) $obj;
+        }, $order);
+
         return $order;
 
     }
@@ -402,6 +431,21 @@ class PurchaseOrderController extends Controller
                 ";
                 \DB::select(\DB::raw($remove));
             }
+        }
+    }
+
+    public function aprovaListaPedidosAjax(Request $request, $id)
+    {
+        $dados = current($request->all());
+        if($dados['codigo'] == '111111') {
+            $dt_create = Carbon::parse($dados['data'])->format('Y-m-d');
+            $dt_atual = Carbon::now()->format('Y-m-d H:i:s');
+            $aprovados = PurchaseOrder::whereRaw("cast(created_at as date) = '{$dt_create}'")->where('user_id',$dados['user']);
+
+            // Atualiza a lista de pedidos
+            $resultado = $aprovados->update(['updated_at' => $dt_atual,'status' => 'A']);
+
+            return response($resultado, 200);
         }
     }
 }

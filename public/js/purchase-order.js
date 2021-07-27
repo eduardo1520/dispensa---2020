@@ -452,6 +452,47 @@ function removePedidoLista(data, id, produto) {
 
 }
 
+function buscarUsuario(nome,sexo) {
+    let tipo = sexo == 'F' ? 'img/mulher.jpg' : 'img/homem.jpeg';
+    let usuario = sexo == 'F' ? 'Foi criada pela usuária' : 'Foi criado pelo usuário';
+    Swal.fire({
+        title: 'Lista de Pedido',
+        text: `${usuario}: ${nome}`,
+        imageUrl: `${tipo}`,
+        imageWidth: 250,
+        imageHeight: 250,
+        imageAlt: 'Custom image',
+    })
+}
+
+function aprovarPedidoLista(data,codigo,user) {
+    promise(`purchase-order/aprovaListaPedidosAjax/${user}`,'POST',[{data:data, codigo:codigo, user:user}])
+        .then(response => {
+            return response.json();
+        })
+        .then(pedidos => {
+            if(pedidos) {
+                let timerInterval
+                Swal.fire({
+                    title: 'Lista de Produtos',
+                    icon: 'success',
+                    html: 'Aprovado com sucesso!',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading()
+                        timerInterval = setInterval(() => {
+                            window.location.reload();
+                        }, 100)
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval)
+                    }
+                })
+            }
+        });
+}
+
 var iconSelect;
 
 window.onload = function(){
