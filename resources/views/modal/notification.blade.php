@@ -38,41 +38,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal"  onclick="cancelar()">Ok</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal" data-notificationOK>Ok</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    function promise(url, method, params) {
-        // const params = { username: 'example' };
-        return fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN':  document.head.querySelector("meta[name=csrf-token]").content
-            },
-            body: (params != undefined) ? JSON.stringify(params) : '',
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function(event) {
-        {{--let url = '{{ $action ?? ''}}';--}}
-        {{--if(url) {--}}
-        {{--    promise(`${url}`, 'post')--}}
-        {{--        .then(response => {--}}
-        {{--            return response.json();--}}
-        {{--        }).then(queries => {--}}
-        {{--            let element = document.querySelector("#descricao");--}}
-        {{--            queries.forEach(function(value){--}}
-        {{--                element.insertAdjacentHTML('beforeend', `${value}\n\n`);--}}
-        {{--            });--}}
-        {{--        }).catch(error => {--}}
-        {{--            console.log('erro:', error);--}}
-        {{--        }--}}
-        {{--    );--}}
-        {{--}--}}
-    });
-
-</script>

@@ -86,3 +86,4 @@ Route::resource('/product-write-off', 'ProductWriteOffController');
 
 Route::resource('/notification', 'NotificationController');
 Route::post('/notification/getNotificationsAjax', 'NotificationController@getNotificationsAjax')->name('getNotificationsAjax');
+Route::post('/notification/viewNotificationsAjax', 'NotificationController@viewNotificationsAjax')->name('viewNotificationsAjax');

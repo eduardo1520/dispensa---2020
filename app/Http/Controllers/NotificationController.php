@@ -89,7 +89,16 @@ class NotificationController extends Controller
     {
         $now = Carbon::now();
         if(count($dados) == 1 && $dados['category_id']) {
-            $categories = ProductWriteOff::where('category_id',$dados['category_id'])->get();
+            $user = \Auth::user()->id;
+            if($user !== 1){
+                $categories = ProductWriteOff::where('category_id',$dados['category_id'])
+                    ->where('user_id', $user)
+                    ->get();
+            } else {
+                $categories = ProductWriteOff::where('category_id',$dados['category_id'])
+                    ->get();
+            }
+
             if(!empty($categories)) {
                 foreach ($categories as $idx =>$category) {
                     $notification[$idx] = [
@@ -121,15 +130,11 @@ class NotificationController extends Controller
 
         $user = \Auth::user()->id;
 
-        $notifications = Notification::select('notifications.id','notifications.qtde','purchase_orders.qtde as qtde_old','products.id as produto_codigo',
-            'products.name as produto','products.image','categories.id as categoria_codigo','categories.tipo','notifications.created_at','users.name')
-            ->join('products','products.id','notifications.product_id')
-            ->join('categories','categories.id','notifications.category_id')
-            ->join('users','users.id','notifications.user_id')
-            ->join('purchase_orders','purchase_orders.product_id','products.id')
-            ->where('purchase_orders.status','A')
-            ->get()->toArray();
+        $notifications = \DB::select('CALL sp_notificacoes(?)',[$user]);
 
+        $notifications = array_map(function($obj) {
+            return (array) $obj;
+        }, $notifications);
 
         foreach ($notifications as $idx => $notification) {
             if($notification['created_at']) {
@@ -137,5 +142,13 @@ class NotificationController extends Controller
             }
         }
         return response($notifications, 200);
+    }
+
+    public function viewNotificationsAjax(Request $request)
+    {
+        $dados = $request->all();
+        $user = \Auth::user()->id;
+        $result = \DB::select('CALL sp_atualiza_notificacoes(?,?)',[$dados['id'],$user]);
+        return response($result, 200);
     }
 }
