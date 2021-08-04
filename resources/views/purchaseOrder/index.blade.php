@@ -171,7 +171,7 @@
                                         <div class="row">
                                             @forelse($listas as $tipos)
                                                 @forelse($tipos as $p)
-                                                    <div class="accordian-body collapse p-3 demo_{{$status == 'C' ? $id : $arr[0]}}" id="{{ $p['id'] }}" aria-expanded="false">
+                                                    <div class="accordian-body collapse p-3 demo_{{$status == 'C' ? $id : $arr[0]. '_' .$arr[1]}}" id="{{ $p['id'] }}" aria-expanded="false">
                                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{{ $p['product_name'] }}</div>
                                                         <div class="card border-left-success shadow h-100 py-2">
                                                             <div class="col-sm">

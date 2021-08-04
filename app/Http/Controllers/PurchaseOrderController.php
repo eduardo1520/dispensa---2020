@@ -82,10 +82,8 @@ class PurchaseOrderController extends Controller
         if($dados['pesquisar']) {
             $qtdes = null;
             if (isset($dados['id']) && count($dados['id']) >= 1 && empty($dados['status'])) {
-                #dd($dados['id']);
                 foreach ($dados['id'] as $d) {
                     $order = $this->getListPurchase([$d], ['A','C','P']);
-                    #dd($order);
                     if(count($order) > 0) {
                         foreach ($order as $o) {
                             if($o['status'] == 'A' || $o['status'] == 'P') {
@@ -137,7 +135,6 @@ class PurchaseOrderController extends Controller
                         }
                     }
                 }
-//                dd($purchase_orders);
             } elseif (isset($dados['id']) && count($dados['id']) >= 1 && isset($dados['status']) && count($dados['status']) >= 1) {
                 // Validar este cenário....
                 $dts = '';
@@ -377,41 +374,15 @@ class PurchaseOrderController extends Controller
     protected  function getListPurchase($data,$status)
     {
 
-        $data = "'" . implode("','", $data) . "'";
-        $status = "'" . implode("','", $status) . "'";
+        $data = implode(",", $data);
+        $status = implode(",", $status);
 
         $usuario = \Auth::user();
-//        dd(\Auth::check());
-        if($usuario['admin'] == 'N') {
-            $id = " AND `users`.`id` = {$usuario['id']}";
-        } else {
-            $id = '';
-        }
 
-        $sql = "
-            SELECT
-              purchase_orders.id,purchase_orders.description,purchase_orders.qtde,purchase_orders.created_at,purchase_orders.deleted_at,
-              purchase_orders.status,measures.nome as measure_nome,products.name as product_name,concat(users.name,' ', users.last_name) as nome_completo, users.id as user_id,users.sexo,
-              products.image,categories.tipo as categories_nome,
-              measures.sigla,conf_product_measurements_quantities.qtde as qtde_default
-            FROM `purchase_orders`
-            INNER JOIN `measures` ON `measures`.`id` = `purchase_orders`.`measure_id`
-            INNER JOIN `products` ON `products`.`id` = `purchase_orders`.`product_id`
-            INNER JOIN `categories` ON `categories`.`id` = `purchase_orders`.`category_id`
-            INNER JOIN `users` ON `users`.`id` = `purchase_orders`.`user_id`
-            INNER JOIN `conf_product_measurements_quantities`
-            ON `conf_product_measurements_quantities`.`measure_id` = `purchase_orders`.`measure_id`
-            AND `conf_product_measurements_quantities`.`product_id` = `purchase_orders`.`product_id`
-            WHERE DATE(purchase_orders.created_at) IN ($data)
-            AND `purchase_orders`.`status` IN ($status)
-            $id
-            GROUP BY `purchase_orders`.`product_id`
-        ";
-
-        $order =   \DB::select(\DB::raw($sql));
+        $order = \DB::select('CALL sp_purchase_orders(?,?,?,?)',[$usuario['admin'],$usuario['id'],$data,$status]);
 
         $order = array_map(function($obj) {
-            return $obj = (array) $obj;
+            return (array) $obj;
         }, $order);
 
         return $order;
