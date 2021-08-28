@@ -26,6 +26,10 @@ Route::get('/about', function () {
 
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::post('/home/getConsumeProductsAjax', 'HomeController@getConsumeProductsAjax')->name('getConsumeProductsAjax');
+Route::post('/home/getCategoriasProductsAjax', 'HomeController@getCategoriasProductsAjax')->name('getCategoriasProductsAjax');
+Route::post('/home/getMarcasProductsAjax', 'HomeController@getMarcasProductsAjax')->name('getMarcasProductsAjax');
+Route::post('/home/getQuantidadesMesAjax', 'HomeController@getQuantidadesMesAjax')->name('getQuantidadesMesAjax');
 
 Route::resource('/profile', 'ProfileController');
 
