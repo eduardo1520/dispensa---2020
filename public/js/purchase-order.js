@@ -33,17 +33,18 @@ function removeProdutoLista(id) {
 function getComboMedidas(produto) {
     let combo = [];
     let selected = '';
-    promise(`measure/measureProductAjax`, 'post',{product_id:produto})
-        .then(response => {
-            return response.json();
-        })
-        .then(medidas => {
-            medidas.forEach(function(m){
-                selected = m.id == 6 ? 'selected' : '';
-                combo.push(`<option value="${m.id}" ${selected}>${m.nome} - ${m.sigla}</option>`);
+    if(produto > 0) {
+        promise(`measure/measureProductAjax`, 'post',{product_id:produto})
+            .then(response => {
+                return response.json();
+            })
+            .then(medidas => {
+                medidas.forEach(function(m){
+                    selected = m.id == 6 ? 'selected' : '';
+                    combo.push(`<option value="${m.id}" ${selected}>${m.nome} - ${m.sigla}</option>`);
+            });
         });
-    });
-
+    }
     return combo;
 }
 
@@ -77,23 +78,60 @@ function getProductMeasurements(produto, qtde = 1) {
         }
     });
 
-    let combo = getComboMedidas();
-
-    promise(`productMeasurements/getProductMeasuresAjax`, 'post', {product_id: produto, measure_id: medida, qtde: qtd})
+    let qtde_estoque = [];
+    promise(`productMeasurements/getValidateProductMeasuresAjax`, 'post', {product_id: produto, qtde: qtd})
         .then(response => {
             return response.json();
         })
-        .then(valor => {
-            document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (prod) {
-                if(prod.getAttribute('id') == produto) {
-                    let produto_nome = prod.querySelector('div >.produto').innerHTML;
-                    let arr = produto_nome.split('- ');
-                    let nome = arr.length > 1 ? arr[1] : arr[0];
-                    prod.querySelector('div >.produto').innerHTML = `[${valor}] - ` + nome;
-                }
-            })
+        .then(resultado => {
+            qtde_estoque = resultado;
+        });
 
-        }).catch(error => {
+    if(produto > 0) {
+        promise(`productMeasurements/getProductMeasuresAjax`, 'post', {product_id: produto, measure_id: medida, qtde: qtd})
+            .then(response => {
+                return response.json();
+            })
+            .then(valor => {
+                document.querySelectorAll('table.dinamico > tbody > tr').forEach(function (prod) {
+                    if(prod.getAttribute('id') == produto) {
+                        let produto_nome = prod.querySelector('div >.produto').innerHTML;
+                        let arr = produto_nome.split('- ');
+                        let nome = arr.length > 1 ? arr[1] : arr[0];
+                        if(qtde_estoque.length > 0) {
+                            if(valor > qtde_estoque[0].qtde) {
+                                let timerInterval;
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Atenção',
+                                    html: 'A quantidade solicitada não é permitida!',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: () => {
+                                        Swal.showLoading()
+                                        timerInterval = setInterval(() => {
+
+                                        }, 100)
+                                    },
+                                    willClose: () => {
+                                        valor = qtde_estoque[0].qtde;
+                                        document.querySelectorAll('table.dinamico > tbody > tr > th > select.qtde ').forEach(function (qt) {
+                                            qt.value = valor - 1;
+                                        });
+                                        prod.querySelector('div >.produto').innerHTML = `<small class="text-muted" id="estoque">Qtde Atual: [${qtde_estoque[0].qtde_atual}]</small><br/><small class="text-muted" id="produto_qtde">[${valor}] - ` + nome + '</small>';
+                                        clearInterval(timerInterval)
+                                    },
+                                    footer: 'Tente novamente...'
+                                })
+
+                            } else {
+                                prod.querySelector('div >.produto').innerHTML = `<small class="text-muted" id="estoque">Qtde Atual: [${qtde_estoque[0].qtde_atual}]</small><br/><small class="text-muted" id="produto_qtde">[${valor}] - ` + nome + '</small>';
+                            }
+                        }
+                    }
+                })
+
+            }).catch(error => {
             let timerInterval;
             Swal.fire({
                 icon: 'error',
@@ -108,7 +146,7 @@ function getProductMeasurements(produto, qtde = 1) {
                     }, 100)
                 },
                 willClose: () => {
-
+                    let combo = getComboMedidas(produto);
                     document.querySelectorAll('.pedido > tbody > tr').forEach(function (pro) {
 
                         if(pro.getAttribute('id') == produto) {
@@ -121,6 +159,7 @@ function getProductMeasurements(produto, qtde = 1) {
                                 qt.remove();
                             });
 
+                            // List Comprehension JavaScript
                             pro.querySelector('select.qtde').insertAdjacentHTML("afterbegin", `${Array.from({length:12}, (_,i) => '<option value=' + i + '>' + (i+1) + '</option>').join('')}`);
 
                             pro.querySelector('select.medida').insertAdjacentHTML("afterbegin", `${combo.join('')}`);
@@ -139,7 +178,9 @@ function getProductMeasurements(produto, qtde = 1) {
                 },
                 footer: 'Tente novamente...'
             })
-    });
+        });
+    }
+
 }
 
 function  atualizaQtdeProduto(id) {

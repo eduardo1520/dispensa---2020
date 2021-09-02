@@ -161,6 +161,13 @@ class ProductMeasurementsController extends Controller
 
     }
 
+    public function getValidateProductMeasuresAjax(Request  $request)
+    {
+        \DB::statement("SET SQL_MODE=''");
+        $dado = \DB::select('CALL sp_valida_estoque(?,?)',[$request['qtde'],$request['product_id']]);
+        return response($dado,200);
+    }
+
     public function getProductMeasurementForProductID($id)
     {
         if($id) {

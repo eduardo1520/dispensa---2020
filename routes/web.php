@@ -58,6 +58,7 @@ Route::resource('/productMeasurements', 'ProductMeasurementsController');
 Route::post('/productMeasurements/getProductMeasuresAjax', 'ProductMeasurementsController@getProductMeasuresAjax')->name('getProductMeasuresAjax');
 Route::post('/productMeasurements/productImageAjax', 'ProductMeasurementsController@getProductImages');
 Route::post('/productMeasurements/productMeasurementsAjax', 'ProductMeasurementsController@createProductMeasurements');
+Route::post('/productMeasurements/getValidateProductMeasuresAjax', 'ProductMeasurementsController@getValidateProductMeasuresAjax');
 
 Route::resource('/confProductMeasurementsQuantities', 'ConfProductMeasurementsQuantitiesController');
 Route::post('/confProductMeasurementsQuantities/upConfProductMeasurementsQuantitiesAjax', 'ConfProductMeasurementsQuantitiesController@upConfProductMeasurementsQuantitiesAjax');
